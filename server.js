@@ -743,6 +743,171 @@ app.delete('/api/products/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// ==================== CHECKOUT & REAL-TIME STOCK CALCULATION ====================
+
+// Process customer checkout, validate real-time stock, and atomically deduct stock
+app.post('/api/checkout', async (req, res) => {
+  const { items, customer, payment_method, promo_code } = req.body || {};
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Your shopping cart is empty' });
+  }
+
+  try {
+    const isMongo = isMongoConnected();
+    const db = !isMongo ? getDatabase() : null;
+    const validatedItems = [];
+    const stockUpdates = [];
+
+    // Step 1: Real-time stock validation for all items
+    for (const item of items) {
+      const productId = item.id;
+      const requestedQty = Math.max(1, parseInt(item.quantity, 10) || 1);
+
+      let productDoc = null;
+      let currentStock = 0;
+      let productName = item.name || 'Product';
+
+      if (isMongo) {
+        productDoc = await findByIdOrLegacy(Product, productId);
+        if (!productDoc) {
+          return res.status(404).json({ error: `Product "${productName}" was not found.` });
+        }
+        currentStock = Number(productDoc.stock) || 0;
+        productName = productDoc.name;
+      } else {
+        const result = db.exec(`SELECT * FROM products WHERE id = ?`, [productId]);
+        if (result.length === 0 || result[0].values.length === 0) {
+          return res.status(404).json({ error: `Product "${productName}" was not found.` });
+        }
+        const mapped = mapProduct(result[0].columns, result[0].values[0]);
+        currentStock = Number(mapped.stock) || 0;
+        productName = mapped.name;
+        productDoc = mapped;
+      }
+
+      // Check if completely out of stock
+      if (currentStock <= 0) {
+        return res.status(400).json({
+          error: `Sorry, "${productName}" is currently out of stock!`,
+          code: 'OUT_OF_STOCK',
+          productId,
+          availableStock: 0
+        });
+      }
+
+      // Check if requested quantity exceeds available stock
+      if (requestedQty > currentStock) {
+        return res.status(400).json({
+          error: `Only ${currentStock} unit${currentStock === 1 ? '' : 's'} available for "${productName}". Please adjust quantity.`,
+          code: 'LOW_STOCK',
+          productId,
+          availableStock: currentStock
+        });
+      }
+
+      validatedItems.push({
+        item,
+        productDoc,
+        productId,
+        requestedQty,
+        currentStock,
+        newStock: currentStock - requestedQty,
+        productName,
+        price: Number(item.price) || 0
+      });
+    }
+
+    // Step 2: Atomic stock deduction in database
+    for (const valid of validatedItems) {
+      if (isMongo) {
+        valid.productDoc.stock = valid.newStock;
+        await valid.productDoc.save();
+      } else {
+        db.run(`UPDATE products SET stock = ? WHERE id = ?`, [valid.newStock, valid.productId]);
+      }
+
+      stockUpdates.push({
+        id: valid.productId,
+        name: valid.productName,
+        previousStock: valid.currentStock,
+        stock: valid.newStock,
+        deducted: valid.requestedQty,
+        stockStatus: valid.newStock === 0 ? 'out_of_stock' : (valid.newStock <= 5 ? 'low_stock' : 'in_stock')
+      });
+    }
+
+    if (!isMongo) {
+      saveDatabase();
+    }
+
+    // Step 3: Broadcast real-time live events to all connected clients
+    broadcastRealtimeUpdate('stock_updated', {
+      action: 'checkout_purchase',
+      items: stockUpdates,
+      timestamp: Date.now()
+    });
+    broadcastRealtimeUpdate('products_updated', {
+      action: 'stock_change',
+      items: stockUpdates,
+      timestamp: Date.now()
+    });
+
+    const orderId = 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000);
+    const orderTotal = validatedItems.reduce((sum, i) => sum + (i.price * i.requestedQty), 0);
+
+    return res.json({
+      success: true,
+      message: 'Order placed successfully! Stock updated in real-time.',
+      orderId,
+      orderTotal,
+      purchasedItems: stockUpdates,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Checkout error:', error);
+    res.status(500).json({ error: 'Failed to process order. Please try again.' });
+  }
+});
+
+// Get real-time stock levels summary (Low to High stock breakdown)
+app.get('/api/products/stock-levels', async (req, res) => {
+  try {
+    let products = [];
+    if (isMongoConnected()) {
+      products = await Product.find({}).sort({ stock: 1 });
+    } else {
+      const db = getDatabase();
+      const result = db.exec(`SELECT * FROM products ORDER BY stock ASC`);
+      if (result.length > 0) {
+        const { columns, values } = result[0];
+        products = values.map(row => mapProduct(columns, row));
+      }
+    }
+
+    const summary = {
+      totalProducts: products.length,
+      outOfStock: products.filter(p => p.stock <= 0).length,
+      criticalStock: products.filter(p => p.stock > 0 && p.stock <= 5).length,
+      lowStock: products.filter(p => p.stock > 5 && p.stock <= 15).length,
+      normalStock: products.filter(p => p.stock > 15 && p.stock <= 50).length,
+      highStock: products.filter(p => p.stock > 50).length,
+      items: products.map(p => ({
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        stock: p.stock,
+        price: p.price,
+        status: p.stock <= 0 ? 'out_of_stock' : (p.stock <= 5 ? 'critical' : (p.stock <= 15 ? 'low' : 'normal'))
+      }))
+    };
+
+    res.json(summary);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stock levels' });
+  }
+});
+
 // ==================== REVIEW ROUTES ====================
 
 // Get reviews for a product

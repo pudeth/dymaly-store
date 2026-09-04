@@ -363,17 +363,46 @@
                 </div>
             </div>
 
-            <!-- Footer Bottom: Copyright, Payments, Live Sync -->
-            <div class="footer-bottom">
-                <div class="footer-bottom-left">
-                    <p id="footerCopyright">© 2026 DyMaly Phone Store. All rights reserved.</p>
-                    <span class="footer-dot">•</span>
-                    <span class="footer-safe-tag">🔒 100% Secure Checkout</span>
+            <!-- Footer Middle: Newsletter & VIP Member Perk -->
+            <div class="footer-newsletter-banner">
+                <div class="newsletter-content">
+                    <div class="newsletter-icon-wrap">🎁</div>
+                    <div class="newsletter-text">
+                        <h4>Subscribe to DyMaly VIP Privileges</h4>
+                        <p>Get instant updates on latest flagship arrivals, exclusive discounts, and flash sales in Cambodia.</p>
+                    </div>
                 </div>
-                <div class="footer-bottom-right">
-                    <div class="live-sync-badge" id="liveSyncBadge" title="Real-Time Connected to Database">
-                        <span class="live-pulse-dot"></span>
-                        <span class="live-status-text">Live Sync Active</span>
+                <div class="newsletter-form-wrap">
+                    <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('🎉 Thank you for subscribing to DyMaly VIP!'); this.reset();">
+                        <input type="email" placeholder="Enter your email address..." required aria-label="Email address">
+                        <button type="submit">Join VIP →</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Footer Bottom: Payment Methods, Copyright, Live Sync -->
+            <div class="footer-bottom-section">
+                <div class="footer-payment-row">
+                    <span class="payment-title">Accepted Payments & Transfers:</span>
+                    <div class="payment-badges">
+                        <span class="payment-pill">🇰🇭 Bakong KHQR</span>
+                        <span class="payment-pill">🏦 ABA PAY</span>
+                        <span class="payment-pill">💳 Visa / Mastercard</span>
+                        <span class="payment-pill">💵 Cash On Delivery</span>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <div class="footer-bottom-left">
+                        <p id="footerCopyright">© 2026 DyMaly Phone Store. All rights reserved.</p>
+                        <span class="footer-dot">•</span>
+                        <span class="footer-safe-tag">🔒 100% Genuine & Secure</span>
+                    </div>
+                    <div class="footer-bottom-right">
+                        <div class="live-sync-badge" id="liveSyncBadge" title="Real-Time Connected to Database">
+                            <span class="live-pulse-dot"></span>
+                            <span class="live-status-text">Live Sync Active</span>
+                        </div>
                     </div>
                 </div>
             </div>
