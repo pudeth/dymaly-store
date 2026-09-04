@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - QKZ Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Kantumruy:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="js/i18n.js"></script>
+</head>
+<body>
+    <div id="loginSection" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-brand-row">
+                    <div class="login-brand-icon" id="loginBrandIcon">
+                        <svg id="loginBrandSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                        <img id="loginBrandImg" src="" alt="Store Logo" class="login-custom-logo-img" style="display: none;">
+                    </div>
+                    <div class="login-secure-badge">
+                        <svg class="secure-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>Secure Area</span>
+                    </div>
+                </div>
+                <h1 data-i18n="admin_login">Admin Login</h1>
+                <p data-i18n="admin_subtitle">Manage phones, stock, categories & customer reviews</p>
+            </div>
+            
+            <div class="login-form-container">
+                <form id="loginForm" autocomplete="on">
+                    <div class="form-group">
+                        <label for="username" data-i18n="username">Username</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <input type="text" id="username" placeholder="Enter username" data-i18n-placeholder="enter_username" value="admin" required autocomplete="username">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" data-i18n="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input type="password" id="password" placeholder="Enter password" data-i18n-placeholder="enter_password" required autocomplete="current-password">
+                            <button type="button" class="password-toggle-btn" id="passwordToggleBtn" aria-label="Toggle password visibility">
+                                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginSubmitBtn">
+                        <span data-i18n="sign_in">Sign in to Dashboard</span>
+                        <svg class="btn-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                    
+                    <p id="loginError" class="error-message"></p>
+                </form>
+
+                <div class="login-divider">
+                    <span>or</span>
+                </div>
+                
+                <a href="index.html" class="back-to-store-btn">
+                    <svg class="store-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span data-i18n="visit_store">Visit the Customer Store</span>
+                </a>
+
+                <div class="login-footer-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span id="loginFooterSessionText">Encrypted Admin Session · <span id="loginFooterStoreName">DyMaly</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboardSection" style="display: none;">
+        <header class="admin-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="index.html" class="header-icon" id="adminHeaderStoreIcon" title="View Customer Store" aria-label="Store Home">
+                        <svg id="adminHeaderStoreSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                        <img id="adminHeaderStoreImg" src="" alt="Store Logo" class="header-custom-logo-img" style="display: none;">
+                    </a>
+                    <div class="header-info">
+                        <h1 id="headerStoreTitle">DyMaly</h1>
+                        <p class="header-subtitle" id="headerStoreSubtitle" data-i18n="admin_portal">Admin Portal</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button type="button" class="header-admin-pill" onclick="switchToTab('settings')" title="Admin Info & Settings">
+                        <span class="admin-pill-avatar" id="headerAdminAvatar">
+                            <span id="headerAdminAvatarInitial">A</span>
+                            <img id="headerAdminAvatarImg" src="" alt="Admin Avatar" class="header-pill-avatar-img" style="display: none;">
+                        </span>
+                        <span class="admin-pill-name" id="headerAdminName">Admin</span>
+                    </button>
+                    <a href="index.html" class="header-store-btn" title="View Customer Store">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span class="btn-text" data-i18n="store">Store</span>
+                    </a>
+                    <button id="logoutBtn" class="logout-btn" title="Log out" aria-label="Log out">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span class="btn-text" data-i18n="logout">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="stats">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                    </svg>
+                </span>
+                <span class="tab-label">Overview</span>
+            </button>
+            <button class="tab-btn" data-tab="catalog">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </span>
+                <span class="tab-label">Catalog</span>
+            </button>
+            <button class="tab-btn" data-tab="reviews">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </span>
+                <span class="tab-label">Reviews</span>
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </span>
+                <span class="tab-label">Settings</span>
+            </button>
+        </nav>
+
+        <main class="container">
+            <!-- Stats Tab -->
+            <div id="statsTab" class="tab-content active">
+                <div class="stats-grid-new">
+                    <div class="stat-card-new stat-products-new">
+                        <div class="stat-icon-new">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-value" id="totalProducts">0</div>
+                        <div class="stat-label-new">Total Products</div>
+                        <div class="stat-meta" id="totalUnits">0 total units</div>
+                    </div>
+                    
+                    <div class="stat-card-new stat-value-new">
+                        <div class="stat-icon-new">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-value" id="stockValue">$0</div>
+                        <div class="stat-label-new">Stock Value</div>
+                        <div class="stat-meta">Total inventory</div>
+                    </div>
+                    
+                    <div class="stat-card-new stat-rating-new">
+                        <div class="stat-icon-new">
+                            <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="stat-value" id="avgRating">0.0</div>
+                        <div class="stat-label-new">Average Rating</div>
+                        <div class="stat-meta" id="totalReviewsMeta">0 reviews</div>
+                    </div>
+                    
+                    <div class="stat-card-new stat-restock-new">
+                        <div class="stat-icon-new">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-value" id="needRestock">0</div>
+                        <div class="stat-label-new">Need Restock</div>
+                        <div class="stat-meta">Low stock items</div>
+                    </div>
+                </div>
+
+                <div class="stock-distribution-section">
+                    <h3 class="section-title-new">Stock Distribution</h3>
+                    <div class="stock-distribution-card">
+                        <div class="stock-item">
+                            <div class="stock-info">
+                                <span class="stock-dot stock-out"></span>
+                                <span class="stock-label">Out of Stock</span>
+                            </div>
+                            <span class="stock-count" id="outOfStockCount">0</span>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-info">
+                                <span class="stock-dot stock-critical"></span>
+                                <span class="stock-label">Critical</span>
+                            </div>
+                            <span class="stock-count" id="criticalCount">0</span>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-info">
+                                <span class="stock-dot stock-low"></span>
+                                <span class="stock-label">Low Stock</span>
+                            </div>
+                            <span class="stock-count" id="lowStockCount">0</span>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-info">
+                                <span class="stock-dot stock-normal"></span>
+                                <span class="stock-label">Normal</span>
+                            </div>
+                            <span class="stock-count" id="normalCount">0</span>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-info">
+                                <span class="stock-dot stock-high"></span>
+                                <span class="stock-label">High Stock</span>
+                            </div>
+                            <span class="stock-count" id="highStockCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="attention-section">
+                    <h3 class="section-title-new">Products Needing Attention</h3>
+                    <div class="low-stock-list" id="lowStockList"></div>
+                </div>
+            </div>
+
+            <!-- Unified Catalog Tab (Products, Brands, Categories) -->
+            <div id="catalogTab" class="tab-content">
+                <div class="page-header catalog-page-header">
+                    <div>
+                        <h2>Catalog Management</h2>
+                        <p class="page-subtitle">Products, brands, and categories in one unified hub</p>
+                    </div>
+                    <div class="catalog-header-actions">
+                        <button id="catalogAddBtn" class="btn-add-item" onclick="handleCatalogAdd()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span id="catalogAddBtnText">Add Product</span>
+                        </button>
+                        <!-- Preserved IDs for background handlers -->
+                        <button id="addProductBtn" style="display:none;"></button>
+                        <button id="addBrandBtn" style="display:none;"></button>
+                        <button id="addCategoryBtn" style="display:none;"></button>
+                    </div>
+                </div>
+
+                <!-- iOS Segmented Control Bar -->
+                <div class="catalog-segmented-control" role="tablist">
+                    <button type="button" class="catalog-segment-btn active" data-subtab="products" onclick="switchCatalogSubtab('products')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                        <span>Products</span>
+                        <span class="catalog-count-pill" id="catalogProductsCount">0</span>
+                    </button>
+                    <button type="button" class="catalog-segment-btn" data-subtab="brands" onclick="switchCatalogSubtab('brands')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Brands</span>
+                        <span class="catalog-count-pill" id="catalogBrandsCount">0</span>
+                    </button>
+                    <button type="button" class="catalog-segment-btn" data-subtab="categories" onclick="switchCatalogSubtab('categories')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        <span>Categories</span>
+                        <span class="catalog-count-pill" id="catalogCategoriesCount">0</span>
+                    </button>
+                </div>
+
+                <!-- SUBVIEW 1: PRODUCTS -->
+                <div id="catalogSubview-products" class="catalog-subview active">
+                    <div class="catalog-filter-bar">
+                        <div class="admin-search catalog-search-input">
+                            <span class="search-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input type="text" id="productSearch" placeholder="Search products by name, brand, or price...">
+                        </div>
+                        <div class="catalog-quick-filters">
+                            <div class="catalog-filter-dropdown">
+                                <label for="filterBrandSelect">Brand:</label>
+                                <select id="filterBrandSelect" onchange="applyProductFilters()">
+                                    <option value="">All Brands</option>
+                                </select>
+                            </div>
+                            <div class="catalog-filter-dropdown">
+                                <label for="filterCategorySelect">Category:</label>
+                                <select id="filterCategorySelect" onchange="applyProductFilters()">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="productsList" class="products-grid"></div>
+                </div>
+
+                <!-- SUBVIEW 2: BRANDS -->
+                <div id="catalogSubview-brands" class="catalog-subview">
+                    <div class="catalog-filter-bar">
+                        <div class="admin-search">
+                            <span class="search-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input type="text" id="brandSearch" placeholder="Search brands...">
+                        </div>
+                        <button type="button" class="btn-add-item btn-subview-add" onclick="openAddBrandModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Add Brand</span>
+                        </button>
+                    </div>
+                    
+                    <div id="brandsList" class="brands-grid"></div>
+                </div>
+
+                <!-- SUBVIEW 3: CATEGORIES -->
+                <div id="catalogSubview-categories" class="catalog-subview">
+                    <div class="catalog-filter-bar">
+                        <div class="admin-search">
+                            <span class="search-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input type="text" id="categorySearch" placeholder="Search categories...">
+                        </div>
+                        <button type="button" class="btn-add-item btn-subview-add" onclick="openAddCategoryModal()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Add Category</span>
+                        </button>
+                    </div>
+                    
+                    <div id="categoriesList" class="categories-grid"></div>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div id="reviewsTab" class="tab-content">
+                <div class="page-header">
+                    <h2>Customer Reviews</h2>
+                    <p class="page-subtitle">Manage customer feedback</p>
+                </div>
+                <div id="reviewsList" class="reviews-list"></div>
+            </div>
+
+            <!-- Settings & Admin Profile Tab -->
+            <div id="settingsTab" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h2>Store & Admin Settings</h2>
+                        <p class="page-subtitle">Configure your store identity and administrator account</p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Card 1: Store Identity (NameStore) -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-icon-badge store-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Store Identity</h3>
+                                <p class="settings-card-desc">Edit store name, tagline, and customer contact info</p>
+                            </div>
+                        </div>
+
+                        <!-- Live Brand Preview Box -->
+                        <div class="store-preview-banner">
+                            <div class="preview-banner-icon" id="previewBannerIcon">
+                                <svg id="previewBannerSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                </svg>
+                                <img id="previewBannerImg" src="" alt="Store Logo" class="preview-logo-img" style="display: none;">
+                            </div>
+                            <div class="preview-banner-text">
+                                <span class="preview-live-tag">LIVE PREVIEW</span>
+                                <h4 id="previewStoreName">DyMaly</h4>
+                                <p id="previewStoreTagline">Phones & audio, delivered fast</p>
+                            </div>
+                        </div>
+
+                        <form id="storeSettingsForm" onsubmit="handleSaveStoreSettings(event)">
+                            <!-- Store Logo Upload Field -->
+                            <div class="form-group store-logo-field">
+                                <label class="label-with-badge">
+                                    <span>Store Logo / Brand Icon</span>
+                                    <span class="field-hint">PNG, JPG, SVG, WEBP (Max 5MB)</span>
+                                </label>
+                                <div class="store-logo-uploader" id="storeLogoUploader">
+                                    <div class="store-logo-preview-box" id="storeLogoPreviewBox">
+                                        <div class="store-logo-default-icon" id="storeLogoDefaultIcon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                            </svg>
+                                        </div>
+                                        <img id="storeLogoPreviewImg" src="" alt="Store Logo Preview" class="store-logo-preview-image" style="display: none;">
+                                    </div>
+                                    <div class="store-logo-upload-info">
+                                        <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
+                                        <input type="hidden" id="settingStoreLogo" value="">
+                                        <div class="upload-btn-row">
+                                            <button type="button" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                </svg>
+                                                <span id="chooseStoreLogoBtnText">Upload Store Logo</span>
+                                            </button>
+                                            <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                                <span>Remove</span>
+                                            </button>
+                                        </div>
+                                        <p class="upload-help-text">Tap to browse or drag & drop. Displayed in customer & admin headers.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="settingStoreName">Store Name *</label>
+                                <input type="text" id="settingStoreName" placeholder="e.g. Bong Store" required oninput="updateStorePreview()">
+                            </div>
+                            <div class="form-group">
+                                <label for="settingStoreTagline">Store Tagline / Slogan</label>
+                                <input type="text" id="settingStoreTagline" placeholder="e.g. Premium Smartphones & Tech Store" oninput="updateStorePreview()">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="settingStorePhone">Contact Phone</label>
+                                    <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingStoreEmail">Contact Email</label>
+                                    <input type="email" id="settingStoreEmail" placeholder="e.g. contact@bongstore.com">
+                                </div>
+                            </div>
+                            <div class="settings-form-actions">
+                                <button type="submit" class="btn-save-settings" id="saveStoreSettingsBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span>Save Store Settings</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Card 2: Admin Profile & Security (Edit Profile) -->
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="settings-icon-badge admin-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Admin Profile</h3>
+                                <p class="settings-card-desc">Edit administrator details and change password</p>
+                            </div>
+                        </div>
+
+                        <!-- Profile Avatar Card -->
+                        <div class="admin-profile-header-card">
+                            <div class="admin-avatar-wrapper">
+                                <div class="admin-avatar-large" id="profileAvatarLarge">A</div>
+                                <img id="profileAvatarImg" src="" alt="Admin Profile Photo" class="admin-avatar-large-img" style="display: none;">
+                                <button type="button" class="btn-avatar-camera" id="btnUploadAdminAvatar" title="Change profile photo" aria-label="Change profile photo">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                        <circle cx="12" cy="13" r="4"></circle>
+                                    </svg>
+                                </button>
+                                <input type="file" id="adminAvatarFileInput" accept="image/*" style="display: none;">
+                                <input type="hidden" id="profileAvatarUrl" value="">
+                            </div>
+                            <div class="admin-profile-meta">
+                                <h4 id="profileCardDisplayName">Store Administrator</h4>
+                                <span class="role-pill">Verified Administrator</span>
+                                <span class="admin-meta-sub" id="profileCardUsername">@admin</span>
+                                <div class="avatar-quick-actions">
+                                    <button type="button" class="btn-avatar-pill-upload" id="chooseAdminAvatarBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span id="chooseAvatarBtnText">Upload Photo</span>
+                                    </button>
+                                    <button type="button" class="btn-avatar-pill-remove" id="removeAdminAvatarBtn" style="display: none;">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="adminProfileForm" onsubmit="handleSaveAdminProfile(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileDisplayName">Display Name *</label>
+                                    <input type="text" id="profileDisplayName" placeholder="e.g. Store Administrator" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileUsername">Username *</label>
+                                    <input type="text" id="profileUsername" placeholder="e.g. admin" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileEmail">Admin Email</label>
+                                    <input type="email" id="profileEmail" placeholder="e.g. admin@bongstore.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profilePhone">Admin Phone</label>
+                                    <input type="text" id="profilePhone" placeholder="e.g. +855 12 345 678">
+                                </div>
+                            </div>
+
+                            <!-- Change Password Sub-section -->
+                            <div class="password-change-section">
+                                <div class="password-section-header">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <span>Change Password (Optional)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileCurrentPassword">Current Password</label>
+                                    <input type="password" id="profileCurrentPassword" placeholder="Enter current password to verify" autocomplete="current-password">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="profileNewPassword">New Password</label>
+                                        <input type="password" id="profileNewPassword" placeholder="New password (min 6 characters)" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profileConfirmPassword">Confirm New Password</label>
+                                        <input type="password" id="profileConfirmPassword" placeholder="Re-enter new password" autocomplete="new-password">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-form-actions">
+                                <button type="submit" class="btn-save-settings" id="saveAdminProfileBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span>Update Profile</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="admin-bottom-nav">
+            <button class="tab-btn nav-item active" data-tab="stats" aria-label="Overview">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                    </svg>
+                </span>
+                <span class="nav-label">Overview</span>
+            </button>
+            <button class="tab-btn nav-item" data-tab="catalog" aria-label="Catalog">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </span>
+                <span class="nav-label">Catalog</span>
+            </button>
+            <button class="tab-btn nav-item" data-tab="reviews" aria-label="Reviews">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </span>
+                <span class="nav-label">Reviews</span>
+            </button>
+            <button class="tab-btn nav-item" data-tab="settings" aria-label="Settings">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </span>
+                <span class="nav-label">Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Product</h2>
+                <button class="modal-close" onclick="closeProductModal()" aria-label="Close modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <div class="form-group">
+                    <label for="productName">Product Name *</label>
+                    <input type="text" id="productName" placeholder="e.g., iPhone 15 Pro" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productBrand">Brand *</label>
+                        <select id="productBrand" required>
+                            <option value="">Select brand...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select id="productCategory">
+                            <option value="">Select category...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productPrice">Price ($) *</label>
+                        <input type="number" id="productPrice" step="0.01" placeholder="999.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productSize">Storage/Size</label>
+                        <input type="text" id="productSize" placeholder="256GB, 512GB, etc.">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Stock Quantity *</label>
+                    <input type="number" id="productStock" placeholder="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea id="productDescription" rows="3" placeholder="Enter product description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="label-with-badge">
+                        <label>Product Image</label>
+                        <span class="recommend-tag">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            Recommended: 800 × 800 px (1:1)
+                        </span>
+                    </div>
+                    <div class="image-upload-container">
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="Preview" style="display: none;">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                <span class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </span>
+                                <p>Click to upload or drag image here</p>
+                                <span class="upload-hint">Square 800×800 px • PNG, JPG, WEBP (Max 5MB)</span>
+                            </div>
+                        </div>
+
+                        <!-- Image Specs Recommendation Guide -->
+                        <div class="image-recommend-guide">
+                            <div class="recommend-guide-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <span>Recommended Image Specs</span>
+                            </div>
+                            <div class="recommend-guide-chips">
+                                <span class="spec-chip"><strong>Dimensions:</strong> 800 × 800 px</span>
+                                <span class="spec-chip"><strong>Ratio:</strong> 1:1 Square</span>
+                                <span class="spec-chip"><strong>Formats:</strong> PNG, JPG, WEBP</span>
+                                <span class="spec-chip"><strong>Max Size:</strong> 5 MB</span>
+                            </div>
+                            <p class="recommend-guide-note">Square 1:1 images with clean light or transparent backgrounds display best in product cards and store catalogs.</p>
+                        </div>
+
+                        <div class="image-details" id="imageDetails">
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">File name</span>
+                                <span class="image-detail-value" id="imageFileName">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">Dimensions</span>
+                                <span class="image-detail-value" id="imageDimensions">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">Aspect ratio</span>
+                                <span class="image-detail-value" id="imageAspectRatio">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">File size</span>
+                                <span class="image-detail-value" id="imageFileSize">-</span>
+                            </div>
+                        </div>
+                        <input type="file" id="productImageFile" accept="image/*" style="display: none;">
+                        <input type="hidden" id="productImage">
+                        <div class="image-upload-actions">
+                            <button type="button" class="btn-upload-action btn-upload-choose" id="selectImageBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>Choose Image</span>
+                            </button>
+                            <button type="button" class="btn-upload-action btn-upload-remove" id="removeImageBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>Remove</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Brand Modal -->
+    <div id="brandModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-header">
+                <h2 id="brandModalTitle">Add New Brand</h2>
+                <button class="modal-close" onclick="closeBrandModal()" aria-label="Close modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="brandForm">
+                <input type="hidden" id="brandId">
+                <div class="form-group">
+                    <label for="brandName">Brand Name *</label>
+                    <input type="text" id="brandName" placeholder="e.g., Apple" required>
+                </div>
+                <div class="form-group">
+                    <label for="brandDescription">Description</label>
+                    <textarea id="brandDescription" rows="2" placeholder="Enter brand description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="label-with-badge">
+                        <label>Brand Logo</label>
+                        <span class="recommend-tag">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            </svg>
+                            Recommended: 400 × 400 px (1:1)
+                        </span>
+                    </div>
+                    <div class="image-upload-container">
+                        <div class="image-preview brand-logo-preview" id="brandLogoPreview">
+                            <img id="brandPreviewImg" src="" alt="Logo Preview" style="display: none;">
+                            <div class="upload-placeholder" id="brandUploadPlaceholder">
+                                <span class="upload-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                    </svg>
+                                </span>
+                                <p>Click to upload or drag logo here</p>
+                                <span class="upload-hint">Square 400×400 px • Transparent PNG (Max 5MB)</span>
+                            </div>
+                        </div>
+
+                        <!-- Logo Specs Recommendation Guide -->
+                        <div class="image-recommend-guide">
+                            <div class="recommend-guide-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <span>Recommended Logo Specs</span>
+                            </div>
+                            <div class="recommend-guide-chips">
+                                <span class="spec-chip"><strong>Dimensions:</strong> 400 × 400 px</span>
+                                <span class="spec-chip"><strong>Ratio:</strong> 1:1 Square</span>
+                                <span class="spec-chip"><strong>Format:</strong> PNG (Transparent)</span>
+                                <span class="spec-chip"><strong>Max Size:</strong> 5 MB</span>
+                            </div>
+                        </div>
+
+                        <div class="image-details" id="brandImageDetails">
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">File name</span>
+                                <span class="image-detail-value" id="brandImageFileName">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">Dimensions</span>
+                                <span class="image-detail-value" id="brandImageDimensions">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">Aspect ratio</span>
+                                <span class="image-detail-value" id="brandImageAspectRatio">-</span>
+                            </div>
+                            <div class="image-detail-separator"></div>
+                            <div class="image-detail-row">
+                                <span class="image-detail-label">File size</span>
+                                <span class="image-detail-value" id="brandImageFileSize">-</span>
+                            </div>
+                        </div>
+                        <input type="file" id="brandLogoFile" accept="image/*" style="display: none;">
+                        <input type="hidden" id="brandLogo">
+                        <div class="image-upload-actions">
+                            <button type="button" class="btn-upload-action btn-upload-choose" id="selectBrandLogoBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>Choose Logo</span>
+                            </button>
+                            <button type="button" class="btn-upload-action btn-upload-remove" id="removeBrandLogoBtn" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span>Remove</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-drag-handle"></div>
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">Add New Category</h2>
+                <button class="modal-close" onclick="closeCategoryModal()" aria-label="Close modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label for="categoryName">Category Name *</label>
+                    <input type="text" id="categoryName" placeholder="e.g., Smartphones" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryDescription">Description</label>
+                    <textarea id="categoryDescription" rows="2" placeholder="Enter category description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="categoryIcon">Icon (Emoji)</label>
+                    <input type="text" id="categoryIcon" placeholder="📱" maxlength="2">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

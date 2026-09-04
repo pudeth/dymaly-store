@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Shopping Bag - QKZ Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Kantumruy:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+</head>
+<body class="cart-page">
+    <header class="site-header">
+        <div class="container">
+            <div class="header-row">
+                <a href="index.html" class="brand" aria-label="QKZ Store Home">
+                    <span class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </span>
+                    <div class="brand-text">
+                        <h1>QKZ Store</h1>
+                        <p data-i18n="brand_tagline">Phones & audio, delivered fast</p>
+                    </div>
+                </a>
+                <nav class="top-nav">
+                    <a href="index.html" class="nav-btn-secondary" aria-label="Continue Shopping">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="nav-text" data-i18n="continue_shopping">Continue Shopping</span>
+                    </a>
+                    <a href="admin.html" class="admin-link" aria-label="Admin Dashboard">
+                        <svg class="admin-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span data-i18n="nav_admin">Admin</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="cart-section">
+        <div class="container">
+            <!-- Cart Page Header -->
+            <div class="cart-page-header">
+                <div class="cart-title-row">
+                    <div class="cart-title-group">
+                        <h2 data-i18n="shopping_bag">Shopping Bag</h2>
+                        <span class="cart-count-pill" id="cartCountPill">0 items</span>
+                    </div>
+                    <button type="button" class="cart-clear-all-btn" id="clearCartBtn" onclick="clearCart()" style="display: none;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <span data-i18n="clear_all">Clear All</span>
+                    </button>
+                </div>
+                
+                <!-- Free Shipping Progress Banner -->
+                <div class="shipping-perk-banner" id="shippingPerkBanner">
+                    <div class="perk-icon-wrap">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <rect x="1" y="3" width="15" height="13" rx="2"></rect>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                        </svg>
+                    </div>
+                    <div class="perk-info">
+                        <span class="perk-title">Free Express Shipping Unlocked!</span>
+                        <span class="perk-sub">Guaranteed delivery in 2–3 business days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Content (Items + Summary) -->
+            <div id="cartContent">
+                <div class="loading">Loading cart...</div>
+            </div>
+
+            <!-- Recommended Accessories Carousel / Quick Add -->
+            <div class="cart-recommended-section" id="recommendedSection" style="display: none;">
+                <div class="recommended-header">
+                    <div class="recommended-title-wrap">
+                        <h3>Frequently Added Together</h3>
+                        <p>Essential accessories for your new device</p>
+                    </div>
+                </div>
+                <div class="recommended-grid">
+                    <div class="rec-card">
+                        <div class="rec-card-image">
+                            <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200&auto=format&fit=crop&q=80" alt="30W USB-C Fast Charger" onerror="this.src='https://via.placeholder.com/120?text=Charger'">
+                        </div>
+                        <div class="rec-card-info">
+                            <h4>30W GaN Fast Charger</h4>
+                            <span class="rec-spec">USB-C Power Delivery</span>
+                            <div class="rec-bottom">
+                                <span class="rec-price">$24.99</span>
+                                <button type="button" class="rec-add-btn" onclick="addRecommendedItem(901, '30W GaN Fast Charger', 'Accessories', 24.99, 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200&auto=format&fit=crop&q=80', 'USB-C')">
+                                    + Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rec-card">
+                        <div class="rec-card-image">
+                            <img src="https://images.unsplash.com/photo-1601593346740-925612772716?w=200&auto=format&fit=crop&q=80" alt="Clear MagSafe Case" onerror="this.src='https://via.placeholder.com/120?text=Case'">
+                        </div>
+                        <div class="rec-card-info">
+                            <h4>Magnetic Armor Case</h4>
+                            <span class="rec-spec">Military Drop Protection</span>
+                            <div class="rec-bottom">
+                                <span class="rec-price">$19.99</span>
+                                <button type="button" class="rec-add-btn" onclick="addRecommendedItem(902, 'Magnetic Armor Case', 'Accessories', 19.99, 'https://images.unsplash.com/photo-1601593346740-925612772716?w=200&auto=format&fit=crop&q=80', 'Universal')">
+                                    + Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rec-card">
+                        <div class="rec-card-image">
+                            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&auto=format&fit=crop&q=80" alt="9H Tempered Glass" onerror="this.src='https://via.placeholder.com/120?text=Glass'">
+                        </div>
+                        <div class="rec-card-info">
+                            <h4>9H Tempered Glass (2-Pack)</h4>
+                            <span class="rec-spec">Ultra-Clear HD & Oleophobic</span>
+                            <div class="rec-bottom">
+                                <span class="rec-price">$12.99</span>
+                                <button type="button" class="rec-add-btn" onclick="addRecommendedItem(903, '9H Tempered Glass (2-Pack)', 'Accessories', 12.99, 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&auto=format&fit=crop&q=80', '2-Pack')">
+                                    + Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-container">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_home">Home</span>
+            </a>
+            <a href="cart.html" class="nav-item active">
+                <div class="nav-icon-wrapper">
+                    <span class="nav-icon"></span>
+                    <span class="nav-badge" id="navCartBadge">0</span>
+                </div>
+                <span class="nav-label" data-i18n="nav_cart">Cart</span>
+            </a>
+            <a href="saved.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_saved">Saved</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_admin">Admin</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">
+        <div class="progress-ring"></div>
+    </button>
+
+    <script src="js/cart.js"></script>
+</body>
+</html>

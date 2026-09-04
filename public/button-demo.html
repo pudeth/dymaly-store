@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button States Demo - QKZ Store</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .demo-section {
+            background: var(--white);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-card);
+        }
+        .demo-section h3 {
+            margin-bottom: 20px;
+            color: var(--text);
+            font-size: 18px;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .demo-label {
+            width: 100%;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-row">
+                <a href="index.html" class="brand">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1>Button Demo</h1>
+                        <p>Modern processing states</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="demo-container">
+        <div class="demo-section">
+            <h3>🎨 Primary Buttons</h3>
+            
+            <div class="demo-label">Normal State</div>
+            <div class="button-row">
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-primary btn-pulse">Pulsing Button</button>
+            </div>
+
+            <div class="demo-label">Processing State</div>
+            <div class="button-row">
+                <button class="btn btn-primary processing">Processing...</button>
+            </div>
+
+            <div class="demo-label">Success State</div>
+            <div class="button-row">
+                <button class="btn btn-primary success">Success!</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔘 Secondary & Dark Buttons</h3>
+            
+            <div class="demo-label">Normal States</div>
+            <div class="button-row">
+                <button class="btn btn-secondary">Secondary Button</button>
+                <button class="btn btn-dark" style="width: auto;">Dark Button</button>
+            </div>
+
+            <div class="demo-label">Processing States</div>
+            <div class="button-row">
+                <button class="btn btn-secondary processing">Processing...</button>
+                <button class="btn btn-dark processing" style="width: auto;">Processing...</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>➕ Add to Cart Buttons</h3>
+            
+            <div class="demo-label">Circular Add Buttons</div>
+            <div class="button-row">
+                <button class="add-btn">+</button>
+                <button class="add-btn processing"></button>
+                <button class="add-btn added"></button>
+            </div>
+
+            <div class="demo-label">Full Width Add Button</div>
+            <div class="button-row">
+                <button class="modal-add-btn">🛒 Add to Cart</button>
+            </div>
+
+            <div class="button-row">
+                <button class="modal-add-btn processing">Adding...</button>
+            </div>
+
+            <div class="button-row">
+                <button class="modal-add-btn success">Added to Cart!</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>💳 Checkout Button</h3>
+            
+            <div class="demo-label">Normal State</div>
+            <div class="button-row">
+                <button class="cart-checkout-btn">💳 Proceed to Checkout</button>
+            </div>
+
+            <div class="demo-label">Processing State</div>
+            <div class="button-row">
+                <button class="cart-checkout-btn processing">Processing...</button>
+            </div>
+
+            <div class="demo-label">Success State</div>
+            <div class="button-row">
+                <button class="cart-checkout-btn success">Order Complete!</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔍 Search Modal Buttons</h3>
+            
+            <div class="button-row">
+                <button class="search-modal-btn search-modal-btn-primary">🔍 Search</button>
+                <button class="search-modal-btn search-modal-btn-secondary">Clear</button>
+            </div>
+
+            <div class="button-row">
+                <button class="search-modal-btn search-modal-btn-primary processing">Searching...</button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎮 Interactive Demo</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Click the button below to see the processing animation:</p>
+            
+            <button class="btn btn-primary" id="demoBtn">Click Me!</button>
+        </div>
+    </div>
+
+    <script>
+        // Interactive demo
+        const demoBtn = document.getElementById('demoBtn');
+        
+        demoBtn.addEventListener('click', () => {
+            // Add processing class
+            demoBtn.classList.add('processing');
+            demoBtn.textContent = 'Processing...';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                // Remove processing, add success
+                demoBtn.classList.remove('processing');
+                demoBtn.classList.add('success');
+                demoBtn.textContent = 'Success!';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    demoBtn.classList.remove('success');
+                    demoBtn.textContent = 'Click Me!';
+                }, 2000);
+            }, 2000);
+        });
+
+        // Add ripple effect on all buttons
+        document.querySelectorAll('.btn, .add-btn, .modal-add-btn, .cart-checkout-btn, .search-modal-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('processing') && !this.classList.contains('success')) {
+                    const rect = this.getBoundingClientRect();
+                    const ripple = document.createElement('span');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.6);
+                        width: 100px;
+                        height: 100px;
+                        margin-top: -50px;
+                        margin-left: -50px;
+                        top: ${e.clientY - rect.top}px;
+                        left: ${e.clientX - rect.left}px;
+                        animation: ripple 0.6s;
+                        pointer-events: none;
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+╔════════════════════════════════════════════════════════════════╗
+║          📱 PHONE STORE - ACCESS INFORMATION                   ║
+╚════════════════════════════════════════════════════════════════╝
+
+🌐 SERVER INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Server Status: RUNNING ✅
+  Port: 3000
+  Base URL: http://localhost:3000
+
+🛍️ CUSTOMER WEBSITE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Homepage (Product Listing):
+  → http://localhost:3000
+  → http://localhost:3000/index.html
+
+  Product Details Page:
+  → http://localhost:3000/product.html?id=1
+  → (Change id=1 to view different products: 1-6)
+
+  Features:
+  ✓ Browse all phones
+  ✓ Filter by brand
+  ✓ Sort by price/newest
+  ✓ View product details
+  ✓ Read reviews
+  ✓ Submit reviews
+
+🔐 ADMIN DASHBOARD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Admin Panel:
+  → http://localhost:3000/admin.html
+
+  Login Credentials:
+  Username: admin
+  Password: admin123
+
+  Features:
+  ✓ View statistics
+  ✓ Add/Edit/Delete products
+  ✓ Monitor reviews
+  ✓ Delete reviews
+
+🔌 API ENDPOINTS (for testing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Get All Products:
+  GET → http://localhost:3000/api/products
+
+  Get Single Product:
+  GET → http://localhost:3000/api/products/1
+
+  Get Product Reviews:
+  GET → http://localhost:3000/api/products/1/reviews
+
+  Admin Stats (requires login):
+  GET → http://localhost:3000/api/stats
+
+📂 DATABASE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Location: ./phonestore.db
+  Type: SQLite
+  Tables: users, products, reviews
+
+📱 SAMPLE PRODUCTS (IDs 1-6)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. iPhone 15 Pro        → $999.99
+  2. Samsung Galaxy S24   → $1,199.99
+  3. Google Pixel 8 Pro   → $899.99
+  4. OnePlus 12          → $799.99
+  5. Xiaomi 14 Pro       → $749.99
+  6. iPhone 14           → $699.99
+
+🚀 QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Server is already running!
+  2. Open browser to: http://localhost:3000
+  3. To restart: Press Ctrl+C, then run: npm start
+
+📚 DOCUMENTATION FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  README.md          → Complete documentation
+  QUICK_START.md     → Quick start guide
+  PROJECT_SUMMARY.md → Project overview
+  ACCESS_GUIDE.txt   → This file
+
+💡 TIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Use Chrome DevTools (F12) to debug
+  • Check server console for API logs
+  • Database auto-saves after each change
+  • Delete phonestore.db to reset data
+  • Press Ctrl+C to stop the server
+
+🎉 ENJOY YOUR PHONE STORE!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

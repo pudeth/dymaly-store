@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Button Demo - QKZ Store</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <style>
+        .demo-section {
+            min-height: 100vh;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .demo-section:nth-child(odd) {
+            background: linear-gradient(135deg, #f5f1e8 0%, #e8dfd0 100%);
+        }
+        .demo-section:nth-child(even) {
+            background: linear-gradient(135deg, #fff 0%, #f5f1e8 100%);
+        }
+        .demo-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #8B4513;
+            margin-bottom: 20px;
+        }
+        .demo-subtitle {
+            font-size: 20px;
+            color: #837a70;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+        .demo-instructions {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px;
+        }
+        .demo-instructions h3 {
+            color: #8B4513;
+            margin-bottom: 16px;
+        }
+        .demo-instructions ul {
+            text-align: left;
+            color: #837a70;
+            line-height: 2;
+        }
+        .demo-instructions li {
+            margin-bottom: 12px;
+        }
+        .highlight {
+            background: linear-gradient(135deg, #ff9f43 0%, #ff8c1a 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .arrow-down {
+            font-size: 40px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Section 1 -->
+    <div class="demo-section">
+        <div class="demo-title">✨ Scroll Button Demo</div>
+        <div class="demo-subtitle">Experience the beautiful scroll-to-top button in action!</div>
+        <div class="demo-instructions">
+            <h3>📋 Instructions:</h3>
+            <ul>
+                <li>Scroll down <span class="highlight">300px</span> to see the button</li>
+                <li>Watch it <span class="highlight">fade in</span> smoothly</li>
+                <li><span class="highlight">Hover</span> to see animations</li>
+                <li><span class="highlight">Click</span> to scroll to top</li>
+            </ul>
+        </div>
+        <div class="arrow-down">👇</div>
+        <p style="margin-top: 20px; color: #837a70;">Scroll down to start the demo</p>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="demo-section">
+        <div class="demo-title">🎨 Beautiful Design</div>
+        <div class="demo-subtitle">Brown gradient with orange accents matching the QKZ Store theme</div>
+        <div class="demo-instructions">
+            <h3>Design Features:</h3>
+            <ul>
+                <li>Gradient: #8B4513 → #A0522D → #B8651E</li>
+                <li>Border glow with orange accent</li>
+                <li>Multi-layer shadow for depth</li>
+                <li>Clean SVG arrow icon</li>
+            </ul>
+        </div>
+        <p style="margin-top: 40px; color: #837a70; font-size: 14px;">Keep scrolling... ⬇️</p>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="demo-section">
+        <div class="demo-title">✨ Hover Effects</div>
+        <div class="demo-subtitle">Engaging animations when you hover over the button</div>
+        <div class="demo-instructions">
+            <h3>Hover Animations:</h3>
+            <ul>
+                <li>Button lifts up 6px</li>
+                <li>Scales to 1.08×</li>
+                <li>Enhanced shadow glow</li>
+                <li>Arrow bounces up and down</li>
+                <li>Progress ring spins</li>
+                <li>4px orange glow appears</li>
+            </ul>
+        </div>
+        <p style="margin-top: 40px; color: #837a70;">Check the bottom right corner →</p>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="demo-section">
+        <div class="demo-title">💫 Click Animation</div>
+        <div class="demo-subtitle">Beautiful ripple effect when clicking the button</div>
+        <div class="demo-instructions">
+            <h3>Click Features:</h3>
+            <ul>
+                <li>Ripple wave expands from center</li>
+                <li>Orange glow radiates outward</li>
+                <li>Smooth scroll to top</li>
+                <li>Native browser animation</li>
+                <li>Tactile feedback</li>
+            </ul>
+        </div>
+        <p style="margin-top: 40px; color: #ff9f43; font-weight: 600; font-size: 18px;">
+            👉 Try clicking the scroll button now!
+        </p>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="demo-section">
+        <div class="demo-title">📱 Responsive Design</div>
+        <div class="demo-subtitle">Perfect on all devices - desktop, tablet, and mobile</div>
+        <div class="demo-instructions">
+            <h3>Device Sizes:</h3>
+            <ul>
+                <li><strong>Desktop:</strong> 54px × 54px</li>
+                <li><strong>Mobile:</strong> 50px × 50px</li>
+                <li><strong>Small:</strong> 46px × 46px</li>
+                <li>Safe area insets for notched devices</li>
+                <li>Above mobile navigation bar</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="demo-section">
+        <div class="demo-title">🚀 Production Ready</div>
+        <div class="demo-subtitle">Implemented on all customer-facing pages</div>
+        <div class="demo-instructions">
+            <h3>Pages with Scroll Button:</h3>
+            <ul>
+                <li>✅ <strong>index.html</strong> - Home page</li>
+                <li>✅ <strong>product.html</strong> - Product details</li>
+                <li>✅ <strong>cart.html</strong> - Shopping cart</li>
+                <li>✅ <strong>saved.html</strong> - Saved items</li>
+            </ul>
+        </div>
+        <p style="margin-top: 40px; color: #10b981; font-weight: 600; font-size: 18px;">
+            ✨ Feature Complete! ✨
+        </p>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">
+        <div class="progress-ring"></div>
+    </button>
+
+    <script>
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        if (scrollToTopBtn) {
+            // Show/hide button based on scroll position
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.add('show');
+                } else {
+                    scrollToTopBtn.classList.remove('show');
+                }
+            });
+
+            // Scroll to top with smooth animation
+            scrollToTopBtn.addEventListener('click', () => {
+                // Add clicked animation
+                scrollToTopBtn.classList.add('clicked');
+                setTimeout(() => scrollToTopBtn.classList.remove('clicked'), 600);
+                
+                // Smooth scroll to top
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+    </script>
+</body>
+</html>

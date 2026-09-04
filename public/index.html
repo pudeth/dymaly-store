@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>QKZ Store - Latest Smartphones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Kantumruy:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-row">
+                <a href="index.html" class="brand" aria-label="Store Home">
+                    <span class="brand-icon" id="customerBrandIcon">
+                        <svg id="customerBrandSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                        <img id="customerBrandImg" src="" alt="Store Logo" class="brand-custom-logo-img" style="display: none;">
+                    </span>
+                    <div class="brand-text">
+                        <h1 id="storeBrandTitle">QKZ Store</h1>
+                        <p id="storeBrandTagline" data-i18n="brand_tagline">Phones & audio, delivered fast</p>
+                    </div>
+                </a>
+                <nav class="top-nav">
+                    <a href="cart.html" class="cart-link" aria-label="Shopping Cart">
+                        <svg class="cart-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="nav-text" data-i18n="nav_cart">Cart</span>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </a>
+                    <a href="admin.html" class="admin-link" aria-label="Admin Dashboard">
+                        <svg class="admin-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span data-i18n="nav_admin">Admin</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="search-bar">
+                <span class="search-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" id="searchInput" placeholder="Search phones, brands, accessories..." autocomplete="off">
+                <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">×</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Promo Banner Carousel -->
+    <section class="hero-banner-section">
+        <div class="container">
+            <div class="banner-carousel" id="bannerCarousel">
+                <div class="banner-slides" id="bannerSlides">
+                    <!-- Slide 1: Apple -->
+                    <div class="banner-slide active" data-brand="Apple" style="--banner-gradient: linear-gradient(135deg, #1d1d1f 0%, #303036 50%, #43434d 100%);">
+                        <div class="banner-slide-layer">
+                            <div class="banner-content">
+                                <span class="banner-badge">✨ Featured Flagship</span>
+                                <h2 class="banner-title" data-i18n="banner_title_1">iPhone 15 Pro</h2>
+                                <p class="banner-desc" data-i18n="banner_desc_1">Titanium design, A17 Pro chip & pro-grade triple camera system.</p>
+                                <button class="banner-btn" onclick="filterByBrand('Apple')" data-i18n="banner_btn_1">
+                                    Shop Apple Phones →
+                                </button>
+                            </div>
+                            <div class="banner-visual">
+                                <div class="brand-hero-badge"> Apple</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slide 2: Samsung -->
+                    <div class="banner-slide" data-brand="Samsung" style="--banner-gradient: linear-gradient(135deg, #0b1a30 0%, #15325b 50%, #1a4980 100%);">
+                        <div class="banner-slide-layer">
+                            <div class="banner-content">
+                                <span class="banner-badge">⚡ Galaxy AI</span>
+                                <h2 class="banner-title" data-i18n="banner_title_2">Galaxy S24 Ultra</h2>
+                                <p class="banner-desc" data-i18n="banner_desc_2">Epic titanium frame, built-in S Pen & 200MP revolution camera.</p>
+                                <button class="banner-btn" onclick="filterByBrand('Samsung')" data-i18n="banner_btn_2">
+                                    Shop Samsung Phones →
+                                </button>
+                            </div>
+                            <div class="banner-visual">
+                                <div class="brand-hero-badge">SAMSUNG</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slide 3: Google -->
+                    <div class="banner-slide" data-brand="Google" style="--banner-gradient: linear-gradient(135deg, #1b382b 0%, #23543e 50%, #2f7255 100%);">
+                        <div class="banner-slide-layer">
+                            <div class="banner-content">
+                                <span class="banner-badge">🤖 AI Innovation</span>
+                                <h2 class="banner-title" data-i18n="banner_title_3">Pixel 8 Pro</h2>
+                                <p class="banner-desc" data-i18n="banner_desc_3">Google Tensor G3, best-in-class computational photography & pure Android.</p>
+                                <button class="banner-btn" onclick="filterByBrand('Google')" data-i18n="banner_btn_3">
+                                    Shop Google Pixel →
+                                </button>
+                            </div>
+                            <div class="banner-visual">
+                                <div class="brand-hero-badge">Google</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Carousel Controls -->
+                <button class="carousel-arrow prev" id="carouselPrev" aria-label="Previous slide">‹</button>
+                <button class="carousel-arrow next" id="carouselNext" aria-label="Next slide">›</button>
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <span class="dot active" onclick="goToSlide(0)"></span>
+                    <span class="dot" onclick="goToSlide(1)"></span>
+                    <span class="dot" onclick="goToSlide(2)"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop by Brand Section -->
+    <section class="brands-section" id="brandsSection">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title-wrap">
+                    <h2 class="section-title" data-i18n="shop_by_brand">Shop by Brand</h2>
+                    <p class="section-subtitle" data-i18n="tap_brand_subtitle">Tap any brand to view authentic smartphones</p>
+                </div>
+                <button class="reset-brand-link" id="resetBrandBtn" style="display: none;" onclick="clearBrandSelection()" data-i18n="show_all_brands">
+                    Show All Brands ✕
+                </button>
+            </div>
+            <!-- Horizontal scrollable brand cards container on mobile -->
+            <div class="brands-scroll-container">
+                <div class="brands-track" id="brandsContainer">
+                    <!-- Dynamically rendered brand cards -->
+                    <div class="brand-loading" data-i18n="loading_brands">Loading top brands...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Catalog Section -->
+    <section class="products-section" id="productsSection">
+        <div class="container">
+            <!-- Mobile Quick Filter Chips -->
+            <div class="brand-chips-scroll">
+                <div class="brand-chips-track" id="brandChipsContainer">
+                    <button class="brand-chip active" data-brand="" onclick="filterByBrand('')">
+                        <span class="chip-icon">📱</span> <span class="chip-label" data-i18n="all_brands">All Brands</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="products-header-bar">
+                <div class="products-headline">
+                    <h2 id="productsHeading" data-i18n="all_products">All Products</h2>
+                    <span class="product-count-tag" id="productCountTag">Loading...</span>
+                </div>
+                <div class="filter-actions">
+                    <div class="sort-select-wrapper">
+                        <select id="sortFilter" aria-label="Sort products">
+                            <option value="newest">🔥 Newest First</option>
+                            <option value="price-low">💰 Price: Low to High</option>
+                            <option value="price-high">💎 Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active filter alert strip -->
+            <div class="active-filter-alert" id="activeFilterAlert" style="display: none;">
+                <div class="active-filter-info">
+                    <span class="filter-icon">🏷️</span>
+                    <span><span data-i18n="showing_products_for">Showing products for</span> <strong id="activeFilterBrandName">Brand</strong></span>
+                </div>
+                <button class="clear-filter-btn" onclick="clearBrandSelection()" title="Clear brand filter">
+                    ✕ <span data-i18n="clear_filter">Clear Filter</span>
+                </button>
+            </div>
+
+            <!-- Hidden select kept for backward compatibility -->
+            <select id="brandFilter" style="display: none;">
+                <option value="">All Brands</option>
+            </select>
+
+            <div id="productsGrid" class="products-grid">
+                <div class="loading">Loading products...</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="toast" id="cartToast"><span class="toast-check">✓</span><span id="cartToastText">Added to cart</span></div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="product-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">×</button>
+            <div class="modal-img-wrap">
+                <div class="modal-img-frame">
+                    <img id="modalImage" class="modal-image" src="" alt="">
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-header">
+                    <div class="modal-title-section">
+                        <h2 id="modalTitle"></h2>
+                        <div id="modalBrand" class="modal-brand"></div>
+                    </div>
+                    <div id="modalPrice" class="modal-price"></div>
+                </div>
+                <div class="modal-rating">
+                    <span id="modalStars" class="modal-stars"></span>
+                    <span id="modalReviewCount" class="modal-review-count"></span>
+                </div>
+                <p id="modalDescription" class="modal-description"></p>
+                <div id="modalStockInfo" class="modal-stock-info"></div>
+                <div class="modal-actions">
+                    <button id="modalAddBtn" class="modal-add-btn">
+                        <span>🛍️</span> <span data-i18n="add_to_cart">Add to cart</span>
+                    </button>
+                    <button id="modalFavBtn" class="modal-fav-btn">🤍</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-container">
+            <a href="index.html" class="nav-item active">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_home">Home</span>
+            </a>
+            <a href="cart.html" class="nav-item">
+                <div class="nav-icon-wrapper">
+                    <span class="nav-icon"></span>
+                    <span class="nav-badge" id="navCartBadge">0</span>
+                </div>
+                <span class="nav-label" data-i18n="nav_cart">Cart</span>
+            </a>
+            <a href="saved.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_saved">Saved</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_admin">Admin</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">
+        <div class="progress-ring"></div>
+    </button>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

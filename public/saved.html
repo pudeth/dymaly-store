@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Saved Items - QKZ Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Kantumruy:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+</head>
+<body class="saved-page">
+    <header class="site-header">
+        <div class="container">
+            <div class="header-row">
+                <a href="index.html" class="brand" aria-label="QKZ Store Home">
+                    <span class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </span>
+                    <div class="brand-text">
+                        <h1>QKZ Store</h1>
+                        <p data-i18n="brand_tagline">Phones & audio, delivered fast</p>
+                    </div>
+                </a>
+                <nav class="top-nav">
+                    <a href="index.html" class="nav-btn-secondary" aria-label="Explore Shop">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        <span class="nav-text" data-i18n="nav_shop">Shop</span>
+                    </a>
+                    <a href="cart.html" class="cart-link" aria-label="Shopping Cart">
+                        <svg class="cart-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="nav-text" data-i18n="nav_cart">Cart</span>
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </a>
+                    <a href="admin.html" class="admin-link" aria-label="Admin Dashboard">
+                        <svg class="admin-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span data-i18n="nav_admin">Admin</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="saved-section">
+        <div class="container">
+            <div class="saved-page-header">
+                <div class="saved-title-row">
+                    <div class="saved-title-group">
+                        <h2>❤️ Wishlist & Saved</h2>
+                        <span class="saved-count-pill" id="savedCountPill">0 items</span>
+                    </div>
+                    <div class="saved-actions-group" id="savedActionsGroup" style="display: none;">
+                        <button type="button" class="btn-move-all" onclick="moveAllToCart()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            <span>Add All to Bag</span>
+                        </button>
+                    </div>
+                </div>
+                <p class="section-subtitle">Your favorite devices reserved in one place for quick access and checkout.</p>
+            </div>
+
+            <div id="savedContent">
+                <div class="loading">Loading saved items...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-container">
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_home">Home</span>
+            </a>
+            <a href="cart.html" class="nav-item">
+                <div class="nav-icon-wrapper">
+                    <span class="nav-icon"></span>
+                    <span class="nav-badge" id="navCartBadge">0</span>
+                </div>
+                <span class="nav-label" data-i18n="nav_cart">Cart</span>
+            </a>
+            <a href="saved.html" class="nav-item active">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_saved">Saved</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <span class="nav-icon"></span>
+                <span class="nav-label" data-i18n="nav_admin">Admin</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTopBtn" aria-label="Scroll to top">
+        <div class="progress-ring"></div>
+    </button>
+
+    <script src="js/saved.js"></script>
+</body>
+</html>
