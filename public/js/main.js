@@ -1364,7 +1364,7 @@ function applyWebsiteData(settings) {
         `).join('');
     }
 
-    // 7. Footer About & Copyright
+    // 7. Footer About, Logo & Copyright
     const footerAbout = document.getElementById('footerStoreAbout');
     if (footerAbout && settings.footer_about) {
         footerAbout.textContent = settings.footer_about;
@@ -1372,6 +1372,26 @@ function applyWebsiteData(settings) {
     const footerCopyright = document.getElementById('footerCopyright');
     if (footerCopyright && settings.footer_copyright) {
         footerCopyright.textContent = settings.footer_copyright;
+    }
+    const footerName = document.getElementById('footerStoreName');
+    if (footerName && settings.store_name) {
+        footerName.textContent = settings.store_name;
+    }
+    const footerBadge = document.getElementById('footerStoreBadge');
+    if (footerBadge && settings.store_badge) {
+        footerBadge.textContent = settings.store_badge;
+    }
+    const footerImg = document.getElementById('footerBrandImg');
+    const footerIcon = document.getElementById('footerBrandIcon');
+    if (footerImg && footerIcon) {
+        if (logoUrl) {
+            footerImg.src = logoUrl;
+            footerImg.style.display = 'block';
+            footerIcon.style.display = 'none';
+        } else {
+            footerImg.style.display = 'none';
+            footerIcon.style.display = 'inline-block';
+        }
     }
 
     // 8. Footer Contact Info
