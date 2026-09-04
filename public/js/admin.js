@@ -2740,10 +2740,41 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeStoreLogoUpload();
         initializeAdminAvatarUpload();
+        connectAdminRealtimeStream();
     });
 } else {
     initializeStoreLogoUpload();
     initializeAdminAvatarUpload();
+    connectAdminRealtimeStream();
+}
+
+// ==================== REAL-TIME LIVE STREAM (SSE) FOR ADMIN ====================
+let adminSseSource = null;
+
+function connectAdminRealtimeStream() {
+    if (window.EventSource) {
+        try {
+            if (adminSseSource) adminSseSource.close();
+            adminSseSource = new EventSource('/api/realtime/stream');
+
+            adminSseSource.onmessage = function(event) {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'stock_updated' || msg.type === 'products_updated') {
+                        if (typeof loadStats === 'function') loadStats();
+                        if (typeof loadProductsWithSearch === 'function') loadProductsWithSearch();
+                        const note = msg.type === 'stock_updated' ? '⚡ Customer order: stock updated live!' : 'Products updated live';
+                        showToast(note);
+                    }
+                } catch (_) {}
+            };
+
+            adminSseSource.onerror = function() {
+                if (adminSseSource) adminSseSource.close();
+                setTimeout(connectAdminRealtimeStream, 6000);
+            };
+        } catch (_) {}
+    }
 }
 
 // React to currency changes in Admin
@@ -2751,3 +2782,4 @@ window.addEventListener('currencyChanged', () => {
     if (typeof loadProducts === 'function') loadProducts();
     if (typeof loadStats === 'function') loadStats();
 });
+

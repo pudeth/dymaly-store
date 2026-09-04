@@ -273,146 +273,24 @@
     <footer class="site-footer" id="siteFooter">
         <div class="footer-top-glow"></div>
         <div class="container">
-            <div class="footer-grid">
-                <!-- Col 1: Brand & Bio -->
-                <div class="footer-col footer-brand-col">
-                    <a href="index.html" class="footer-brand-header">
-                        <div class="footer-brand-logo-frame" id="footerBrandLogoFrame">
-                            <img id="footerBrandImg" src="/images/app-icon.png" alt="DyMaly Store Logo" class="footer-custom-logo-img" onerror="this.style.display='none'; document.getElementById('footerBrandIcon').style.display='inline-block';">
-                            <span class="footer-brand-icon" id="footerBrandIcon" style="display: none;">📱</span>
-                        </div>
-                        <div class="footer-brand-name-group">
-                            <h3 id="footerStoreName">DyMaly</h3>
-                            <span class="footer-brand-sub" id="footerStoreBadge">Official Flagship Store</span>
-                        </div>
-                    </a>
-                    <p class="footer-store-about" id="footerStoreAbout">
-                        DyMaly is Cambodia's premier destination for authentic flagship smartphones, high-fidelity audio, and official tech accessories. Guaranteed genuine with warranty.
-                    </p>
-                    <div class="footer-social-wrapper">
-                        <span class="footer-social-label">Follow Us</span>
-                        <div class="footer-social-links" id="footerSocialLinks">
-                            <!-- Populated dynamically from database in real-time -->
-                        </div>
+            <div class="footer-brand-centered">
+                <a href="index.html" class="footer-brand-header">
+                    <div class="footer-brand-logo-frame" id="footerBrandLogoFrame">
+                        <img id="footerBrandImg" src="/images/app-icon.png" alt="DyMaly Store Logo" class="footer-custom-logo-img" onerror="this.style.display='none'; document.getElementById('footerBrandIcon').style.display='inline-block';">
+                        <span class="footer-brand-icon" id="footerBrandIcon" style="display: none;">📱</span>
                     </div>
-                </div>
-
-                <!-- Col 2: Quick Links -->
-                <div class="footer-col footer-nav-col">
-                    <h4 class="footer-heading">Quick Links</h4>
-                    <ul class="footer-links-list">
-                        <li><a href="index.html">🏠 Home Storefront</a></li>
-                        <li><a href="#productsSection">📱 All Smartphones</a></li>
-                        <li><a href="cart.html">🛍️ Shopping Bag</a></li>
-                        <li><a href="saved.html">❤️ Saved Wishlist</a></li>
-                        <li><a href="admin.html">🔐 Admin Portal</a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 3: Customer Care & Guarantees -->
-                <div class="footer-col footer-care-col">
-                    <h4 class="footer-heading">Why Choose Us</h4>
-                    <ul class="footer-care-list">
-                        <li>
-                            <span class="care-icon">🛡️</span>
-                            <div>
-                                <strong>100% Genuine</strong>
-                                <span>Official manufacturer warranty</span>
-                            </div>
-                        </li>
-                        <li>
-                            <span class="care-icon">🚀</span>
-                            <div>
-                                <strong>Express Shipping</strong>
-                                <span>Fast delivery across Cambodia</span>
-                            </div>
-                        </li>
-                        <li>
-                            <span class="care-icon">🔄</span>
-                            <div>
-                                <strong>7-Day Easy Return</strong>
-                                <span>Hassle-free replacement</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Col 4: Contact & Hours -->
-                <div class="footer-col footer-contact-col">
-                    <h4 class="footer-heading">Customer Support</h4>
-                    <ul class="footer-contact-list">
-                        <li id="footerPhoneItem">
-                            <span class="contact-icon-box">📞</span>
-                            <div class="contact-info">
-                                <span class="contact-label">Hotline</span>
-                                <a href="tel:+85512345678" id="footerPhoneLink">+855 12 345 678</a>
-                            </div>
-                        </li>
-                        <li id="footerEmailItem">
-                            <span class="contact-icon-box">✉️</span>
-                            <div class="contact-info">
-                                <span class="contact-label">Email</span>
-                                <a href="mailto:contact@dymaly.com" id="footerEmailLink">contact@dymaly.com</a>
-                            </div>
-                        </li>
-                        <li id="footerAddressItem">
-                            <span class="contact-icon-box">📍</span>
-                            <div class="contact-info">
-                                <span class="contact-label">Showroom</span>
-                                <span id="footerAddressText">Preah Monivong Blvd, Phnom Penh</span>
-                            </div>
-                        </li>
-                        <li id="footerHoursItem">
-                            <span class="contact-icon-box">🕒</span>
-                            <div class="contact-info">
-                                <span class="contact-label">Open Daily</span>
-                                <span id="footerHoursText">8:00 AM - 9:00 PM</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Footer Middle: Newsletter & VIP Member Perk -->
-            <div class="footer-newsletter-banner">
-                <div class="newsletter-content">
-                    <div class="newsletter-icon-wrap">🎁</div>
-                    <div class="newsletter-text">
-                        <h4>Subscribe to DyMaly VIP Privileges</h4>
-                        <p>Get instant updates on latest flagship arrivals, exclusive discounts, and flash sales in Cambodia.</p>
+                    <div class="footer-brand-name-group">
+                        <h3 id="footerStoreName">DyMaly</h3>
+                        <span class="footer-brand-sub" id="footerStoreBadge">Official Flagship Store</span>
                     </div>
-                </div>
-                <div class="newsletter-form-wrap">
-                    <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('🎉 Thank you for subscribing to DyMaly VIP!'); this.reset();">
-                        <input type="email" placeholder="Enter your email address..." required aria-label="Email address">
-                        <button type="submit">Join VIP →</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Footer Bottom: Payment Methods, Copyright, Live Sync -->
-            <div class="footer-bottom-section">
-                <div class="footer-payment-row">
-                    <span class="payment-title">Accepted Payments & Transfers:</span>
-                    <div class="payment-badges">
-                        <span class="payment-pill">🇰🇭 Bakong KHQR</span>
-                        <span class="payment-pill">🏦 ABA PAY</span>
-                        <span class="payment-pill">💳 Visa / Mastercard</span>
-                        <span class="payment-pill">💵 Cash On Delivery</span>
-                    </div>
-                </div>
-
-                <div class="footer-bottom">
-                    <div class="footer-bottom-left">
-                        <p id="footerCopyright">© 2026 DyMaly Phone Store. All rights reserved.</p>
-                        <span class="footer-dot">•</span>
-                        <span class="footer-safe-tag">🔒 100% Genuine & Secure</span>
-                    </div>
-                    <div class="footer-bottom-right">
-                        <div class="live-sync-badge" id="liveSyncBadge" title="Real-Time Connected to Database">
-                            <span class="live-pulse-dot"></span>
-                            <span class="live-status-text">Live Sync Active</span>
-                        </div>
+                </a>
+                <p class="footer-store-about" id="footerStoreAbout">
+                    DyMaly is Cambodia's premier destination for authentic flagship smartphones, high-fidelity audio, and official tech accessories. Guaranteed genuine with warranty.
+                </p>
+                <div class="footer-social-wrapper">
+                    <span class="footer-social-label">Follow Us</span>
+                    <div class="footer-social-links" id="footerSocialLinks">
+                        <!-- Populated dynamically from database in real-time -->
                     </div>
                 </div>
             </div>
