@@ -1385,9 +1385,19 @@ function applyWebsiteData(settings) {
     const footerIcon = document.getElementById('footerBrandIcon');
     if (footerImg && footerIcon) {
         if (logoUrl) {
+            footerImg.onload = () => {
+                footerImg.style.display = 'block';
+                footerIcon.style.display = 'none';
+            };
+            footerImg.onerror = () => {
+                footerImg.style.display = 'none';
+                footerIcon.style.display = 'inline-block';
+            };
             footerImg.src = logoUrl;
-            footerImg.style.display = 'block';
-            footerIcon.style.display = 'none';
+            if (footerImg.complete && footerImg.naturalWidth > 0) {
+                footerImg.style.display = 'block';
+                footerIcon.style.display = 'none';
+            }
         } else {
             footerImg.style.display = 'none';
             footerIcon.style.display = 'inline-block';

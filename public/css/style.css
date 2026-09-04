@@ -5101,25 +5101,19 @@ body.modal-open {
 
 /* Headings */
 .footer-heading {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     color: #ffffff;
-    margin: 0 0 18px 0;
-    letter-spacing: 0.6px;
+    margin: 0 0 16px 0;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
-    position: relative;
-    padding-bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .footer-heading::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 24px;
-    height: 2px;
-    background: #ff9f43;
-    border-radius: 2px;
+    display: none;
 }
 
 /* Col 2: Links */
