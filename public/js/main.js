@@ -1311,11 +1311,19 @@ function applyWebsiteData(settings) {
             const badgeEl = document.getElementById('announcementBadge');
             const textEl = document.getElementById('announcementText');
             const linkEl = document.getElementById('announcementLink');
-            if (badgeEl) badgeEl.textContent = settings.announcement_badge || 'Special Offer';
+            if (badgeEl) {
+                if (settings.announcement_badge && settings.announcement_badge.trim()) {
+                    badgeEl.textContent = settings.announcement_badge.trim();
+                    badgeEl.style.display = 'inline-block';
+                } else {
+                    badgeEl.textContent = '';
+                    badgeEl.style.display = 'none';
+                }
+            }
             if (textEl) textEl.textContent = settings.announcement_text;
             if (linkEl) {
                 linkEl.href = settings.announcement_link || '#productsSection';
-                linkEl.style.display = settings.announcement_link ? 'inline' : 'none';
+                linkEl.style.display = (settings.announcement_link && settings.announcement_link.trim()) ? 'inline' : 'none';
             }
         } else {
             announcementBar.style.display = 'none';

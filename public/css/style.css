@@ -4818,11 +4818,12 @@ body.modal-open {
 
 /* Top Announcement Bar */
 .top-announcement-bar {
+    width: 100%;
     background: linear-gradient(90deg, #1d1d1f 0%, #2c3e50 50%, #ff9f43 100%);
     color: #ffffff;
     font-size: 13px;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 10px 16px;
     position: relative;
     z-index: 1010;
     box-shadow: 0 1px 4px rgba(0,0,0,0.1);
@@ -4830,38 +4831,51 @@ body.modal-open {
 }
 
 .top-announcement-bar .announcement-content {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
     text-align: center;
 }
 
 .announcement-badge {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: #ffffff;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: none;
+    outline: none;
+    display: inline-block;
+}
+
+.announcement-badge:empty {
+    display: none !important;
 }
 
 .announcement-text {
     color: #f8fafc;
     letter-spacing: 0.1px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .announcement-link {
     color: #ffdda1;
     font-weight: 700;
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
     transition: opacity 0.2s;
+    white-space: nowrap;
 }
 
 .announcement-link:hover {
