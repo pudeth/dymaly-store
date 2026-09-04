@@ -22,21 +22,33 @@
 
         formatPrice: function(amountInUsd, opts = {}) {
             const num = Number(amountInUsd) || 0;
+            if (opts.plain) {
+                if (this.currentCurrency === 'KHR') {
+                    const riel = Math.round(num * this.usdToKhrRate);
+                    return `${riel.toLocaleString('en-US')} ៛`;
+                } else {
+                    return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                }
+            }
             if (this.currentCurrency === 'KHR') {
                 const riel = Math.round(num * this.usdToKhrRate);
                 const formatted = riel.toLocaleString('en-US');
                 if (opts.showBoth) {
-                    return `<span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span> <span class="price-sub-usd">($${num.toFixed(2)})</span>`;
+                    return `<span class="price-nowrap"><span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span> <span class="price-sub-usd">($${num.toFixed(2)})</span></span>`;
                 }
-                return `<span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span>`;
+                return `<span class="price-nowrap"><span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span></span>`;
             } else {
                 const formatted = num.toFixed(2);
                 if (opts.showBoth) {
                     const riel = Math.round(num * this.usdToKhrRate).toLocaleString('en-US');
-                    return `<span class="curr-symbol">$</span><span class="price-val">${formatted}</span> <span class="price-sub-khr">(${riel}&nbsp;៛)</span>`;
+                    return `<span class="price-nowrap"><span class="curr-symbol">$</span><span class="price-val">${formatted}</span> <span class="price-sub-khr">(${riel}&nbsp;៛)</span></span>`;
                 }
-                return `<span class="curr-symbol">$</span><span class="price-val">${formatted}</span>`;
+                return `<span class="price-nowrap"><span class="curr-symbol">$</span><span class="price-val">${formatted}</span></span>`;
             }
+        },
+
+        formatPriceText: function(amountInUsd) {
+            return this.formatPrice(amountInUsd, { plain: true });
         },
 
         setCurrency: function(curr) {
@@ -153,6 +165,7 @@
 
                 // Navigation & Tabs
                 nav_overview: 'Overview',
+                nav_orders: 'Orders',
                 nav_catalog: 'Catalog',
                 nav_reviews: 'Reviews',
                 nav_settings: 'Settings',
@@ -376,6 +389,7 @@
 
                 // Navigation & Tabs
                 nav_overview: 'ទិដ្ឋភាពទូទៅ',
+                nav_orders: 'ការបញ្ជាទិញ',
                 nav_catalog: 'កាតាឡុក',
                 nav_reviews: 'ការវាយតម្លៃ',
                 nav_settings: 'ការកំណត់',
@@ -599,6 +613,7 @@
 
                 // Navigation & Tabs
                 nav_overview: '总览概况',
+                nav_orders: '订单管理',
                 nav_catalog: '商品目录',
                 nav_reviews: '用户评价',
                 nav_settings: '系统设置',

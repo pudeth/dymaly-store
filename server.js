@@ -79,13 +79,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    
-    if (mimetype && extname) {
+    const isImage = (file.mimetype && file.mimetype.startsWith('image/')) || 
+                    /\.(jpe?g|png|gif|webp|svg|avif|bmp|heic|heif)$/i.test(file.originalname);
+    if (isImage) {
       return cb(null, true);
     } else {
       cb(new Error('Only image files are allowed!'));
@@ -1329,6 +1327,33 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 
 // Upload image endpoint
 app.post('/api/upload-image', requireAdmin, (req, res) => {
+  // 1. Support Base64 Data URL if submitted as JSON
+  if (req.is('application/json') && req.body && req.body.image) {
+    try {
+      const dataUri = req.body.image;
+      if (typeof dataUri === 'string' && dataUri.startsWith('data:image/')) {
+        const matches = dataUri.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+        if (matches) {
+          const ext = matches[1].replace('jpeg', 'jpg').replace('+xml', 'svg');
+          const buffer = Buffer.from(matches[2], 'base64');
+          const filename = 'product-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + ext;
+          const filePath = path.join(uploadsDir, filename);
+          fs.writeFileSync(filePath, buffer);
+          return res.json({
+            success: true,
+            imageUrl: '/uploads/' + filename,
+            filename: filename
+          });
+        }
+      }
+      return res.json({ success: true, imageUrl: req.body.image });
+    } catch (err) {
+      console.error('Base64 image write error:', err);
+      return res.status(500).json({ error: 'Failed to process base64 image' });
+    }
+  }
+
+  // 2. Standard Multipart File Upload
   upload.single('image')(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ error: err.message || 'File upload failed' });
@@ -1339,40 +1364,26 @@ app.post('/api/upload-image', requireAdmin, (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      // 1. Free ImgBB cloud storage
-      const imgbbKey = process.env.IMGBB_API_KEY || 'c16540642d8c8a419f34a1323eeb6038';
-      if (imgbbKey) {
+      // Cloudinary cloud storage if configured
+      if (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_URL) {
         try {
-          const fileBuffer = fs.readFileSync(req.file.path);
-          const fileBlob = new Blob([fileBuffer], { type: req.file.mimetype || 'image/jpeg' });
-          const formBody = new FormData();
-          formBody.append('image', fileBlob, req.file.originalname || req.file.filename);
-          formBody.append('name', path.parse(req.file.originalname || req.file.filename).name);
-
-          const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
-            method: 'POST',
-            body: formBody,
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
+          const cloudinary = require('cloudinary').v2;
+          const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'phone-store-products'
           });
-          const imgbbData = await imgbbRes.json();
-          if (imgbbData && imgbbData.success && imgbbData.data && imgbbData.data.url) {
-            console.log('✓ Uploaded image to ImgBB cloud:', imgbbData.data.url);
+          if (result && result.secure_url) {
             return res.json({
               success: true,
-              imageUrl: imgbbData.data.url,
+              imageUrl: result.secure_url,
               filename: req.file.filename
             });
-          } else {
-            console.warn('ImgBB API response warning:', imgbbData);
           }
         } catch (cloudErr) {
-          console.warn('ImgBB upload fallback to local storage:', cloudErr.message);
+          console.warn('Cloudinary upload error, falling back to local storage:', cloudErr.message);
         }
       }
-      
-      // 2. Default: Saved to uploadsDir (persistent disk /data/uploads or public/uploads)
+
+      // Default: Saved to uploadsDir (/data/uploads or public/uploads)
       const imageUrl = '/uploads/' + req.file.filename;
       res.json({ 
         success: true, 

@@ -166,6 +166,17 @@
                 </span>
                 <span class="tab-label" data-i18n="nav_overview">Overview</span>
             </button>
+            <button class="tab-btn" data-tab="orders" aria-label="Orders" data-i18n-aria="nav_orders">
+                <span class="tab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                </span>
+                <span class="tab-label" data-i18n="nav_orders">Orders</span>
+                <span class="tab-badge" id="ordersTabBadge" style="display: none;">0</span>
+            </button>
             <button class="tab-btn" data-tab="catalog">
                 <span class="tab-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -218,9 +229,9 @@
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
                         </div>
-                        <div class="stat-value" id="stockValue">$0</div>
-                        <div class="stat-label-new" data-i18n="stat_stock_value">Stock Value</div>
-                        <div class="stat-meta" data-i18n="stat_total_inventory">Total inventory</div>
+                        <div class="stat-value" id="stockValue">$0.00</div>
+                        <div class="stat-label-new" id="stockValueLabel">Total Revenue</div>
+                        <div class="stat-meta" id="stockValueMeta">From customer orders</div>
                     </div>
                     
                     <div class="stat-card-new stat-rating-new">
@@ -292,6 +303,69 @@
                 <div class="attention-section">
                     <h3 class="section-title-new" data-i18n="products_needing_attention">Products Needing Attention</h3>
                     <div class="low-stock-list" id="lowStockList"></div>
+                </div>
+            </div>
+
+            <!-- Customer Orders Tab -->
+            <div id="ordersTab" class="tab-content">
+                <div class="page-header orders-page-header">
+                    <div>
+                        <h2>🛍️ Customer Orders</h2>
+                        <p class="page-subtitle">Real-time order history saved in database. View details and delete orders to manage revenue.</p>
+                    </div>
+                    <div class="orders-header-actions">
+                        <button type="button" class="btn-clear-orders" id="clearAllOrdersBtn" onclick="clearAllOrders()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <span>Clear All Orders</span>
+                        </button>
+                        <button type="button" class="btn-refresh-orders" onclick="loadOrders()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Orders Summary Metric Boxes -->
+                <div class="orders-metrics-grid">
+                    <div class="order-metric-card">
+                        <div class="metric-label">Total Orders</div>
+                        <div class="metric-val" id="ordersBannerCount">0</div>
+                        <div class="metric-hint">Saved in database</div>
+                    </div>
+                    <div class="order-metric-card revenue-highlight">
+                        <div class="metric-label">Total Sales Revenue</div>
+                        <div class="metric-val" id="ordersBannerRevenue">$0.00</div>
+                        <div class="metric-hint">Live sales total</div>
+                    </div>
+                    <div class="order-metric-card">
+                        <div class="metric-label">Real-Time Sync</div>
+                        <div class="metric-val sync-pulse">● Connected</div>
+                        <div class="metric-hint">Instant updates</div>
+                    </div>
+                </div>
+
+                <!-- Orders Table Card -->
+                <div class="orders-table-card">
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Purchased Items</th>
+                                    <th>Total Paid</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading-orders-cell">Loading orders from database...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -841,6 +915,16 @@
                 </span>
                 <span class="nav-label" data-i18n="nav_overview">Overview</span>
             </button>
+            <button class="tab-btn nav-item" data-tab="orders" aria-label="Orders" data-i18n-aria="nav_orders">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                </span>
+                <span class="nav-label" data-i18n="nav_orders">Orders</span>
+            </button>
             <button class="tab-btn nav-item" data-tab="catalog" aria-label="Catalog" data-i18n-aria="nav_catalog">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -935,6 +1019,29 @@
                         </span>
                     </div>
                     <div class="image-upload-container">
+                        <!-- Mode Tabs: Upload File vs Image URL -->
+                        <div class="image-mode-tabs">
+                            <button type="button" class="image-mode-tab active" id="modeUploadTab" onclick="switchImageMode('upload')">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                <span>Upload File</span>
+                            </button>
+                            <button type="button" class="image-mode-tab" id="modeUrlTab" onclick="switchImageMode('url')">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                <span>Image URL Link</span>
+                            </button>
+                        </div>
+
+                        <!-- Web Image URL Input Box (shown when URL tab is active) -->
+                        <div class="image-url-box" id="imageUrlBox" style="display: none;">
+                            <div class="image-url-input-wrap">
+                                <span class="url-input-icon">🔗</span>
+                                <input type="url" id="productImageUrlInput" placeholder="https://example.com/phone.jpg" oninput="handleImageUrlInput(this.value)">
+                                <button type="button" class="btn-clear-url" onclick="clearImageUrlInput()" title="Clear">✕</button>
+                            </div>
+                            <span class="image-url-hint">Paste any direct web image URL to preview and save</span>
+                        </div>
+
+                        <!-- Image Preview Box -->
                         <div class="image-preview" id="imagePreview">
                             <img id="previewImg" src="" alt="Preview" style="display: none;">
                             <div class="upload-placeholder" id="uploadPlaceholder">
@@ -946,7 +1053,7 @@
                                     </svg>
                                 </span>
                                 <p>Click to upload or drag image here</p>
-                                <span class="upload-hint">Square 800×800 px • PNG, JPG, WEBP (Max 5MB)</span>
+                                <span class="upload-hint">Square 800×800 px • PNG, JPG, WEBP (Max 10MB)</span>
                             </div>
                         </div>
 
@@ -964,7 +1071,7 @@
                                 <span class="spec-chip"><strong>Dimensions:</strong> 800 × 800 px</span>
                                 <span class="spec-chip"><strong>Ratio:</strong> 1:1 Square</span>
                                 <span class="spec-chip"><strong>Formats:</strong> PNG, JPG, WEBP</span>
-                                <span class="spec-chip"><strong>Max Size:</strong> 5 MB</span>
+                                <span class="spec-chip"><strong>Max Size:</strong> 10 MB</span>
                             </div>
                             <p class="recommend-guide-note">Square 1:1 images with clean light or transparent backgrounds display best in product cards and store catalogs.</p>
                         </div>

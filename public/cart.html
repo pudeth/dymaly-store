@@ -182,6 +182,59 @@
         <div class="progress-ring"></div>
     </button>
 
+    <!-- Checkout Customer Details Modal -->
+    <div class="checkout-modal-overlay" id="checkoutModalOverlay" style="display: none;">
+        <div class="checkout-modal-card">
+            <div class="checkout-modal-header">
+                <div class="modal-header-icon">🛍️</div>
+                <div style="flex: 1;">
+                    <h3>Complete Your Order</h3>
+                    <p>Enter your details to confirm and save your order</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeCheckoutModal()" aria-label="Close modal">✕</button>
+            </div>
+            <form id="checkoutDetailsForm" onsubmit="submitCheckoutOrder(event)">
+                <div class="checkout-form-group">
+                    <label for="customerNameInput">Full Name <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="customerNameInput" placeholder="e.g. Sok Dara" required>
+                </div>
+                <div class="checkout-form-group">
+                    <label for="customerPhoneInput">Phone / Telegram <span style="color: #ef4444;">*</span></label>
+                    <input type="tel" id="customerPhoneInput" placeholder="e.g. 012 345 678" required>
+                </div>
+                <div class="checkout-form-group">
+                    <label for="customerAddressInput">Delivery Address</label>
+                    <input type="text" id="customerAddressInput" placeholder="e.g. Street 271, Phnom Penh">
+                </div>
+                <div class="checkout-form-group">
+                    <label for="customerNotesInput">Delivery Notes (Optional)</label>
+                    <input type="text" id="customerNotesInput" placeholder="e.g. Call before delivery">
+                </div>
+                <div class="checkout-modal-total-box">
+                    <div class="modal-total-row">
+                        <span>Items Subtotal:</span>
+                        <span id="modalItemsTotal">$0.00</span>
+                    </div>
+                    <div class="modal-total-row" id="modalDiscountRow" style="display: none; color: #dc2626;">
+                        <span>Promo Discount:</span>
+                        <span id="modalDiscountVal">-$0.00</span>
+                    </div>
+                    <div class="modal-total-row final">
+                        <span>Total to Pay:</span>
+                        <span id="modalFinalPay" class="final-price-highlight">$0.00</span>
+                    </div>
+                </div>
+                <div class="checkout-modal-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closeCheckoutModal()">Cancel</button>
+                    <button type="submit" class="btn-modal-confirm" id="confirmOrderBtn">
+                        <span>Confirm & Place Order</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/cart.js"></script>
 </body>
 </html>

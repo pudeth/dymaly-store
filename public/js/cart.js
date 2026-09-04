@@ -373,25 +373,107 @@ function showToast(msg) {
     }, 2400);
 }
 
-// Checkout with realistic button animation and real-time backend stock deduction
-async function checkout() {
+// Checkout: Open customer details modal
+function checkout() {
     if (cart.length === 0) {
         showToast('Your shopping bag is empty!');
         return;
     }
-    
+    openCheckoutModal();
+}
+
+function openCheckoutModal() {
+    const overlay = document.getElementById('checkoutModalOverlay');
+    if (!overlay) {
+        // Fallback if modal not present
+        directCheckout();
+        return;
+    }
+
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const discount = getDiscountAmount(subtotal);
     const finalTotal = Math.max(0, subtotal - discount);
-    
-    const btn = document.getElementById('checkoutBtn');
-    const originalBtnHtml = btn ? btn.innerHTML : '';
-    if (btn) {
-        btn.classList.add('processing');
-        btn.disabled = true;
-        btn.innerHTML = `
+
+    const subtotalEl = document.getElementById('modalItemsTotal');
+    const discountRow = document.getElementById('modalDiscountRow');
+    const discountEl = document.getElementById('modalDiscountVal');
+    const finalEl = document.getElementById('modalFinalPay');
+
+    if (subtotalEl) subtotalEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(subtotal) : `$${subtotal.toFixed(2)}`;
+    if (discountRow && discountEl) {
+        if (discount > 0) {
+            discountRow.style.display = 'flex';
+            discountEl.innerHTML = window.BongI18n ? `-${window.BongI18n.formatPrice(discount)}` : `-$${discount.toFixed(2)}`;
+        } else {
+            discountRow.style.display = 'none';
+        }
+    }
+    if (finalEl) finalEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(finalTotal, { showBoth: true }) : `$${finalTotal.toFixed(2)}`;
+
+    // Pre-fill customer details from localStorage if available
+    const savedName = localStorage.getItem('dymaly_customer_name') || '';
+    const savedPhone = localStorage.getItem('dymaly_customer_phone') || '';
+    const savedAddress = localStorage.getItem('dymaly_customer_address') || '';
+
+    const nameInput = document.getElementById('customerNameInput');
+    const phoneInput = document.getElementById('customerPhoneInput');
+    const addressInput = document.getElementById('customerAddressInput');
+
+    if (nameInput && !nameInput.value) nameInput.value = savedName;
+    if (phoneInput && !phoneInput.value) phoneInput.value = savedPhone;
+    if (addressInput && !addressInput.value) addressInput.value = savedAddress;
+
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCheckoutModal() {
+    const overlay = document.getElementById('checkoutModalOverlay');
+    if (overlay) overlay.style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Submit checkout order to backend API and save in database
+async function submitCheckoutOrder(event) {
+    if (event) event.preventDefault();
+
+    if (cart.length === 0) {
+        showToast('Your shopping bag is empty!');
+        closeCheckoutModal();
+        return;
+    }
+
+    const nameInput = document.getElementById('customerNameInput');
+    const phoneInput = document.getElementById('customerPhoneInput');
+    const addressInput = document.getElementById('customerAddressInput');
+    const notesInput = document.getElementById('customerNotesInput');
+
+    const customerName = (nameInput && nameInput.value.trim()) || 'Online Customer';
+    const customerPhone = (phoneInput && phoneInput.value.trim()) || '';
+    const customerAddress = (addressInput && addressInput.value.trim()) || '';
+    const customerNotes = (notesInput && notesInput.value.trim()) || '';
+
+    if (!customerName || !customerPhone) {
+        alert('Please provide your Name and Phone Number to complete the order.');
+        return;
+    }
+
+    // Save for future convenience
+    localStorage.setItem('dymaly_customer_name', customerName);
+    localStorage.setItem('dymaly_customer_phone', customerPhone);
+    if (customerAddress) localStorage.setItem('dymaly_customer_address', customerAddress);
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discount = getDiscountAmount(subtotal);
+    const finalTotal = Math.max(0, subtotal - discount);
+
+    const confirmBtn = document.getElementById('confirmOrderBtn');
+    const origBtnHtml = confirmBtn ? confirmBtn.innerHTML : '';
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = `
             <span class="spinner-inline" style="display:inline-block; width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:8px; vertical-align:middle;"></span>
-            <span>Verifying Stock & Processing...</span>
+            <span>Saving Order to Database...</span>
         `;
     }
 
@@ -400,82 +482,59 @@ async function checkout() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                customer: {
+                    name: customerName,
+                    phone: customerPhone,
+                    address: customerAddress,
+                    notes: customerNotes
+                },
                 items: cart.map(i => ({
                     id: i.id,
                     quantity: i.quantity,
                     price: i.price,
-                    name: i.name
+                    name: i.name,
+                    size: i.size || '',
+                    image_url: i.image_url || ''
                 })),
-                promo_code: appliedPromo || ''
+                promo_code: appliedPromo || '',
+                discount_amount: discount
             })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            // Insufficient stock or item out of stock
-            if (btn) {
-                btn.classList.remove('processing');
-                btn.disabled = false;
-                btn.innerHTML = originalBtnHtml;
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = origBtnHtml;
             }
-
             const errorMsg = data.error || 'Checkout could not be completed.';
-            showToast('⚠️ ' + errorMsg);
             alert(`⚠️ Stock Alert:\n\n${errorMsg}`);
-
-            // If a specific product had low or zero stock, adjust cart locally
-            if (data.productId !== undefined && data.availableStock !== undefined) {
-                const target = cart.find(i => String(i.id) === String(data.productId));
-                if (target) {
-                    if (data.availableStock <= 0) {
-                        target.quantity = 0;
-                        cart = cart.filter(i => String(i.id) !== String(data.productId));
-                    } else {
-                        target.quantity = data.availableStock;
-                        target.maxStock = data.availableStock;
-                    }
-                    saveCart();
-                    renderCart();
-                }
-            }
             return;
         }
 
-        // Order succeeded! Real-time stock deducted in database
-        if (btn) {
-            btn.classList.remove('processing');
-            btn.classList.add('success');
-            btn.innerHTML = `<span>✓ Order Confirmed!</span>`;
-        }
+        closeCheckoutModal();
 
-        setTimeout(() => {
-            const displayTotal = window.BongI18n ? window.BongI18n.formatPrice(finalTotal, { showBoth: true }) : `$${finalTotal.toFixed(2)}`;
-            const orderNum = data.orderId || ('ORD-' + Date.now().toString(36).toUpperCase());
-            
-            // Format list of purchased items
-            const purchasedSummary = (data.purchasedItems || []).map(p => 
-                `• ${p.name} (Qty: ${p.deducted}) → Remaining Stock: ${p.stock}`
-            ).join('\n');
+        const orderNum = data.orderNumber || data.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000));
+        const displayTotal = window.BongI18n ? window.BongI18n.formatPrice(finalTotal, { showBoth: true }) : `$${finalTotal.toFixed(2)}`;
 
-            alert(`🎉 Order Placed Successfully!\n\nOrder #: ${orderNum}\nTotal Paid: ${displayTotal}\nEstimated Delivery: 2–3 Business Days\n\nStock Updated in Real-Time:\n${purchasedSummary || 'All items reserved'}\n\nThank you for choosing DyMaly Phone Store!`);
+        // Clear cart
+        cart = [];
+        appliedPromo = '';
+        localStorage.removeItem('cart');
+        localStorage.removeItem('cart_promo');
+        saveCart();
+        renderCart();
 
-            cart = [];
-            appliedPromo = '';
-            localStorage.removeItem('cart');
-            localStorage.removeItem('cart_promo');
-            saveCart();
-            renderCart();
-        }, 500);
+        alert(`🎉 ORDER CONFIRMED & SAVED!\n\nOrder #: ${orderNum}\nCustomer: ${customerName} (${customerPhone})\nTotal Amount: ${displayTotal}\nDelivery: 2–3 Business Days\n\nYour order has been recorded in our database and live revenue updated.`);
 
     } catch (err) {
         console.error('Checkout network error:', err);
-        if (btn) {
-            btn.classList.remove('processing');
-            btn.disabled = false;
-            btn.innerHTML = originalBtnHtml;
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = origBtnHtml;
         }
-        showToast('Network error processing checkout. Please retry.');
+        alert('Network error connecting to store server. Please try again.');
     }
 }
 
