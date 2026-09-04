@@ -26,16 +26,16 @@
                 const riel = Math.round(num * this.usdToKhrRate);
                 const formatted = riel.toLocaleString('en-US');
                 if (opts.showBoth) {
-                    return `${formatted} ៛ <span class="price-sub-usd">($${num.toFixed(2)})</span>`;
+                    return `<span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span> <span class="price-sub-usd">($${num.toFixed(2)})</span>`;
                 }
-                return `${formatted} ៛`;
+                return `<span class="price-val">${formatted}</span>&nbsp;<span class="curr-symbol">៛</span>`;
             } else {
                 const formatted = num.toFixed(2);
                 if (opts.showBoth) {
                     const riel = Math.round(num * this.usdToKhrRate).toLocaleString('en-US');
-                    return `$${formatted} <span class="price-sub-khr">(${riel} ៛)</span>`;
+                    return `<span class="curr-symbol">$</span><span class="price-val">${formatted}</span> <span class="price-sub-khr">(${riel}&nbsp;៛)</span>`;
                 }
-                return `$${formatted}`;
+                return `<span class="curr-symbol">$</span><span class="price-val">${formatted}</span>`;
             }
         },
 

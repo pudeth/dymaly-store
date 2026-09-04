@@ -201,16 +201,28 @@ function renderProducts() {
         
         let stockBadge = '';
         if (stock === 0) {
-            stockBadge = `<span class="stock-pill stock-out">${t('sold_out', 'Sold out')}</span>`;
+            stockBadge = `<span class="stock-pill stock-out"><span class="stock-dot out"></span>${t('sold_out', 'Sold out')}</span>`;
         } else if (stock <= 5) {
-            stockBadge = `<span class="stock-pill stock-low">⚡ ${t('only', 'Only')} ${stock} ${t('left', 'left')}</span>`;
+            stockBadge = `<span class="stock-pill stock-low"><span class="stock-dot low"></span>${t('only', 'Only')} ${stock}</span>`;
         } else {
-            stockBadge = `<span class="stock-pill stock-high">✓ ${stock} ${t('in_stock', 'In Stock')}</span>`;
+            stockBadge = `<span class="stock-pill stock-high"><span class="stock-dot in"></span>${stock} ${t('in_stock', 'In Stock')}</span>`;
         }
 
         const sizeBadge = product.size ? `<span class="product-size-badge">${product.size}</span>` : '';
         const pid = product.id;
         
+        const favIcon = isSaved 
+            ? `<svg class="fav-heart-svg active" viewBox="0 0 24 24" width="16" height="16" fill="#ef4444" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`
+            : `<svg class="fav-heart-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#785a42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+
+        const addBtn = stock > 0 
+            ? `<button class="add-btn" onclick="addToCart(event, '${pid}')" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">
+                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+               </button>` 
+            : `<button class="add-btn out" disabled title="${t('out_of_stock', 'Out of stock')}" aria-label="${t('out_of_stock', 'Out of stock')}">
+                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+               </button>`;
+
         return `
             <div class="product-card" data-stock="${stock}">
                 ${stockBadge}
@@ -218,24 +230,20 @@ function renderProducts() {
                         onclick="toggleSaved(event, '${pid}')" 
                         title="${isSaved ? 'Remove from saved' : 'Save for later'}"
                         aria-label="${isSaved ? 'Remove from saved' : 'Save for later'}">
-                    ${isSaved ? '❤️' : '🤍'}
+                    ${favIcon}
                 </button>
                 <div class="product-img-wrap" onclick="viewProduct('${pid}')">
-                    <div class="product-img-frame">
-                        <img src="${product.image_url}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${product.name.replace(/'/g, "\\'")}', '${(product.brand || '').replace(/'/g, "\\'")}');">
-                    </div>
+                    <img src="${product.image_url}" alt="${product.name}" class="product-card-img" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${product.name.replace(/'/g, "\\'")}', '${(product.brand || '').replace(/'/g, "\\'")}');">
                 </div>
                 <div class="product-info">
                     <div class="product-brand-row">
-                        <span class="product-brand-name" onclick="filterByBrand('${product.brand}')" style="cursor: pointer;" title="Filter by ${product.brand}">${product.brand}</span>
+                        <span class="product-brand-name" onclick="filterByBrand('${product.brand}')" title="Filter by ${product.brand}">${product.brand}</span>
                         ${sizeBadge}
                     </div>
-                    <h3 onclick="viewProduct('${pid}')" style="cursor: pointer;">${product.name}</h3>
+                    <h3 onclick="viewProduct('${pid}')" title="${product.name}">${product.name}</h3>
                     <div class="product-price-row">
                         <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
-                        ${stock > 0 
-                            ? `<button class="add-btn" onclick="addToCart(event, '${pid}')" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` 
-                            : `<button class="add-btn out" disabled title="${t('out_of_stock', 'Out of stock')}" aria-label="${t('out_of_stock', 'Out of stock')}">✕</button>`}
+                        ${addBtn}
                     </div>
                 </div>
             </div>
