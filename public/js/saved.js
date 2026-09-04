@@ -168,7 +168,7 @@ async function renderSavedItems() {
                             </button>
 
                             <div class="saved-card-image" onclick="viewProduct('${product.id}')">
-                                <img src="${safeImage}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${safeName}', '${safeBrand}');">
+                                <img src="${safeImage}" alt="${product.name}" width="300" height="300" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderImage('${safeName}', '${safeBrand}');">
                             </div>
 
                             <div class="saved-card-body" onclick="viewProduct('${product.id}')">

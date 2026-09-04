@@ -194,7 +194,7 @@ function renderProducts() {
         return;
     }
     
-    container.innerHTML = filteredProducts.map(product => {
+    container.innerHTML = filteredProducts.map((product, idx) => {
         const t = (k, def) => (window.BongI18n ? window.BongI18n.t(k) : def);
         const isSaved = savedItems.includes(product.id);
         const stock = Number(product.stock) || 0;
@@ -223,6 +223,8 @@ function renderProducts() {
                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                </button>`;
 
+        const loadMode = idx < 4 ? 'eager' : 'lazy';
+
         return `
             <div class="product-card" data-stock="${stock}">
                 ${stockBadge}
@@ -233,7 +235,7 @@ function renderProducts() {
                     ${favIcon}
                 </button>
                 <div class="product-img-wrap" onclick="viewProduct('${pid}')">
-                    <img src="${product.image_url}" alt="${product.name}" class="product-card-img" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${product.name.replace(/'/g, "\\'")}', '${(product.brand || '').replace(/'/g, "\\'")}');">
+                    <img src="${product.image_url}" alt="${product.name}" class="product-card-img" width="300" height="300" loading="${loadMode}" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderImage('${product.name.replace(/'/g, "\\'")}', '${(product.brand || '').replace(/'/g, "\\'")}');">
                 </div>
                 <div class="product-info">
                     <div class="product-brand-row">

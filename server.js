@@ -97,6 +97,59 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/uploads', express.static(uploadsDir));
 
+// Smart fallback for missing uploaded images (handles ephemeral container restarts gracefully with HTTP 200)
+app.get('/uploads/:filename', (req, res) => {
+  const filename = path.basename(req.params.filename);
+  const filePath = path.join(uploadsDir, filename);
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+
+  const fallbackPath = path.join(__dirname, 'public', 'uploads', filename);
+  if (fs.existsSync(fallbackPath)) {
+    return res.sendFile(fallbackPath);
+  }
+
+  // Generate a modern luxury phone SVG placeholder on the fly with HTTP 200 OK
+  const svgPlaceholder = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fdfbf9"/>
+      <stop offset="60%" stop-color="#f3ede6"/>
+      <stop offset="100%" stop-color="#e6dbce"/>
+    </radialGradient>
+    <linearGradient id="phoneBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c2520"/>
+      <stop offset="50%" stop-color="#1b1613"/>
+      <stop offset="100%" stop-color="#0f0c0a"/>
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d"/>
+      <stop offset="50%" stop-color="#c09875"/>
+      <stop offset="100%" stop-color="#8c6846"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#1a1410" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="500" height="500" fill="url(#bgGrad)" rx="24"/>
+  <g filter="url(#cardShadow)" transform="translate(140, 60)">
+    <rect x="0" y="0" width="220" height="380" rx="40" fill="url(#phoneBodyGrad)" stroke="url(#goldAccent)" stroke-width="3.5"/>
+    <rect x="10" y="10" width="200" height="360" rx="32" fill="#0d0a08"/>
+    <rect x="75" y="20" width="70" height="14" rx="7" fill="#1c1713"/>
+    <circle cx="110" cy="175" r="50" fill="url(#goldAccent)" opacity="0.16"/>
+    <text x="110" y="180" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="36" text-anchor="middle" fill="#c09875">📱</text>
+    <text x="110" y="230" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#fdfaf6" letter-spacing="1">PREMIUM PHONE</text>
+    <text x="110" y="250" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" text-anchor="middle" fill="#9ca3af">DyMaly Store</text>
+  </g>
+</svg>`;
+
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  return res.status(200).send(svgPlaceholder);
+});
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'phone-store-secret-key-change-in-production',
