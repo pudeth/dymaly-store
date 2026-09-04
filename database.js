@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const DB_PATH = path.join(__dirname, 'phonestore.db');
+const DATA_DIR = process.env.DATA_DIR || (fs.existsSync('/data') ? '/data' : __dirname);
+const DB_PATH = path.join(DATA_DIR, 'phonestore.db');
 let db = null;
 
 // Helper function to generate authentic brand logo SVG data URIs
@@ -64,6 +65,19 @@ function getPlaceholderImage(text, width = 300, height = 300) {
 async function initDatabase() {
   const SQL = await initSqlJs();
   
+  // Seed persistent database from repository seed if it does not exist yet
+  if (!fs.existsSync(DB_PATH)) {
+    const seedPath = path.join(__dirname, 'phonestore.db');
+    if (fs.existsSync(seedPath) && seedPath !== DB_PATH) {
+      try {
+        fs.copyFileSync(seedPath, DB_PATH);
+        console.log(`✓ Seeded initial database to ${DB_PATH}`);
+      } catch (err) {
+        console.warn('Could not copy seed database:', err.message);
+      }
+    }
+  }
+
   // Load existing database or create new one
   if (fs.existsSync(DB_PATH)) {
     const buffer = fs.readFileSync(DB_PATH);

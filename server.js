@@ -18,10 +18,28 @@ function getPlaceholderImage(text, width = 300, height = 300) {
   return 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 }
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
+// Uploads directory configuration (supports persistent disk /data/uploads)
+const DATA_DIR = process.env.DATA_DIR || (fs.existsSync('/data') ? '/data' : null);
+const uploadsDir = DATA_DIR ? path.join(DATA_DIR, 'uploads') : path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Auto-seed initial image assets to persistent disk if running on /data
+const seedUploadsDir = path.join(__dirname, 'public', 'uploads');
+if (DATA_DIR && seedUploadsDir !== uploadsDir && fs.existsSync(seedUploadsDir)) {
+  try {
+    const seedFiles = fs.readdirSync(seedUploadsDir);
+    seedFiles.forEach(file => {
+      const destFile = path.join(uploadsDir, file);
+      if (!fs.existsSync(destFile)) {
+        fs.copyFileSync(path.join(seedUploadsDir, file), destFile);
+      }
+    });
+    console.log(`✓ Seeded ${seedFiles.length} upload assets to ${uploadsDir}`);
+  } catch (err) {
+    console.warn('Could not seed uploads to persistent directory:', err.message);
+  }
 }
 
 // Configure multer for file uploads
@@ -55,6 +73,7 @@ const upload = multer({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use('/uploads', express.static(uploadsDir));
 
 // Session configuration
 app.use(session({
@@ -557,12 +576,38 @@ app.get('/api/stats', requireAdmin, (req, res) => {
 // ==================== BRAND ROUTES ====================
 
 // Upload image endpoint
-app.post('/api/upload-image', requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/upload-image', requireAdmin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
+
+    // 1. Optional: Free ImgBB cloud storage (if IMGBB_API_KEY is configured)
+    if (process.env.IMGBB_API_KEY) {
+      try {
+        const fileBase64 = fs.readFileSync(req.file.path).toString('base64');
+        const formBody = new URLSearchParams();
+        formBody.append('image', fileBase64);
+        formBody.append('name', path.parse(req.file.originalname).name);
+
+        const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formBody
+        });
+        const imgbbData = await imgbbRes.json();
+        if (imgbbData && imgbbData.success && imgbbData.data && imgbbData.data.url) {
+          return res.json({
+            success: true,
+            imageUrl: imgbbData.data.url,
+            filename: req.file.filename
+          });
+        }
+      } catch (cloudErr) {
+        console.warn('ImgBB upload fallback to persistent storage:', cloudErr.message);
+      }
+    }
     
+    // 2. Default: Saved to uploadsDir (persistent disk /data/uploads or public/uploads)
     const imageUrl = '/uploads/' + req.file.filename;
     res.json({ 
       success: true, 
