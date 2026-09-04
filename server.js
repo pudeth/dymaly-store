@@ -582,28 +582,36 @@ app.post('/api/upload-image', requireAdmin, upload.single('image'), async (req, 
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // 1. Optional: Free ImgBB cloud storage (if IMGBB_API_KEY is configured)
-    if (process.env.IMGBB_API_KEY) {
+    // 1. Free ImgBB cloud storage
+    const imgbbKey = process.env.IMGBB_API_KEY || 'c16540642d8c8a419f34a1323eeb6038';
+    if (imgbbKey) {
       try {
-        const fileBase64 = fs.readFileSync(req.file.path).toString('base64');
-        const formBody = new URLSearchParams();
-        formBody.append('image', fileBase64);
-        formBody.append('name', path.parse(req.file.originalname).name);
+        const fileBuffer = fs.readFileSync(req.file.path);
+        const fileBlob = new Blob([fileBuffer], { type: req.file.mimetype || 'image/jpeg' });
+        const formBody = new FormData();
+        formBody.append('image', fileBlob, req.file.originalname || req.file.filename);
+        formBody.append('name', path.parse(req.file.originalname || req.file.filename).name);
 
-        const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, {
+        const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
           method: 'POST',
-          body: formBody
+          body: formBody,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+          }
         });
         const imgbbData = await imgbbRes.json();
         if (imgbbData && imgbbData.success && imgbbData.data && imgbbData.data.url) {
+          console.log('✓ Uploaded image to ImgBB cloud:', imgbbData.data.url);
           return res.json({
             success: true,
             imageUrl: imgbbData.data.url,
             filename: req.file.filename
           });
+        } else {
+          console.warn('ImgBB API response warning:', imgbbData);
         }
       } catch (cloudErr) {
-        console.warn('ImgBB upload fallback to persistent storage:', cloudErr.message);
+        console.warn('ImgBB upload fallback to local storage:', cloudErr.message);
       }
     }
     
