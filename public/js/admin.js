@@ -209,19 +209,38 @@ async function loadStats() {
         const totalUnitsDesc = window.BongI18n ? window.BongI18n.t('stat_total_units_desc', 'total units') : 'total units';
         document.getElementById('totalUnits').textContent = `${totalUnits} ${totalUnitsDesc}`;
         
-        // Total Revenue (cleared to $0.00, only increases with customer orders)
-        const revenueFormatted = `$${Number(totalRevenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        // Total Revenue (cleared to $0.00 / 0 ៛, only increases with customer orders)
+        const isKhr = window.BongI18n && window.BongI18n.currentCurrency === 'KHR';
+        const revenueIconSvg = document.getElementById('revenueCurrencyIconSvg');
+        const revenueIconText = document.getElementById('revenueCurrencyIconText');
+        if (revenueIconSvg && revenueIconText) {
+            revenueIconSvg.style.display = isKhr ? 'none' : 'inline-block';
+            revenueIconText.style.display = isKhr ? 'inline-block' : 'none';
+        }
+
         const stockValueEl = document.getElementById('stockValue');
-        if (stockValueEl) stockValueEl.textContent = revenueFormatted;
+        if (stockValueEl) {
+            stockValueEl.innerHTML = window.BongI18n 
+                ? window.BongI18n.formatPrice(totalRevenue) 
+                : `$${Number(totalRevenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
 
         const stockValueLabel = document.getElementById('stockValueLabel');
         if (stockValueLabel) {
-            stockValueLabel.textContent = 'Total Revenue';
+            stockValueLabel.textContent = window.BongI18n ? window.BongI18n.t('stat_total_revenue', 'Total Revenue') : 'Total Revenue';
         }
 
         const stockValueMeta = document.getElementById('stockValueMeta');
         if (stockValueMeta) {
-            stockValueMeta.textContent = totalOrders === 0 ? '0 customer orders' : `${totalOrders} order${totalOrders !== 1 ? 's' : ''} in database`;
+            if (window.BongI18n) {
+                const orderWord = window.BongI18n.t('nav_orders', 'orders');
+                const databaseWord = window.BongI18n.t('saved_in_database', 'in database');
+                stockValueMeta.textContent = totalOrders === 0 
+                    ? `0 ${orderWord}` 
+                    : `${totalOrders} ${orderWord} (${databaseWord})`;
+            } else {
+                stockValueMeta.textContent = totalOrders === 0 ? '0 customer orders' : `${totalOrders} order${totalOrders !== 1 ? 's' : ''} in database`;
+            }
         }
 
         const ordersTabBadge = document.getElementById('ordersTabBadge');
@@ -306,6 +325,19 @@ function updateOrdersSummary(orders) {
         revEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(totalRevenue) : `$${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    const stockValueEl = document.getElementById('stockValue');
+    if (stockValueEl) {
+        stockValueEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(totalRevenue) : `$${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    const isKhr = window.BongI18n && window.BongI18n.currentCurrency === 'KHR';
+    const revenueIconSvg = document.getElementById('revenueCurrencyIconSvg');
+    const revenueIconText = document.getElementById('revenueCurrencyIconText');
+    if (revenueIconSvg && revenueIconText) {
+        revenueIconSvg.style.display = isKhr ? 'none' : 'inline-block';
+        revenueIconText.style.display = isKhr ? 'inline-block' : 'none';
+    }
+
     const badgeEl = document.getElementById('ordersTabBadge');
     if (badgeEl) {
         badgeEl.textContent = totalOrders;
@@ -357,7 +389,7 @@ function renderOrders(orders) {
                 <strong style="color: #b85212;">${item.quantity || 1}×</strong>
                 <span style="font-weight: 600; color: #374151;">${item.name}</span>
                 ${item.size ? `<span style="background:#fed7aa; color:#9a3412; font-size: 10px; font-weight:700; padding:1px 4px; border-radius:4px;">${item.size}</span>` : ''}
-                <span style="color: #6b7280; font-size: 11px;">$${(Number(item.price || 0) * (Number(item.quantity) || 1)).toFixed(2)}</span>
+                <span style="color: #6b7280; font-size: 11px;">${window.BongI18n ? window.BongI18n.formatPriceText((Number(item.price || 0) * (Number(item.quantity) || 1))) : ('$' + (Number(item.price || 0) * (Number(item.quantity) || 1)).toFixed(2))}</span>
             </div>
         `).join('');
 
@@ -3147,9 +3179,19 @@ function connectAdminRealtimeStream() {
 }
 
 // React to currency changes in Admin
-window.addEventListener('currencyChanged', () => {
-    if (typeof loadProducts === 'function') loadProducts();
+window.addEventListener('currencyChanged', (e) => {
+    const isKhr = window.BongI18n && window.BongI18n.currentCurrency === 'KHR';
+    const revenueIconSvg = document.getElementById('revenueCurrencyIconSvg');
+    const revenueIconText = document.getElementById('revenueCurrencyIconText');
+    if (revenueIconSvg && revenueIconText) {
+        revenueIconSvg.style.display = isKhr ? 'none' : 'inline-block';
+        revenueIconText.style.display = isKhr ? 'inline-block' : 'none';
+    }
+
     if (typeof loadStats === 'function') loadStats();
+    if (typeof loadProducts === 'function') loadProducts();
+    if (typeof loadProductsWithSearch === 'function') loadProductsWithSearch();
+    if (typeof loadOrders === 'function') loadOrders();
 });
 
 // React to language changes in Admin
@@ -3157,8 +3199,10 @@ window.addEventListener('languageChanged', () => {
     if (window.BongI18n && typeof window.BongI18n.applyTranslations === 'function') {
         window.BongI18n.applyTranslations();
     }
-    if (typeof loadProducts === 'function') loadProducts();
     if (typeof loadStats === 'function') loadStats();
+    if (typeof loadProducts === 'function') loadProducts();
+    if (typeof loadProductsWithSearch === 'function') loadProductsWithSearch();
+    if (typeof loadOrders === 'function') loadOrders();
 });
 
 

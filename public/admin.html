@@ -224,14 +224,15 @@
                     
                     <div class="stat-card-new stat-value-new">
                         <div class="stat-icon-new">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg id="revenueCurrencyIconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="12" y1="1" x2="12" y2="23"></line>
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
+                            <span id="revenueCurrencyIconText" style="display: none; font-size: 22px; font-weight: 800; color: #10b981; line-height: 1;">៛</span>
                         </div>
                         <div class="stat-value" id="stockValue">$0.00</div>
-                        <div class="stat-label-new" id="stockValueLabel">Total Revenue</div>
-                        <div class="stat-meta" id="stockValueMeta">From customer orders</div>
+                        <div class="stat-label-new" id="stockValueLabel" data-i18n="stat_total_revenue">Total Revenue</div>
+                        <div class="stat-meta" id="stockValueMeta" data-i18n="stat_from_customer_orders">From customer orders</div>
                     </div>
                     
                     <div class="stat-card-new stat-rating-new">

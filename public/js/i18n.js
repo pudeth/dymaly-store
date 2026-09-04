@@ -196,6 +196,8 @@
                 // Admin Stats & Metrics
                 stat_total_products: 'Total Products',
                 stat_total_units_desc: 'total units',
+                stat_total_revenue: 'Total Revenue',
+                stat_from_customer_orders: 'From customer orders',
                 stat_stock_value: 'Stock Value',
                 stat_total_inventory: 'Total inventory',
                 stat_avg_rating: 'Average Rating',
@@ -443,6 +445,8 @@
                 // Admin Stats & Metrics
                 stat_total_products: 'ផលិតផលសរុប',
                 stat_total_units_desc: 'គ្រឿងសរុប',
+                stat_total_revenue: 'ចំណូលសរុប',
+                stat_from_customer_orders: 'ពីការបញ្ជាទិញរបស់អតិថិជន',
                 stat_stock_value: 'តម្លៃស្តុកសរុប',
                 stat_total_inventory: 'តម្លៃសារពើភ័ណ្ឌសរុប',
                 stat_avg_rating: 'ពិន្ទុវាយតម្លៃមធ្យម',
@@ -690,6 +694,8 @@
                 // Admin Stats & Metrics
                 stat_total_products: '产品总数',
                 stat_total_units_desc: '件总库存',
+                stat_total_revenue: '销售总额',
+                stat_from_customer_orders: '来自客户订单',
                 stat_stock_value: '库存总货值',
                 stat_total_inventory: '全部在库资产',
                 stat_avg_rating: '平均好评度',
@@ -866,6 +872,15 @@
                 sortSelect.options[0].text = this.t('sort_newest');
                 sortSelect.options[1].text = this.t('sort_price_low');
                 sortSelect.options[2].text = this.t('sort_price_high');
+            }
+
+            // Admin Revenue Card & Currency Icon Live Sync
+            const isKhr = this.currentCurrency === 'KHR';
+            const revenueIconSvg = document.getElementById('revenueCurrencyIconSvg');
+            const revenueIconText = document.getElementById('revenueCurrencyIconText');
+            if (revenueIconSvg && revenueIconText) {
+                revenueIconSvg.style.display = isKhr ? 'none' : 'inline-block';
+                revenueIconText.style.display = isKhr ? 'inline-block' : 'none';
             }
         },
 
