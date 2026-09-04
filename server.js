@@ -220,11 +220,11 @@ app.get('/api/realtime/stream', (req, res) => {
   res.setHeader('X-Accel-Buffering', 'no');
   res.flushHeaders();
 
-  // Send initial handshake
-  res.write(`data: ${JSON.stringify({ type: 'connected', timestamp: Date.now() })}\n\n`);
+  // Send initial handshake with retry directive for standard SSE clients
+  res.write(`retry: 15000\n\ndata: ${JSON.stringify({ type: 'connected', timestamp: Date.now() })}\n\n`);
   sseClients.add(res);
 
-  // Periodic keep-alive comment to prevent cloud proxies from dropping idle connections
+  // Periodic keep-alive comment (15s) to prevent cloud proxies and QUIC from dropping idle streams
   const keepAliveTimer = setInterval(() => {
     try {
       res.write(': keep-alive\n\n');
@@ -232,7 +232,7 @@ app.get('/api/realtime/stream', (req, res) => {
       clearInterval(keepAliveTimer);
       sseClients.delete(res);
     }
-  }, 25000);
+  }, 15000);
 
   req.on('close', () => {
     clearInterval(keepAliveTimer);

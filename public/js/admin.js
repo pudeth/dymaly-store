@@ -321,14 +321,17 @@ function renderOrders(orders) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="7">
-                    <div class="orders-empty-state" style="text-align: center; padding: 50px 20px;">
-                        <div style="font-size: 42px; margin-bottom: 12px;">🛍️</div>
-                        <h3 style="font-size: 19px; font-weight: 800; color: #3d1704; margin-bottom: 6px;">No Customer Orders Yet</h3>
-                        <p style="font-size: 13.5px; color: #8c827a; max-width: 460px; margin: 0 auto;">When customers purchase items from your store, their orders will be saved here in real-time. You can view items, customer details, and delete orders.</p>
+                    <div class="orders-empty-state">
+                        <div class="empty-icon-wrap">🛍️</div>
+                        <h3 data-i18n="no_orders_yet">No Customer Orders Yet</h3>
+                        <p data-i18n="no_orders_yet_desc">When customers purchase items from your store, their orders will be saved here in real-time. You can view items, customer details, and delete orders.</p>
                     </div>
                 </td>
             </tr>
         `;
+        if (window.BongI18n && typeof window.BongI18n.translatePage === 'function') {
+            window.BongI18n.translatePage();
+        }
         return;
     }
 
@@ -765,14 +768,43 @@ async function handleProductFormSubmit(e) {
         }
         
         const id = document.getElementById('productId').value;
-        const name = document.getElementById('productName').value;
-        const brand = document.getElementById('productBrand').value;
-        const category = document.getElementById('productCategory').value;
+        const name = (document.getElementById('productName').value || '').trim();
+        const brand = (document.getElementById('productBrand').value || '').trim();
+        const category = (document.getElementById('productCategory').value || '').trim();
         const price = parseFloat(document.getElementById('productPrice').value);
-        const size = document.getElementById('productSize').value;
+        const size = (document.getElementById('productSize').value || '').trim();
         const stock = parseInt(document.getElementById('productStock').value);
-        const description = document.getElementById('productDescription').value;
+        const description = (document.getElementById('productDescription').value || '').trim();
         
+        if (!name) {
+            showToast('Please enter a product name');
+            const nameEl = document.getElementById('productName');
+            if (nameEl) nameEl.focus();
+            if (submitBtn) { submitBtn.classList.remove('processing'); submitBtn.disabled = false; }
+            return;
+        }
+        if (!brand) {
+            showToast('Please select a brand');
+            const brandEl = document.getElementById('productBrand');
+            if (brandEl) brandEl.focus();
+            if (submitBtn) { submitBtn.classList.remove('processing'); submitBtn.disabled = false; }
+            return;
+        }
+        if (isNaN(price) || price < 0) {
+            showToast('Please enter a valid price');
+            const priceEl = document.getElementById('productPrice');
+            if (priceEl) priceEl.focus();
+            if (submitBtn) { submitBtn.classList.remove('processing'); submitBtn.disabled = false; }
+            return;
+        }
+        if (isNaN(stock) || stock < 0) {
+            showToast('Please enter a valid stock quantity');
+            const stockEl = document.getElementById('productStock');
+            if (stockEl) stockEl.focus();
+            if (submitBtn) { submitBtn.classList.remove('processing'); submitBtn.disabled = false; }
+            return;
+        }
+
         const productData = {
             name,
             brand,
@@ -1730,19 +1762,25 @@ window.switchImageMode = function(mode) {
     const urlTab = document.getElementById('modeUrlTab');
     const urlBox = document.getElementById('imageUrlBox');
     const selectBtn = document.getElementById('selectImageBtn');
+    const urlInput = document.getElementById('productImageUrlInput');
     
     if (mode === 'url') {
         if (uploadTab) uploadTab.classList.remove('active');
         if (urlTab) urlTab.classList.add('active');
         if (urlBox) urlBox.style.display = 'block';
         if (selectBtn) selectBtn.style.display = 'none';
-        const urlInput = document.getElementById('productImageUrlInput');
-        if (urlInput) urlInput.focus();
+        if (urlInput) {
+            urlInput.removeAttribute('disabled');
+            urlInput.focus();
+        }
     } else {
         if (uploadTab) uploadTab.classList.add('active');
         if (urlTab) urlTab.classList.remove('active');
         if (urlBox) urlBox.style.display = 'none';
         if (selectBtn) selectBtn.style.display = 'inline-flex';
+        if (urlInput) {
+            urlInput.setAttribute('disabled', 'disabled');
+        }
     }
 };
 
@@ -3061,32 +3099,51 @@ if (document.readyState === 'loading') {
 
 // ==================== REAL-TIME LIVE STREAM (SSE) FOR ADMIN ====================
 let adminSseSource = null;
+let adminSseRetryCount = 0;
+const MAX_ADMIN_SSE_RETRIES = 5;
 
 function connectAdminRealtimeStream() {
-    if (window.EventSource) {
-        try {
-            if (adminSseSource) adminSseSource.close();
-            adminSseSource = new EventSource('/api/realtime/stream');
-
-            adminSseSource.onmessage = function(event) {
-                try {
-                    const msg = JSON.parse(event.data);
-                    if (msg.type === 'stock_updated' || msg.type === 'products_updated' || msg.type === 'order_created' || msg.type === 'orders_updated') {
-                        if (typeof loadStats === 'function') loadStats();
-                        if (typeof loadOrders === 'function') loadOrders();
-                        if (typeof loadProductsWithSearch === 'function') loadProductsWithSearch();
-                        const note = msg.type === 'order_created' ? '🎉 New customer order received live!' : (msg.type === 'stock_updated' ? '⚡ Customer order: stock updated live!' : 'Store data updated live');
-                        showToast(note);
-                    }
-                } catch (_) {}
-            };
-
-            adminSseSource.onerror = function() {
-                if (adminSseSource) adminSseSource.close();
-                setTimeout(connectAdminRealtimeStream, 6000);
-            };
-        } catch (_) {}
+    if (!window.EventSource) return;
+    if (adminSseRetryCount >= MAX_ADMIN_SSE_RETRIES) {
+        return; // Pause auto-reconnect if network/QUIC drops repeatedly
     }
+
+    try {
+        if (adminSseSource) {
+            adminSseSource.close();
+            adminSseSource = null;
+        }
+        adminSseSource = new EventSource('/api/realtime/stream');
+
+        adminSseSource.onopen = function() {
+            adminSseRetryCount = 0;
+        };
+
+        adminSseSource.onmessage = function(event) {
+            try {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'stock_updated' || msg.type === 'products_updated' || msg.type === 'order_created' || msg.type === 'orders_updated') {
+                    if (typeof loadStats === 'function') loadStats();
+                    if (typeof loadOrders === 'function') loadOrders();
+                    if (typeof loadProductsWithSearch === 'function') loadProductsWithSearch();
+                    const note = msg.type === 'order_created' ? '🎉 New customer order received live!' : (msg.type === 'stock_updated' ? '⚡ Customer order: stock updated live!' : 'Store data updated live');
+                    showToast(note);
+                }
+            } catch (_) {}
+        };
+
+        adminSseSource.onerror = function() {
+            if (adminSseSource) {
+                adminSseSource.close();
+                adminSseSource = null;
+            }
+            adminSseRetryCount++;
+            if (adminSseRetryCount < MAX_ADMIN_SSE_RETRIES) {
+                const delay = Math.min(10000 * Math.pow(1.5, adminSseRetryCount), 30000);
+                setTimeout(connectAdminRealtimeStream, delay);
+            }
+        };
+    } catch (_) {}
 }
 
 // React to currency changes in Admin

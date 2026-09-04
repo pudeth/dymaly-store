@@ -310,17 +310,17 @@
             <div id="ordersTab" class="tab-content">
                 <div class="page-header orders-page-header">
                     <div>
-                        <h2>🛍️ Customer Orders</h2>
-                        <p class="page-subtitle">Real-time order history saved in database. View details and delete orders to manage revenue.</p>
+                        <h2 data-i18n="customer_orders_title">🛍️ Customer Orders</h2>
+                        <p class="page-subtitle" data-i18n="customer_orders_subtitle">Real-time order history saved in database. View details and delete orders to manage revenue.</p>
                     </div>
                     <div class="orders-header-actions">
                         <button type="button" class="btn-clear-orders" id="clearAllOrdersBtn" onclick="clearAllOrders()">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                            <span>Clear All Orders</span>
+                            <span data-i18n="clear_all_orders">Clear All Orders</span>
                         </button>
                         <button type="button" class="btn-refresh-orders" onclick="loadOrders()">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                            <span>Refresh</span>
+                            <span data-i18n="refresh">Refresh</span>
                         </button>
                     </div>
                 </div>
@@ -328,19 +328,19 @@
                 <!-- Orders Summary Metric Boxes -->
                 <div class="orders-metrics-grid">
                     <div class="order-metric-card">
-                        <div class="metric-label">Total Orders</div>
+                        <div class="metric-label" data-i18n="stat_total_orders">Total Orders</div>
                         <div class="metric-val" id="ordersBannerCount">0</div>
-                        <div class="metric-hint">Saved in database</div>
+                        <div class="metric-hint" data-i18n="saved_in_database">Saved in database</div>
                     </div>
                     <div class="order-metric-card revenue-highlight">
-                        <div class="metric-label">Total Sales Revenue</div>
+                        <div class="metric-label" data-i18n="stat_total_sales_revenue">Total Sales Revenue</div>
                         <div class="metric-val" id="ordersBannerRevenue">$0.00</div>
-                        <div class="metric-hint">Live sales total</div>
+                        <div class="metric-hint" data-i18n="live_sales_total">Live sales total</div>
                     </div>
                     <div class="order-metric-card">
-                        <div class="metric-label">Real-Time Sync</div>
-                        <div class="metric-val sync-pulse">● Connected</div>
-                        <div class="metric-hint">Instant updates</div>
+                        <div class="metric-label" data-i18n="real_time_sync">Real-Time Sync</div>
+                        <div class="metric-val sync-pulse" data-i18n="connected">Connected</div>
+                        <div class="metric-hint" data-i18n="instant_updates">Instant updates</div>
                     </div>
                 </div>
 
@@ -350,18 +350,18 @@
                         <table class="orders-table">
                             <thead>
                                 <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Customer</th>
-                                    <th>Purchased Items</th>
-                                    <th>Total Paid</th>
-                                    <th>Status</th>
-                                    <th style="text-align: right;">Action</th>
+                                    <th data-i18n="th_order_num">Order #</th>
+                                    <th data-i18n="th_date">Date</th>
+                                    <th data-i18n="th_customer">Customer</th>
+                                    <th data-i18n="th_items">Purchased Items</th>
+                                    <th data-i18n="th_total_paid">Total Paid</th>
+                                    <th data-i18n="th_status">Status</th>
+                                    <th style="text-align: right;" data-i18n="th_action">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="ordersTableBody">
                                 <tr>
-                                    <td colspan="7" class="loading-orders-cell">Loading orders from database...</td>
+                                    <td colspan="7" class="loading-orders-cell" data-i18n="loading_orders">Loading orders from database...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -968,7 +968,7 @@
                     </svg>
                 </button>
             </div>
-            <form id="productForm">
+            <form id="productForm" novalidate>
                 <input type="hidden" id="productId">
                 <div class="form-group">
                     <label for="productName" data-i18n="product_name_label">Product Name *</label>
@@ -1035,7 +1035,7 @@
                         <div class="image-url-box" id="imageUrlBox" style="display: none;">
                             <div class="image-url-input-wrap">
                                 <span class="url-input-icon">🔗</span>
-                                <input type="url" id="productImageUrlInput" placeholder="https://example.com/phone.jpg" oninput="handleImageUrlInput(this.value)">
+                                <input type="text" inputmode="url" id="productImageUrlInput" name="productImageUrl" placeholder="https://example.com/phone.jpg" oninput="handleImageUrlInput(this.value)" disabled>
                                 <button type="button" class="btn-clear-url" onclick="clearImageUrlInput()" title="Clear">✕</button>
                             </div>
                             <span class="image-url-hint">Paste any direct web image URL to preview and save</span>
