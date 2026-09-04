@@ -373,8 +373,8 @@ function showToast(msg) {
     }, 2400);
 }
 
-// Checkout with realistic button animation
-function checkout() {
+// Checkout with realistic button animation and real-time backend stock deduction
+async function checkout() {
     if (cart.length === 0) {
         showToast('Your shopping bag is empty!');
         return;
@@ -385,27 +385,98 @@ function checkout() {
     const finalTotal = Math.max(0, subtotal - discount);
     
     const btn = document.getElementById('checkoutBtn');
+    const originalBtnHtml = btn ? btn.innerHTML : '';
     if (btn) {
         btn.classList.add('processing');
         btn.disabled = true;
+        btn.innerHTML = `
+            <span class="spinner-inline" style="display:inline-block; width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:8px; vertical-align:middle;"></span>
+            <span>Verifying Stock & Processing...</span>
+        `;
     }
-    
-    setTimeout(() => {
+
+    try {
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                items: cart.map(i => ({
+                    id: i.id,
+                    quantity: i.quantity,
+                    price: i.price,
+                    name: i.name
+                })),
+                promo_code: appliedPromo || ''
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Insufficient stock or item out of stock
+            if (btn) {
+                btn.classList.remove('processing');
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+
+            const errorMsg = data.error || 'Checkout could not be completed.';
+            showToast('⚠️ ' + errorMsg);
+            alert(`⚠️ Stock Alert:\n\n${errorMsg}`);
+
+            // If a specific product had low or zero stock, adjust cart locally
+            if (data.productId !== undefined && data.availableStock !== undefined) {
+                const target = cart.find(i => String(i.id) === String(data.productId));
+                if (target) {
+                    if (data.availableStock <= 0) {
+                        target.quantity = 0;
+                        cart = cart.filter(i => String(i.id) !== String(data.productId));
+                    } else {
+                        target.quantity = data.availableStock;
+                        target.maxStock = data.availableStock;
+                    }
+                    saveCart();
+                    renderCart();
+                }
+            }
+            return;
+        }
+
+        // Order succeeded! Real-time stock deducted in database
         if (btn) {
             btn.classList.remove('processing');
             btn.classList.add('success');
+            btn.innerHTML = `<span>✓ Order Confirmed!</span>`;
         }
-        
+
         setTimeout(() => {
-            const displayTotal = window.BongI18n ? window.BongI18n.formatPrice(finalTotal) : `$${finalTotal.toFixed(2)}`;
-            alert(`🎉 Order Placed Successfully!\n\nOrder Total: ${displayTotal}\nEstimated Delivery: 2–3 Business Days\n\nThank you for choosing QKZ Store!`);
+            const displayTotal = window.BongI18n ? window.BongI18n.formatPrice(finalTotal, { showBoth: true }) : `$${finalTotal.toFixed(2)}`;
+            const orderNum = data.orderId || ('ORD-' + Date.now().toString(36).toUpperCase());
+            
+            // Format list of purchased items
+            const purchasedSummary = (data.purchasedItems || []).map(p => 
+                `• ${p.name} (Qty: ${p.deducted}) → Remaining Stock: ${p.stock}`
+            ).join('\n');
+
+            alert(`🎉 Order Placed Successfully!\n\nOrder #: ${orderNum}\nTotal Paid: ${displayTotal}\nEstimated Delivery: 2–3 Business Days\n\nStock Updated in Real-Time:\n${purchasedSummary || 'All items reserved'}\n\nThank you for choosing DyMaly Phone Store!`);
+
             cart = [];
             appliedPromo = '';
+            localStorage.removeItem('cart');
             localStorage.removeItem('cart_promo');
             saveCart();
             renderCart();
-        }, 600);
-    }, 1200);
+        }, 500);
+
+    } catch (err) {
+        console.error('Checkout network error:', err);
+        if (btn) {
+            btn.classList.remove('processing');
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+        }
+        showToast('Network error processing checkout. Please retry.');
+    }
 }
 
 // Initialize
@@ -536,8 +607,73 @@ async function loadStoreIdentity() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadStoreIdentity);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStoreIdentity();
+        connectCartRealtimeStream();
+    });
 } else {
     loadStoreIdentity();
+    connectCartRealtimeStream();
 }
+
+// ==================== REAL-TIME LIVE STREAM FOR CART ====================
+let cartSseSource = null;
+
+function connectCartRealtimeStream() {
+    if (window.EventSource) {
+        try {
+            if (cartSseSource) cartSseSource.close();
+            cartSseSource = new EventSource('/api/realtime/stream');
+            
+            cartSseSource.onmessage = function(event) {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'stock_updated' || msg.type === 'products_updated') {
+                        syncCartWithLiveStock();
+                    }
+                } catch (e) {}
+            };
+
+            cartSseSource.onerror = function() {
+                if (cartSseSource) cartSseSource.close();
+                setTimeout(connectCartRealtimeStream, 6000);
+            };
+        } catch (e) {}
+    }
+}
+
+async function syncCartWithLiveStock() {
+    if (cart.length === 0) return;
+    try {
+        const res = await fetch('/api/products?_t=' + Date.now());
+        if (!res.ok) return;
+        const freshProducts = await res.json();
+        let changed = false;
+
+        cart.forEach(item => {
+            const fresh = freshProducts.find(p => String(p.id) === String(item.id));
+            if (fresh) {
+                const freshStock = Number(fresh.stock);
+                if (item.maxStock !== freshStock) {
+                    item.maxStock = freshStock;
+                    changed = true;
+                }
+                if (freshStock <= 0 && item.quantity > 0) {
+                    showToast(`⚠️ "${item.name}" just went out of stock!`);
+                    changed = true;
+                } else if (item.quantity > freshStock) {
+                    item.quantity = Math.max(1, freshStock);
+                    changed = true;
+                    showToast(`⚠️ Stock updated: Only ${freshStock} left for ${item.name}`);
+                }
+            }
+        });
+
+        if (changed) {
+            saveCart();
+            renderCart();
+        }
+    } catch (e) {}
+}
+
 

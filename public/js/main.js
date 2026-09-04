@@ -197,13 +197,23 @@ function renderProducts() {
     container.innerHTML = filteredProducts.map(product => {
         const t = (k, def) => (window.BongI18n ? window.BongI18n.t(k) : def);
         const isSaved = savedItems.includes(product.id);
-        const soldOutBadge = product.stock === 0 ? `<span class="sold-out-badge">${t('sold_out', 'Sold out')}</span>` : '';
-        const sizeBadge = product.size ? `<span class="product-size-badge">${product.size}</span>` : '';
+        const stock = Number(product.stock) || 0;
         
+        let stockBadge = '';
+        if (stock === 0) {
+            stockBadge = `<span class="stock-pill stock-out">${t('sold_out', 'Sold out')}</span>`;
+        } else if (stock <= 5) {
+            stockBadge = `<span class="stock-pill stock-low">⚡ ${t('only', 'Only')} ${stock} ${t('left', 'left')}</span>`;
+        } else {
+            stockBadge = `<span class="stock-pill stock-high">✓ ${stock} ${t('in_stock', 'In Stock')}</span>`;
+        }
+
+        const sizeBadge = product.size ? `<span class="product-size-badge">${product.size}</span>` : '';
         const pid = product.id;
+        
         return `
-            <div class="product-card">
-                ${soldOutBadge}
+            <div class="product-card" data-stock="${stock}">
+                ${stockBadge}
                 <button class="fav-btn ${isSaved ? 'active' : ''}" 
                         onclick="toggleSaved(event, '${pid}')" 
                         title="${isSaved ? 'Remove from saved' : 'Save for later'}"
@@ -223,7 +233,9 @@ function renderProducts() {
                     <h3 onclick="viewProduct('${pid}')" style="cursor: pointer;">${product.name}</h3>
                     <div class="product-price-row">
                         <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
-                        ${product.stock > 0 ? `<button class="add-btn" onclick="addToCart(event, '${pid}')" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` : ''}
+                        ${stock > 0 
+                            ? `<button class="add-btn" onclick="addToCart(event, '${pid}')" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` 
+                            : `<button class="add-btn out" disabled title="${t('out_of_stock', 'Out of stock')}" aria-label="${t('out_of_stock', 'Out of stock')}">✕</button>`}
                     </div>
                 </div>
             </div>
@@ -343,7 +355,7 @@ function updateProductCount() {
     }
 }
 
-// Unified filter application (Brand + Search)
+// Unified filter application (Brand + Search + Stock Status)
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -352,16 +364,27 @@ function applyFilters() {
 
     // Filter by brand
     if (currentBrand) {
-        list = list.filter(p => p.brand.toLowerCase() === currentBrand.toLowerCase());
+        list = list.filter(p => (p.brand || '').toLowerCase() === currentBrand.toLowerCase());
     }
 
     // Filter by search term
     if (searchTerm) {
         list = list.filter(p => 
-            p.name.toLowerCase().includes(searchTerm) ||
-            p.brand.toLowerCase().includes(searchTerm) ||
+            (p.name && p.name.toLowerCase().includes(searchTerm)) ||
+            (p.brand && p.brand.toLowerCase().includes(searchTerm)) ||
             (p.description && p.description.toLowerCase().includes(searchTerm))
         );
+    }
+
+    // Filter by real-time stock status
+    const stockFilter = document.getElementById('stockStatusFilter');
+    const stockStatus = stockFilter ? stockFilter.value : 'all';
+    if (stockStatus === 'in-stock') {
+        list = list.filter(p => (Number(p.stock) || 0) > 0);
+    } else if (stockStatus === 'low-stock') {
+        list = list.filter(p => (Number(p.stock) || 0) > 0 && (Number(p.stock) || 0) <= 5);
+    } else if (stockStatus === 'out-stock') {
+        list = list.filter(p => (Number(p.stock) || 0) <= 0);
     }
 
     filteredProducts = list;
@@ -373,8 +396,11 @@ document.getElementById('brandFilter')?.addEventListener('change', (e) => {
     filterByBrand(e.target.value, false);
 });
 
-// Sort products
-document.getElementById('sortFilter').addEventListener('change', applySorting);
+// Listen to stock status filter dropdown
+document.getElementById('stockStatusFilter')?.addEventListener('change', applyFilters);
+
+// Sort products (Newest, Price Low/High, Stock Low/High)
+document.getElementById('sortFilter')?.addEventListener('change', applySorting);
 
 function applySorting() {
     const sortFilter = document.getElementById('sortFilter');
@@ -385,10 +411,16 @@ function applySorting() {
             filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             break;
         case 'price-low':
-            filteredProducts.sort((a, b) => a.price - b.price);
+            filteredProducts.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
             break;
         case 'price-high':
-            filteredProducts.sort((a, b) => b.price - a.price);
+            filteredProducts.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+            break;
+        case 'stock-low':
+            filteredProducts.sort((a, b) => (Number(a.stock) || 0) - (Number(b.stock) || 0));
+            break;
+        case 'stock-high':
+            filteredProducts.sort((a, b) => (Number(b.stock) || 0) - (Number(a.stock) || 0));
             break;
     }
     
@@ -396,13 +428,17 @@ function applySorting() {
     updateProductCount();
 }
 
+// Active modal product tracking
+let currentActiveModalProductId = null;
+
 // View product details
 function viewProduct(id) {
-    const product = allProducts.find(p => p.id === id);
+    const product = allProducts.find(p => String(p.id) === String(id));
     if (!product) return;
     
+    currentActiveModalProductId = product.id;
     const modal = document.getElementById('productModal');
-    const isSaved = savedItems.includes(product.id);
+    const isSaved = savedItems.some(savedId => String(savedId) === String(product.id));
     
     // Populate modal
     const modalImg = document.getElementById('modalImage');
@@ -422,54 +458,71 @@ function viewProduct(id) {
     }
     const modalPriceEl = document.getElementById('modalPrice');
     if (modalPriceEl) {
-        modalPriceEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(product.price, { showBoth: true }) : `$${product.price.toFixed(2)}`;
+        modalPriceEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(product.price, { showBoth: true }) : `$${Number(product.price).toFixed(2)}`;
     }
     document.getElementById('modalDescription').textContent = product.description || 'No description available.';
     
     // Get reviews for this product
     fetchProductReviews(product.id);
     
-    // Stock info
-    const stockInfo = document.getElementById('modalStockInfo');
-    if (product.stock === 0) {
-        stockInfo.textContent = 'Out of stock';
-        stockInfo.className = 'modal-stock-info out';
-    } else if (product.stock < 10) {
-        stockInfo.textContent = `Only ${product.stock} left!`;
-        stockInfo.className = 'modal-stock-info low';
-    } else {
-        stockInfo.textContent = 'In stock';
-        stockInfo.className = 'modal-stock-info';
-    }
-    
-    // Add to cart button
-    const addBtn = document.getElementById('modalAddBtn');
-    if (product.stock === 0) {
-        addBtn.disabled = true;
-        addBtn.innerHTML = '<span>🛍️</span> Out of stock';
-    } else {
-        addBtn.disabled = false;
-        addBtn.innerHTML = '<span>🛍️</span> Add to cart';
-        addBtn.onclick = () => {
-            addToCart(null, product.id);
-        };
-    }
+    // Real-time stock info & dynamic button state
+    updateModalStockDisplay(product);
     
     // Favorite button
     const favBtn = document.getElementById('modalFavBtn');
-    favBtn.textContent = isSaved ? '❤️' : '🤍';
-    favBtn.className = isSaved ? 'modal-fav-btn active' : 'modal-fav-btn';
-    favBtn.onclick = () => {
-        toggleSavedInModal(product.id);
-    };
+    if (favBtn) {
+        favBtn.textContent = isSaved ? '❤️' : '🤍';
+        favBtn.className = isSaved ? 'modal-fav-btn active' : 'modal-fav-btn';
+        favBtn.onclick = () => {
+            toggleSavedInModal(product.id);
+        };
+    }
     
     // Show modal
     modal.classList.add('show');
     document.body.classList.add('modal-open');
 }
 
+// Update modal stock display in real time
+function updateModalStockDisplay(product) {
+    if (!product) return;
+    const stockInfo = document.getElementById('modalStockInfo');
+    const addBtn = document.getElementById('modalAddBtn');
+    const t = (k, def) => (window.BongI18n ? window.BongI18n.t(k) : def);
+    const stock = Number(product.stock) || 0;
+
+    if (stockInfo) {
+        if (stock === 0) {
+            stockInfo.innerHTML = `<span class="stock-dot-indicator out"></span> <strong>${t('out_of_stock', 'Out of stock')}</strong>`;
+            stockInfo.className = 'modal-stock-info out';
+        } else if (stock <= 5) {
+            stockInfo.innerHTML = `<span class="stock-dot-indicator low"></span> <strong>⚡ ${t('low_stock', 'Low Stock')}: ${t('only', 'Only')} ${stock} ${t('left', 'left')}!</strong>`;
+            stockInfo.className = 'modal-stock-info low';
+        } else {
+            stockInfo.innerHTML = `<span class="stock-dot-indicator in"></span> <strong>✓ ${t('in_stock', 'In stock')} (${stock} available)</strong>`;
+            stockInfo.className = 'modal-stock-info in';
+        }
+    }
+
+    if (addBtn) {
+        if (stock === 0) {
+            addBtn.disabled = true;
+            addBtn.className = 'modal-add-btn disabled';
+            addBtn.innerHTML = `<span>🚫</span> <span>${t('sold_out', 'Sold out')}</span>`;
+        } else {
+            addBtn.disabled = false;
+            addBtn.className = 'modal-add-btn';
+            addBtn.innerHTML = `<span>🛍️</span> <span>${t('add_to_cart', 'Add to cart')}</span>`;
+            addBtn.onclick = (e) => {
+                addToCart(e, product.id);
+            };
+        }
+    }
+}
+
 // Close product modal
 function closeProductModal() {
+    currentActiveModalProductId = null;
     const modal = document.getElementById('productModal');
     modal.classList.remove('show');
     document.body.classList.remove('modal-open');
@@ -1475,9 +1528,23 @@ function connectRealtimeStream() {
                     } else if (msg.type === 'settings_updated') {
                         applyWebsiteData(msg.payload);
                         flashLiveSync('Website updated live');
-                    } else if (msg.type === 'products_updated') {
+                    } else if (msg.type === 'products_updated' || msg.type === 'stock_updated') {
                         if (typeof loadProducts === 'function') loadProducts();
-                        flashLiveSync('Products updated');
+                        const alertText = msg.type === 'stock_updated' ? 'Live stock updated' : 'Products updated';
+                        flashLiveSync(alertText);
+
+                        // If user is currently looking at product detail modal, refresh stock in real-time
+                        if (currentActiveModalProductId) {
+                            setTimeout(async () => {
+                                try {
+                                    const res = await fetch('/api/products/' + currentActiveModalProductId);
+                                    if (res.ok) {
+                                        const freshProd = await res.json();
+                                        updateModalStockDisplay(freshProd);
+                                    }
+                                } catch (_) {}
+                            }, 300);
+                        }
                     } else if (msg.type === 'brands_updated' || msg.type === 'categories_updated') {
                         if (typeof loadBrands === 'function') loadBrands();
                     }

@@ -192,11 +192,21 @@
                     <span class="product-count-tag" id="productCountTag">Loading...</span>
                 </div>
                 <div class="filter-actions">
+                    <div class="stock-select-wrapper">
+                        <select id="stockStatusFilter" aria-label="Filter by Stock">
+                            <option value="all" data-i18n="stock_filter_all">📦 All Stock</option>
+                            <option value="in-stock" data-i18n="stock_filter_instock">✓ In Stock</option>
+                            <option value="low-stock" data-i18n="stock_filter_low">⚡ Low Stock (≤ 5)</option>
+                            <option value="out-stock" data-i18n="stock_filter_out">🚫 Out of Stock</option>
+                        </select>
+                    </div>
                     <div class="sort-select-wrapper">
                         <select id="sortFilter" aria-label="Sort products">
-                            <option value="newest">🔥 Newest First</option>
-                            <option value="price-low">💰 Price: Low to High</option>
-                            <option value="price-high">💎 Price: High to Low</option>
+                            <option value="newest" data-i18n="sort_newest">🔥 Newest First</option>
+                            <option value="price-low" data-i18n="sort_price_low">💰 Price: Low to High</option>
+                            <option value="price-high" data-i18n="sort_price_high">💎 Price: High to Low</option>
+                            <option value="stock-high" data-i18n="sort_stock_high">📦 Stock: High to Low</option>
+                            <option value="stock-low" data-i18n="sort_stock_low">⚡ Stock: Low to High</option>
                         </select>
                     </div>
                 </div>
@@ -268,8 +278,8 @@
                 <div class="footer-col footer-brand-col">
                     <a href="index.html" class="footer-brand-header">
                         <div class="footer-brand-logo-frame" id="footerBrandLogoFrame">
-                            <span class="footer-brand-icon" id="footerBrandIcon">📱</span>
-                            <img id="footerBrandImg" src="" alt="Store Logo" class="footer-custom-logo-img" style="display: none;">
+                            <img id="footerBrandImg" src="/images/app-icon.png" alt="DyMaly Store Logo" class="footer-custom-logo-img" onerror="this.style.display='none'; document.getElementById('footerBrandIcon').style.display='inline-block';">
+                            <span class="footer-brand-icon" id="footerBrandIcon" style="display: none;">📱</span>
                         </div>
                         <div class="footer-brand-name-group">
                             <h3 id="footerStoreName">DyMaly</h3>

@@ -922,11 +922,19 @@ nav.top-nav .cart-link {
     border-radius: 12px;
 }
 
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.stock-select-wrapper select,
 .sort-select-wrapper select {
-    padding: 9px 16px;
+    padding: 8px 14px;
     border: 1.5px solid var(--cream-line);
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 12.5px;
     background: var(--white);
     font-weight: 600;
     color: var(--text);
@@ -937,6 +945,8 @@ nav.top-nav .cart-link {
     transition: border-color 0.2s;
 }
 
+.stock-select-wrapper select:hover,
+.stock-select-wrapper select:focus,
 .sort-select-wrapper select:hover,
 .sort-select-wrapper select:focus {
     border-color: var(--accent);
@@ -1091,20 +1101,66 @@ nav.top-nav .cart-link {
     background: #ffffff;
 }
 
-.sold-out-badge {
+.sold-out-badge,
+.stock-pill {
     position: absolute;
     top: 10px;
     left: 10px;
-    background: var(--danger);
-    color: var(--white);
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
-    letter-spacing: 0.3px;
-    text-transform: capitalize;
+    letter-spacing: 0.2px;
     z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
+
+.stock-pill.stock-out {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.stock-pill.stock-low {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    animation: stockPillPulse 2s infinite ease-in-out;
+}
+
+.stock-pill.stock-high {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+@keyframes stockPillPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}
+
+.add-btn.out {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    border-color: #e5e7eb !important;
+    opacity: 0.7;
+}
+
+.stock-dot-indicator {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.stock-dot-indicator.in { background: #22c55e; box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+.stock-dot-indicator.low { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+.stock-dot-indicator.out { background: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
 
 .product-info {
     background: #ffffff;
@@ -5508,21 +5564,80 @@ body.modal-open {
 
 @media (max-width: 600px) {
     .site-footer {
-        padding: 50px 0 110px;
+        padding: 45px 0 135px; /* Extra bottom padding so floating mobile bar never overlaps */
     }
     .footer-grid {
         grid-template-columns: 1fr;
-        gap: 28px;
+        gap: 32px;
+        text-align: center;
+    }
+    .footer-brand-header {
+        justify-content: center;
+    }
+    .footer-store-about {
+        margin: 0 auto 20px;
+    }
+    .footer-social-wrapper {
+        align-items: center;
+    }
+    .footer-social-links {
+        justify-content: center;
+    }
+    .footer-heading {
+        justify-content: center;
+    }
+    .footer-links-list {
+        align-items: center;
+    }
+    .footer-care-list li {
+        justify-content: center;
+        text-align: left;
+    }
+    .footer-contact-list li {
+        justify-content: center;
+        text-align: left;
+    }
+    .footer-newsletter-banner {
+        padding: 20px 18px;
+        text-align: center;
+    }
+    .newsletter-content {
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+    }
+    .newsletter-form {
+        flex-direction: column;
+        border-radius: 16px;
+        padding: 10px;
+        gap: 10px;
+    }
+    .newsletter-form input {
+        text-align: center;
+        padding: 8px;
+        width: 100%;
+    }
+    .newsletter-form button {
+        width: 100%;
+        padding: 12px;
     }
     .footer-payment-row {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+    }
+    .payment-badges {
+        justify-content: center;
     }
     .footer-bottom {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
         gap: 14px;
+    }
+    .footer-bottom-left {
+        justify-content: center;
     }
     .trust-grid {
         grid-template-columns: 1fr;
