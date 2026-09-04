@@ -109,10 +109,10 @@ async function seedMongoDB() {
       { key: 'store_badge', value: 'Official Store' },
       
       // Top Announcement Bar
-      { key: 'announcement_enabled', value: 'true' },
-      { key: 'announcement_text', value: '🎉 Grand Opening: Free express delivery on all phones + 1-Year Official Warranty 🚚' },
-      { key: 'announcement_link', value: '#productsSection' },
-      { key: 'announcement_badge', value: 'Special Offer' },
+      { key: 'announcement_enabled', value: 'false' },
+      { key: 'announcement_text', value: '' },
+      { key: 'announcement_link', value: '' },
+      { key: 'announcement_badge', value: '' },
       
       // Hero Promo Banner
       { key: 'hero_badge', value: '✨ Featured Flagship 2026' },
