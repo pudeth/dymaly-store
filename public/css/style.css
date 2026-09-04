@@ -56,12 +56,12 @@ body {
     background: var(--cream);
     color: var(--text);
     line-height: 1.55;
-    padding-bottom: 0; /* Connected down to the bottom with zero gap */
+    margin: 0;
+    padding: 0 !important;
+    padding-bottom: 0 !important; /* Connected down to the bottom with zero gap */
     -webkit-font-smoothing: antialiased;
-    /* Safe area insets for notched devices */
-    padding-top: env(safe-area-inset-top);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+    width: 100%;
+    overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6, p, span, a, button, input, label, select, textarea {
@@ -2026,7 +2026,21 @@ footer p { margin: 4px 0; font-size: 13px; opacity: 0.7; }
 
 /* ===================== Responsive ===================== */
 @media (max-width: 768px) {
-    body { padding-bottom: 100px; }
+    body {
+        padding: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    /* Clearance for floating mobile nav on pages without a footer */
+    body:not(:has(.site-footer)) {
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px)) !important;
+    }
+
+    .cart-page,
+    .saved-page,
+    .product-page {
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px));
+    }
 
     .product-detail-grid {
         grid-template-columns: 1fr;
@@ -5013,11 +5027,13 @@ body.modal-open {
     position: relative;
     background: radial-gradient(circle at 50% 0%, #1e1b18 0%, #110f0d 70%, #0c0a09 100%);
     color: #e2e8f0;
-    padding: 60px 0 35px;
+    padding: 55px 0 calc(35px + env(safe-area-inset-bottom, 0px));
     margin-top: auto; /* Pushes footer to the bottom with zero gap */
-    border-top: 1px solid rgba(255, 159, 67, 0.25);
+    margin-bottom: 0 !important;
+    border-top: 1px solid rgba(255, 159, 67, 0.28);
     font-size: 13.5px;
     width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -5043,6 +5059,13 @@ body.modal-open {
     pointer-events: none;
 }
 
+.site-footer .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
 .footer-brand-centered {
     display: flex;
     flex-direction: column;
@@ -5051,7 +5074,7 @@ body.modal-open {
     max-width: 680px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0;
 }
 
 .footer-brand-header {
@@ -5119,9 +5142,11 @@ body.modal-open {
 .footer-store-about {
     color: #9ca3af;
     line-height: 1.65;
-    margin: 0 auto 24px;
+    margin: 0 auto 22px;
     font-size: 13.5px;
     text-align: center;
+    max-width: 580px;
+    width: 100%;
 }
 
 .footer-social-wrapper {
@@ -5129,12 +5154,15 @@ body.modal-open {
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
 }
 
 .footer-social-label {
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     color: #9ca3af;
 }
@@ -5142,24 +5170,28 @@ body.modal-open {
 .footer-social-links {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .footer-social-btn {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    background: rgba(255, 255, 255, 0.06);
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.07);
     color: #f3f4f6;
-    padding: 8px 18px;
+    padding: 9px 18px;
     border-radius: 999px;
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .footer-social-btn:hover {
@@ -5170,26 +5202,60 @@ body.modal-open {
     box-shadow: 0 4px 14px rgba(255, 159, 67, 0.35);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .site-footer {
-        padding: 40px 0 125px; /* Clearance for floating mobile navigation */
+        padding-top: 42px;
+        /* Connect all the way down through mobile safe area, leaving no gap */
+        padding-bottom: calc(95px + env(safe-area-inset-bottom, 24px));
+        margin-bottom: 0 !important;
+    }
+
+    .site-footer .container {
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .footer-brand-centered {
-        padding: 0 15px;
+        max-width: 440px;
     }
 
     .footer-store-about {
         font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        padding: 0 4px;
+        color: #a3a3a3;
     }
 
+    .footer-social-wrapper {
+        width: 100%;
+        max-width: 380px;
+    }
+
+    /* Balanced 2-column grid on mobile for full left & right display */
     .footer-social-links {
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
     }
 
     .footer-social-btn {
-        padding: 7px 14px;
-        font-size: 12px;
+        width: 100%;
+        padding: 11px 12px;
+        font-size: 12.5px;
+    }
+}
+
+@media (max-width: 360px) {
+    .footer-social-links {
+        gap: 8px;
+    }
+    
+    .footer-social-btn {
+        padding: 9px 8px;
+        font-size: 11.5px;
+        gap: 5px;
     }
 }
 
