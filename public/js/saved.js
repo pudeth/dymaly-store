@@ -2,6 +2,14 @@
 let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+// Translation helper
+const t = (key, fallback = '') => {
+    if (window.BongI18n && typeof window.BongI18n.t === 'function') {
+        return window.BongI18n.t(key);
+    }
+    return fallback || key;
+};
+
 // Luxury phone placeholder illustration SVG
 function getPlaceholderImage(name = 'Phone', brand = '') {
     const cleanBrand = (brand || 'QKZ').toUpperCase();
@@ -61,7 +69,8 @@ function updateCartBadge() {
 
     const countPill = document.getElementById('savedCountPill');
     if (countPill) {
-        countPill.textContent = savedItems.length === 1 ? '1 item' : `${savedItems.length} items`;
+        const itemWord = savedItems.length === 1 ? t('item', 'item') : t('items', 'items');
+        countPill.textContent = `${savedItems.length} ${itemWord}`;
     }
 
     const actionsGroup = document.getElementById('savedActionsGroup');
@@ -99,10 +108,10 @@ async function renderSavedItems() {
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </div>
-                <h3>Your Wishlist is Empty</h3>
-                <p>Browse our catalog of premium smartphones and save your favorite devices to keep track of specs and prices.</p>
+                <h3>${t('empty_wishlist_title', 'Your Wishlist is Empty')}</h3>
+                <p>${t('empty_wishlist_desc', 'Browse our catalog of premium smartphones and save your favorite devices to keep track of specs and prices.')}</p>
                 <a href="index.html" class="btn-browse-products">
-                    <span>Explore Phones</span>
+                    <span>${t('explore_phones', 'Explore Phones')}</span>
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </a>
             </div>
@@ -123,9 +132,9 @@ async function renderSavedItems() {
                     <div class="empty-heart-wrap">
                         <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </div>
-                    <h3>No Saved Items Found</h3>
-                    <p>Some saved products may have been updated or removed.</p>
-                    <a href="index.html" class="btn-browse-products">Explore Phones</a>
+                    <h3>${t('no_saved_items_found', 'No Saved Items Found')}</h3>
+                    <p>${t('no_saved_items_desc', 'Some saved products may have been updated or removed.')}</p>
+                    <a href="index.html" class="btn-browse-products">${t('explore_phones', 'Explore Phones')}</a>
                 </div>
             `;
             updateCartBadge();
@@ -136,14 +145,14 @@ async function renderSavedItems() {
             <div class="saved-products-grid">
                 ${savedProducts.map(product => {
                     let stockClass = 'in-stock';
-                    let stockText = `✓ In Stock (${product.stock})`;
+                    let stockText = `✓ ${t('in_stock', 'In Stock')} (${product.stock})`;
                     
                     if (product.stock === 0) {
                         stockClass = 'out-of-stock';
-                        stockText = 'Out of Stock';
+                        stockText = t('out_of_stock', 'Out of Stock');
                     } else if (product.stock < 10) {
                         stockClass = 'low-stock';
-                        stockText = `Only ${product.stock} left!`;
+                        stockText = `${t('only', 'Only')} ${product.stock} ${t('left', 'left')}!`;
                     }
                     
                     const safeName = (product.name || '').replace(/'/g, "\\'");
@@ -152,7 +161,7 @@ async function renderSavedItems() {
                     
                     return `
                         <div class="saved-card" data-product-id="${product.id}">
-                            <button type="button" class="saved-remove-btn active" onclick="toggleSaved(event, '${product.id}')" title="Remove from wishlist" aria-label="Remove ${product.name}">
+                            <button type="button" class="saved-remove-btn active" onclick="toggleSaved(event, '${product.id}')" title="${t('remove_from_wishlist', 'Remove from wishlist')}" aria-label="${t('remove_from_wishlist', 'Remove from wishlist')}">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
@@ -176,16 +185,16 @@ async function renderSavedItems() {
                                     <span class="saved-card-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</span>
                                 </div>
                                 ${product.stock > 0 ? `
-                                <button type="button" class="saved-add-btn" onclick="addToCart(event, '${product.id}')" aria-label="Add ${product.name} to cart">
+                                <button type="button" class="saved-add-btn" onclick="addToCart(event, '${product.id}')" aria-label="${t('add_to_cart', 'Add to cart')}">
                                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
                                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                         <line x1="3" y1="6" x2="21" y2="6"></line>
                                         <path d="M16 10a4 4 0 0 1-8 0"></path>
                                     </svg>
-                                    <span>Add</span>
+                                    <span>${t('add_short', 'Add')}</span>
                                 </button>
                                 ` : `
-                                <span class="saved-out-notice">Unavailable</span>
+                                <span class="saved-out-notice">${t('unavailable', 'Unavailable')}</span>
                                 `}
                             </div>
                         </div>
@@ -213,10 +222,10 @@ function toggleSaved(event, productId) {
     const index = savedItems.indexOf(productId);
     if (index > -1) {
         savedItems.splice(index, 1);
-        showToast('Removed from wishlist');
+        showToast(t('removed_from_saved', 'Removed from saved'));
     } else {
         savedItems.push(productId);
-        showToast('Added to wishlist');
+        showToast(t('saved_for_later_toast', 'Saved for later'));
     }
     
     localStorage.setItem('savedItems', JSON.stringify(savedItems));
@@ -257,13 +266,13 @@ async function addToCart(event, productId) {
         
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartBadge();
-        showToast(`Added ${product.name} to bag`);
+        showToast(t('added_to_cart', 'Added to cart'));
         
         // Button visual feedback if clicked
         if (event && event.currentTarget) {
             const btn = event.currentTarget;
             const originalContent = btn.innerHTML;
-            btn.innerHTML = '<span>✓ Added</span>';
+            btn.innerHTML = `<span>✓ ${t('added_to_cart', 'Added')}</span>`;
             btn.style.background = '#10b981';
             btn.style.color = '#ffffff';
             setTimeout(() => {
@@ -287,7 +296,7 @@ async function moveAllToCart() {
         const savedProducts = allProducts.filter(p => savedItems.includes(p.id) && p.stock > 0);
         
         if (savedProducts.length === 0) {
-            showToast('Saved items are currently out of stock');
+            showToast(t('out_of_stock', 'Saved items are currently out of stock'));
             return;
         }
         
@@ -311,7 +320,7 @@ async function moveAllToCart() {
         
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartBadge();
-        showToast(`Added ${savedProducts.length} items to your bag!`);
+        showToast(t('all_added_to_cart', 'All saved items added to bag'));
     } catch (e) {
         console.error('Error moving all to cart:', e);
     }
@@ -450,6 +459,10 @@ if (document.readyState === 'loading') {
 
 // React to AI Translate and Currency changes
 window.addEventListener('languageChanged', () => {
+    if (window.BongI18n && typeof window.BongI18n.translatePage === 'function') {
+        window.BongI18n.translatePage();
+    }
+    updateCartBadge();
     if (typeof renderSavedItems === 'function') renderSavedItems();
 });
 window.addEventListener('currencyChanged', () => {
