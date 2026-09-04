@@ -372,10 +372,13 @@ app.put('/api/settings', requireAdmin, async (req, res) => {
 // Get admin profile (Admin only)
 app.get('/api/admin/profile', requireAdmin, async (req, res) => {
   try {
-    const userId = req.session.user.id;
+    const userId = req.session.user ? req.session.user.id : null;
 
     if (isMongoConnected()) {
-      const user = await findByIdOrLegacy(User, userId);
+      let user = await findByIdOrLegacy(User, userId);
+      if (!user && req.session.user && req.session.user.username) {
+        user = await User.findOne({ username: req.session.user.username });
+      }
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -391,7 +394,10 @@ app.get('/api/admin/profile', requireAdmin, async (req, res) => {
     }
 
     const db = getDatabase();
-    const result = db.exec("SELECT id, username, role, display_name, email, phone, avatar_url FROM users WHERE id = ?", [userId]);
+    let result = db.exec("SELECT id, username, role, display_name, email, phone, avatar_url FROM users WHERE id = ?", [userId]);
+    if ((result.length === 0 || result[0].values.length === 0) && req.session.user && req.session.user.username) {
+      result = db.exec("SELECT id, username, role, display_name, email, phone, avatar_url FROM users WHERE username = ?", [req.session.user.username]);
+    }
     if (result.length === 0 || result[0].values.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -406,18 +412,21 @@ app.get('/api/admin/profile', requireAdmin, async (req, res) => {
       avatar_url: avatar_url || ''
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    res.status(500).json({ error: 'Failed to fetch profile: ' + error.message });
   }
 });
 
 // Update admin profile & password (Admin only)
 app.put('/api/admin/profile', requireAdmin, async (req, res) => {
   const { username, display_name, email, phone, avatar_url, current_password, new_password } = req.body;
-  const userId = req.session.user.id;
+  const userId = req.session.user ? req.session.user.id : null;
 
   try {
     if (isMongoConnected()) {
-      const user = await findByIdOrLegacy(User, userId);
+      let user = await findByIdOrLegacy(User, userId);
+      if (!user && req.session.user && req.session.user.username) {
+        user = await User.findOne({ username: req.session.user.username });
+      }
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -433,21 +442,22 @@ app.put('/api/admin/profile', requireAdmin, async (req, res) => {
         user.password = await bcrypt.hash(new_password, 10);
       }
 
-      if (username && username !== user.username) {
-        const conflict = await User.findOne({ username, _id: { $ne: user._id } });
+      if (username && String(username).trim() && String(username).trim() !== user.username) {
+        const conflict = await User.findOne({ username: String(username).trim(), _id: { $ne: user._id } });
         if (conflict) {
           return res.status(400).json({ error: 'Username already taken' });
         }
-        user.username = username.trim();
+        user.username = String(username).trim();
       }
 
-      if (display_name !== undefined) user.display_name = display_name.trim();
-      if (email !== undefined) user.email = email.trim();
-      if (phone !== undefined) user.phone = phone.trim();
-      if (avatar_url !== undefined) user.avatar_url = avatar_url.trim();
+      if (display_name !== undefined && display_name !== null) user.display_name = String(display_name).trim();
+      if (email !== undefined && email !== null) user.email = String(email).trim();
+      if (phone !== undefined && phone !== null) user.phone = String(phone).trim();
+      if (avatar_url !== undefined && avatar_url !== null) user.avatar_url = String(avatar_url).trim();
 
       await user.save();
 
+      req.session.user.id = user.id;
       req.session.user.username = user.username;
       req.session.user.display_name = user.display_name;
       req.session.user.avatar_url = user.avatar_url;
@@ -468,11 +478,15 @@ app.put('/api/admin/profile', requireAdmin, async (req, res) => {
 
     // SQLite fallback
     const db = getDatabase();
-    const result = db.exec("SELECT * FROM users WHERE id = ?", [userId]);
+    let result = db.exec("SELECT * FROM users WHERE id = ?", [userId]);
+    if ((result.length === 0 || result[0].values.length === 0) && req.session.user && req.session.user.username) {
+      result = db.exec("SELECT * FROM users WHERE username = ?", [req.session.user.username]);
+    }
     if (result.length === 0 || result[0].values.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
     const userRow = result[0].values[0];
+    const currentUserId = userRow[0];
     const currentHashed = userRow[2];
 
     // If new password requested, verify current password
@@ -485,32 +499,33 @@ app.put('/api/admin/profile', requireAdmin, async (req, res) => {
         return res.status(400).json({ error: 'Incorrect current password' });
       }
       const hashedNew = await bcrypt.hash(new_password, 10);
-      db.run("UPDATE users SET password = ? WHERE id = ?", [hashedNew, userId]);
+      db.run("UPDATE users SET password = ? WHERE id = ?", [hashedNew, currentUserId]);
     }
 
     // Check if new username conflicts with another user
-    if (username && username !== userRow[1]) {
-      const conflict = db.exec("SELECT id FROM users WHERE username = ? AND id != ?", [username, userId]);
+    if (username && String(username).trim() && String(username).trim() !== userRow[1]) {
+      const conflict = db.exec("SELECT id FROM users WHERE username = ? AND id != ?", [String(username).trim(), currentUserId]);
       if (conflict.length > 0 && conflict[0].values.length > 0) {
         return res.status(400).json({ error: 'Username already taken' });
       }
     }
 
-    const updatedUsername = username ? username.trim() : userRow[1];
-    const updatedDisplayName = display_name ? display_name.trim() : (userRow[4] || 'Store Administrator');
-    const updatedEmail = email ? email.trim() : (userRow[5] || 'admin@bongstore.com');
-    const updatedPhone = phone ? phone.trim() : (userRow[6] || '+855 12 345 678');
-    const updatedAvatar = avatar_url !== undefined ? avatar_url.trim() : (userRow[7] || '');
+    const updatedUsername = (username && typeof username === 'string' && username.trim()) ? username.trim() : userRow[1];
+    const updatedDisplayName = (display_name !== undefined && display_name !== null) ? String(display_name).trim() : (userRow[4] || 'Store Administrator');
+    const updatedEmail = (email !== undefined && email !== null) ? String(email).trim() : (userRow[5] || 'admin@bongstore.com');
+    const updatedPhone = (phone !== undefined && phone !== null) ? String(phone).trim() : (userRow[6] || '+855 12 345 678');
+    const updatedAvatar = (avatar_url !== undefined && avatar_url !== null) ? String(avatar_url).trim() : (userRow[7] || '');
 
     db.run(`
       UPDATE users 
       SET username = ?, display_name = ?, email = ?, phone = ?, avatar_url = ? 
       WHERE id = ?
-    `, [updatedUsername, updatedDisplayName, updatedEmail, updatedPhone, updatedAvatar, userId]);
+    `, [updatedUsername, updatedDisplayName, updatedEmail, updatedPhone, updatedAvatar, currentUserId]);
 
     saveDatabase();
 
     // Update session
+    req.session.user.id = currentUserId;
     req.session.user.username = updatedUsername;
     req.session.user.display_name = updatedDisplayName;
     req.session.user.avatar_url = updatedAvatar;
@@ -519,7 +534,7 @@ app.put('/api/admin/profile', requireAdmin, async (req, res) => {
       success: true,
       message: 'Profile updated successfully',
       user: {
-        id: userId,
+        id: currentUserId,
         username: updatedUsername,
         display_name: updatedDisplayName,
         email: updatedEmail,
@@ -528,8 +543,8 @@ app.put('/api/admin/profile', requireAdmin, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Profile update error:', error);
-    res.status(500).json({ error: 'Failed to update profile' });
+    console.error('Error updating admin profile:', error);
+    res.status(500).json({ error: 'Failed to update profile: ' + error.message });
   }
 });
 
@@ -932,55 +947,62 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 // ==================== BRAND ROUTES ====================
 
 // Upload image endpoint
-app.post('/api/upload-image', requireAdmin, upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+app.post('/api/upload-image', requireAdmin, (req, res) => {
+  upload.single('image')(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message || 'File upload failed' });
     }
 
-    // 1. Free ImgBB cloud storage
-    const imgbbKey = process.env.IMGBB_API_KEY || 'c16540642d8c8a419f34a1323eeb6038';
-    if (imgbbKey) {
-      try {
-        const fileBuffer = fs.readFileSync(req.file.path);
-        const fileBlob = new Blob([fileBuffer], { type: req.file.mimetype || 'image/jpeg' });
-        const formBody = new FormData();
-        formBody.append('image', fileBlob, req.file.originalname || req.file.filename);
-        formBody.append('name', path.parse(req.file.originalname || req.file.filename).name);
-
-        const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
-          method: 'POST',
-          body: formBody,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-          }
-        });
-        const imgbbData = await imgbbRes.json();
-        if (imgbbData && imgbbData.success && imgbbData.data && imgbbData.data.url) {
-          console.log('✓ Uploaded image to ImgBB cloud:', imgbbData.data.url);
-          return res.json({
-            success: true,
-            imageUrl: imgbbData.data.url,
-            filename: req.file.filename
-          });
-        } else {
-          console.warn('ImgBB API response warning:', imgbbData);
-        }
-      } catch (cloudErr) {
-        console.warn('ImgBB upload fallback to local storage:', cloudErr.message);
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
       }
+
+      // 1. Free ImgBB cloud storage
+      const imgbbKey = process.env.IMGBB_API_KEY || 'c16540642d8c8a419f34a1323eeb6038';
+      if (imgbbKey) {
+        try {
+          const fileBuffer = fs.readFileSync(req.file.path);
+          const fileBlob = new Blob([fileBuffer], { type: req.file.mimetype || 'image/jpeg' });
+          const formBody = new FormData();
+          formBody.append('image', fileBlob, req.file.originalname || req.file.filename);
+          formBody.append('name', path.parse(req.file.originalname || req.file.filename).name);
+
+          const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+            method: 'POST',
+            body: formBody,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }
+          });
+          const imgbbData = await imgbbRes.json();
+          if (imgbbData && imgbbData.success && imgbbData.data && imgbbData.data.url) {
+            console.log('✓ Uploaded image to ImgBB cloud:', imgbbData.data.url);
+            return res.json({
+              success: true,
+              imageUrl: imgbbData.data.url,
+              filename: req.file.filename
+            });
+          } else {
+            console.warn('ImgBB API response warning:', imgbbData);
+          }
+        } catch (cloudErr) {
+          console.warn('ImgBB upload fallback to local storage:', cloudErr.message);
+        }
+      }
+      
+      // 2. Default: Saved to uploadsDir (persistent disk /data/uploads or public/uploads)
+      const imageUrl = '/uploads/' + req.file.filename;
+      res.json({ 
+        success: true, 
+        imageUrl: imageUrl,
+        filename: req.file.filename 
+      });
+    } catch (error) {
+      console.error('Upload handler error:', error);
+      res.status(500).json({ error: 'Failed to process uploaded image' });
     }
-    
-    // 2. Default: Saved to uploadsDir (persistent disk /data/uploads or public/uploads)
-    const imageUrl = '/uploads/' + req.file.filename;
-    res.json({ 
-      success: true, 
-      imageUrl: imageUrl,
-      filename: req.file.filename 
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to upload image' });
-  }
+  });
 });
 
 // Delete image endpoint

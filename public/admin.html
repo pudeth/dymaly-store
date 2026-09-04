@@ -496,16 +496,15 @@
                                         </div>
                                         <div class="store-logo-upload-info">
                                             <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
-                                            <input type="hidden" id="settingStoreLogo" value="">
                                             <div class="upload-btn-row">
-                                                <button type="button" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn">
+                                                <label for="storeLogoFileInput" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                                         <polyline points="17 8 12 3 7 8"></polyline>
                                                         <line x1="12" y1="3" x2="12" y2="15"></line>
                                                     </svg>
                                                     <span id="chooseStoreLogoBtnText">Upload Store Logo</span>
-                                                </button>
+                                                </label>
                                                 <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -514,7 +513,11 @@
                                                     <span>Remove</span>
                                                 </button>
                                             </div>
-                                            <p class="upload-help-text">Tap to browse or upload. Displayed in customer & admin headers.</p>
+                                            <div class="store-logo-url-row" style="margin-top: 8px; display: flex; gap: 8px; width: 100%;">
+                                                <input type="text" id="settingStoreLogo" placeholder="Or paste Logo Image URL (https://...)" style="flex: 1; font-size: 12px; padding: 7px 11px; border: 1px solid #d5c8b8; border-radius: 8px;">
+                                                <button type="button" class="btn-secondary" id="btnPreviewStoreLogoUrl" style="padding: 7px 12px; font-size: 12px; font-weight: 600; white-space: nowrap;">Apply URL</button>
+                                            </div>
+                                            <p class="upload-help-text" style="margin-top: 6px;">Upload PNG/JPG/SVG/WEBP or paste direct image link. Synced live across store.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -719,34 +722,42 @@
                             <div class="admin-avatar-wrapper">
                                 <div class="admin-avatar-large" id="profileAvatarLarge">A</div>
                                 <img id="profileAvatarImg" src="" alt="Admin Profile Photo" class="admin-avatar-large-img" style="display: none;">
-                                <button type="button" class="btn-avatar-camera" id="btnUploadAdminAvatar" title="Change profile photo" aria-label="Change profile photo">
+                                <label for="adminAvatarFileInput" class="btn-avatar-camera" id="btnUploadAdminAvatar" title="Change profile photo" aria-label="Change profile photo" style="cursor: pointer;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                                         <circle cx="12" cy="13" r="4"></circle>
                                     </svg>
-                                </button>
+                                </label>
                                 <input type="file" id="adminAvatarFileInput" accept="image/*" style="display: none;">
-                                <input type="hidden" id="profileAvatarUrl" value="">
                             </div>
                             <div class="admin-profile-meta">
                                 <h4 id="profileCardDisplayName">Store Administrator</h4>
                                 <span class="role-pill">Verified Administrator</span>
                                 <span class="admin-meta-sub" id="profileCardUsername">@admin</span>
                                 <div class="avatar-quick-actions">
-                                    <button type="button" class="btn-avatar-pill-upload" id="chooseAdminAvatarBtn">
+                                    <label for="adminAvatarFileInput" class="btn-avatar-pill-upload" id="chooseAdminAvatarBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                             <polyline points="17 8 12 3 7 8"></polyline>
                                             <line x1="12" y1="3" x2="12" y2="15"></line>
                                         </svg>
                                         <span id="chooseAvatarBtnText">Upload Photo</span>
-                                    </button>
+                                    </label>
                                     <button type="button" class="btn-avatar-pill-remove" id="removeAdminAvatarBtn" style="display: none;">Remove</button>
                                 </div>
                             </div>
                         </div>
 
                         <form id="adminProfileForm" onsubmit="handleSaveAdminProfile(event)">
+                            <div class="form-group" style="margin-top: 14px; margin-bottom: 14px;">
+                                <label for="profileAvatarUrl">Profile Photo / Logo URL</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="profileAvatarUrl" placeholder="https://... or upload photo above" style="flex: 1;">
+                                    <button type="button" class="btn-secondary" id="btnPreviewAvatarUrl" style="padding: 8px 14px; font-size: 13px; font-weight: 600; white-space: nowrap;">Preview</button>
+                                </div>
+                                <small style="color: #78716c; font-size: 12px; margin-top: 4px; display: block;">Upload an image from your device above, or paste an image URL here.</small>
+                            </div>
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="profileDisplayName">Display Name *</label>
