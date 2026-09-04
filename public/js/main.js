@@ -242,7 +242,7 @@ function renderProducts() {
                     </div>
                     <h3 onclick="viewProduct('${pid}')" title="${product.name}">${product.name}</h3>
                     <div class="product-price-row">
-                        <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
+                        <span class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</span>
                         ${addBtn}
                     </div>
                 </div>
