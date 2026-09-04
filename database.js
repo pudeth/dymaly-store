@@ -150,11 +150,43 @@ function migrateDatabase() {
 
       // Seed default settings if not exists
       const defaultSettings = [
-        ['store_name', 'Bong Store'],
-        ['store_tagline', 'Premium Smartphones & Tech Store'],
+        ['store_name', 'DyMaly'],
+        ['store_tagline', 'Phones & audio, delivered fast'],
         ['store_phone', '+855 12 345 678'],
-        ['store_email', 'contact@bongstore.com'],
-        ['store_logo', '']
+        ['store_email', 'contact@dymaly.com'],
+        ['store_logo', ''],
+        ['store_badge', 'Official Store'],
+        ['announcement_enabled', 'true'],
+        ['announcement_text', '🎉 Grand Opening: Free express delivery on all phones + 1-Year Official Warranty 🚚'],
+        ['announcement_link', '#productsSection'],
+        ['announcement_badge', 'Special Offer'],
+        ['hero_badge', '✨ Featured Flagship 2026'],
+        ['hero_title', 'Next-Gen Smartphones'],
+        ['hero_subtitle', 'Titanium design, powerful mobile AI chips & pro-grade triple camera systems.'],
+        ['hero_btn_text', 'Explore Phones →'],
+        ['hero_btn_link', '#productsSection'],
+        ['store_address', 'Preah Monivong Blvd, Phnom Penh, Cambodia'],
+        ['store_hours', 'Mon - Sun: 8:00 AM - 9:00 PM'],
+        ['store_telegram', '@dymaly_store'],
+        ['social_telegram', 'https://t.me/dymaly_store'],
+        ['social_facebook', 'https://facebook.com'],
+        ['social_tiktok', 'https://tiktok.com'],
+        ['social_instagram', 'https://instagram.com'],
+        ['badge_1_icon', '🚀'],
+        ['badge_1_title', 'Express Delivery'],
+        ['badge_1_desc', 'Fast shipping nationwide'],
+        ['badge_2_icon', '🛡️'],
+        ['badge_2_title', 'Official Warranty'],
+        ['badge_2_desc', '1-Year genuine warranty'],
+        ['badge_3_icon', '💬'],
+        ['badge_3_title', '24/7 Support'],
+        ['badge_3_desc', 'Instant help via Telegram'],
+        ['badge_4_icon', '🔄'],
+        ['badge_4_title', '7-Day Return'],
+        ['badge_4_desc', 'Hassle-free exchange'],
+        ['footer_about', 'DyMaly is your trusted premier destination for authentic smartphones, high-end audio, and cutting-edge tech accessories in Cambodia.'],
+        ['footer_copyright', '© 2026 DyMaly Phone Store. All rights reserved.'],
+        ['site_version', String(Date.now())]
       ];
 
       for (const [key, value] of defaultSettings) {

@@ -450,6 +450,15 @@
                             </div>
                         </div>
 
+                        <!-- Real-time live sync status banner -->
+                        <div class="realtime-status-alert">
+                            <div class="realtime-status-dot"></div>
+                            <div>
+                                <strong>Real-Time Live Database Active</strong>
+                                <p>Any updates saved below are stored in MongoDB Atlas and immediately sync live to all visitor screens without refreshing.</p>
+                            </div>
+                        </div>
+
                         <!-- Live Brand Preview Box -->
                         <div class="store-preview-banner">
                             <div class="preview-banner-icon" id="previewBannerIcon">
@@ -467,71 +476,224 @@
                         </div>
 
                         <form id="storeSettingsForm" onsubmit="handleSaveStoreSettings(event)">
-                            <!-- Store Logo Upload Field -->
-                            <div class="form-group store-logo-field">
-                                <label class="label-with-badge">
-                                    <span>Store Logo / Brand Icon</span>
-                                    <span class="field-hint">PNG, JPG, SVG, WEBP (Max 5MB)</span>
-                                </label>
-                                <div class="store-logo-uploader" id="storeLogoUploader">
-                                    <div class="store-logo-preview-box" id="storeLogoPreviewBox">
-                                        <div class="store-logo-default-icon" id="storeLogoDefaultIcon">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
-                                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                                            </svg>
+                            <!-- Section A: Store Identity -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">🏪 1. Store Identity & Branding</h4>
+                                <div class="form-group store-logo-field">
+                                    <label class="label-with-badge">
+                                        <span>Store Logo / Brand Icon</span>
+                                        <span class="field-hint">PNG, JPG, SVG, WEBP (Cloud Stored)</span>
+                                    </label>
+                                    <div class="store-logo-uploader" id="storeLogoUploader">
+                                        <div class="store-logo-preview-box" id="storeLogoPreviewBox">
+                                            <div class="store-logo-default-icon" id="storeLogoDefaultIcon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                                </svg>
+                                            </div>
+                                            <img id="storeLogoPreviewImg" src="" alt="Store Logo Preview" class="store-logo-preview-image" style="display: none;">
                                         </div>
-                                        <img id="storeLogoPreviewImg" src="" alt="Store Logo Preview" class="store-logo-preview-image" style="display: none;">
+                                        <div class="store-logo-upload-info">
+                                            <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
+                                            <input type="hidden" id="settingStoreLogo" value="">
+                                            <div class="upload-btn-row">
+                                                <button type="button" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                    </svg>
+                                                    <span id="chooseStoreLogoBtnText">Upload Store Logo</span>
+                                                </button>
+                                                <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    </svg>
+                                                    <span>Remove</span>
+                                                </button>
+                                            </div>
+                                            <p class="upload-help-text">Tap to browse or upload. Displayed in customer & admin headers.</p>
+                                        </div>
                                     </div>
-                                    <div class="store-logo-upload-info">
-                                        <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
-                                        <input type="hidden" id="settingStoreLogo" value="">
-                                        <div class="upload-btn-row">
-                                            <button type="button" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                                </svg>
-                                                <span id="chooseStoreLogoBtnText">Upload Store Logo</span>
-                                            </button>
-                                            <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                </svg>
-                                                <span>Remove</span>
-                                            </button>
-                                        </div>
-                                        <p class="upload-help-text">Tap to browse or drag & drop. Displayed in customer & admin headers.</p>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingStoreName">Store Name *</label>
+                                        <input type="text" id="settingStoreName" placeholder="e.g. DyMaly" required oninput="updateStorePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingStoreBadge">Header Badge</label>
+                                        <input type="text" id="settingStoreBadge" placeholder="e.g. Official Store">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingStoreTagline">Store Tagline / Slogan</label>
+                                    <input type="text" id="settingStoreTagline" placeholder="e.g. Phones & audio, delivered fast" oninput="updateStorePreview()">
+                                </div>
+                            </div>
+
+                            <!-- Section B: Announcement Bar -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">📢 2. Top Announcement Bar</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingAnnouncementEnabled">Display Announcement Bar?</label>
+                                        <select id="settingAnnouncementEnabled">
+                                            <option value="true">✅ Enabled (Visible at top of website)</option>
+                                            <option value="false">❌ Disabled (Hidden)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingAnnouncementBadge">Announcement Badge Text</label>
+                                        <input type="text" id="settingAnnouncementBadge" placeholder="e.g. Special Offer">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingAnnouncementText">Announcement Message *</label>
+                                    <input type="text" id="settingAnnouncementText" placeholder="e.g. Free delivery on all phone orders over $100!">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingAnnouncementLink">Announcement Link (Optional)</label>
+                                    <input type="text" id="settingAnnouncementLink" placeholder="e.g. #productsSection or https://t.me/...">
+                                </div>
+                            </div>
+
+                            <!-- Section C: Hero Banner Content -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">✨ 3. Hero Promo Banner (Homepage)</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingHeroBadge">Promo Badge</label>
+                                        <input type="text" id="settingHeroBadge" placeholder="e.g. ✨ Featured Flagship 2026">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingHeroBtnText">CTA Button Text</label>
+                                        <input type="text" id="settingHeroBtnText" placeholder="e.g. Explore Phones →">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingHeroTitle">Main Headline</label>
+                                    <input type="text" id="settingHeroTitle" placeholder="e.g. Next-Gen Smartphones">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settingHeroSubtitle">Subheadline / Description</label>
+                                    <textarea id="settingHeroSubtitle" rows="2" placeholder="e.g. Titanium design, powerful mobile AI chips & pro-grade triple camera systems."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Section D: Contact & Location Details -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">📞 4. Customer Support & Store Location</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingStorePhone">Contact Phone</label>
+                                        <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingStoreEmail">Contact Email</label>
+                                        <input type="email" id="settingStoreEmail" placeholder="e.g. contact@dymaly.com">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingStoreAddress">Physical Address / City</label>
+                                        <input type="text" id="settingStoreAddress" placeholder="e.g. Preah Monivong Blvd, Phnom Penh, Cambodia">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingStoreHours">Operating Hours</label>
+                                        <input type="text" id="settingStoreHours" placeholder="e.g. Mon - Sun: 8:00 AM - 9:00 PM">
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="settingStoreName">Store Name *</label>
-                                <input type="text" id="settingStoreName" placeholder="e.g. Bong Store" required oninput="updateStorePreview()">
+                            <!-- Section E: Social Media Links -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">🌐 5. Social Media Channels</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingSocialTelegram">Telegram Link / Username</label>
+                                        <input type="text" id="settingSocialTelegram" placeholder="e.g. https://t.me/dymaly_store">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingSocialFacebook">Facebook Page URL</label>
+                                        <input type="text" id="settingSocialFacebook" placeholder="e.g. https://facebook.com/dymaly">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="settingSocialTiktok">TikTok Profile URL</label>
+                                        <input type="text" id="settingSocialTiktok" placeholder="e.g. https://tiktok.com/@dymaly">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingSocialInstagram">Instagram Profile URL</label>
+                                        <input type="text" id="settingSocialInstagram" placeholder="e.g. https://instagram.com/dymaly">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="settingStoreTagline">Store Tagline / Slogan</label>
-                                <input type="text" id="settingStoreTagline" placeholder="e.g. Premium Smartphones & Tech Store" oninput="updateStorePreview()">
+
+                            <!-- Section F: Guarantees & Trust Badges -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">🛡️ 6. Trust Badges & Guarantees (4 Highlights)</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Badge 1: Title & Icon</label>
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="text" id="settingBadge1Icon" style="max-width: 60px; text-align: center;" placeholder="🚀">
+                                            <input type="text" id="settingBadge1Title" placeholder="Express Delivery">
+                                        </div>
+                                        <input type="text" id="settingBadge1Desc" style="margin-top: 6px;" placeholder="Fast shipping nationwide">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Badge 2: Title & Icon</label>
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="text" id="settingBadge2Icon" style="max-width: 60px; text-align: center;" placeholder="🛡️">
+                                            <input type="text" id="settingBadge2Title" placeholder="Official Warranty">
+                                        </div>
+                                        <input type="text" id="settingBadge2Desc" style="margin-top: 6px;" placeholder="1-Year genuine warranty">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Badge 3: Title & Icon</label>
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="text" id="settingBadge3Icon" style="max-width: 60px; text-align: center;" placeholder="💬">
+                                            <input type="text" id="settingBadge3Title" placeholder="24/7 Support">
+                                        </div>
+                                        <input type="text" id="settingBadge3Desc" style="margin-top: 6px;" placeholder="Instant help via Telegram">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Badge 4: Title & Icon</label>
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="text" id="settingBadge4Icon" style="max-width: 60px; text-align: center;" placeholder="🔄">
+                                            <input type="text" id="settingBadge4Title" placeholder="7-Day Return">
+                                        </div>
+                                        <input type="text" id="settingBadge4Desc" style="margin-top: 6px;" placeholder="Hassle-free exchange">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-row">
+
+                            <!-- Section G: Footer Content & Legal -->
+                            <div class="settings-sub-section">
+                                <h4 class="sub-section-title">📜 7. Footer Content & Copyright</h4>
                                 <div class="form-group">
-                                    <label for="settingStorePhone">Contact Phone</label>
-                                    <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
+                                    <label for="settingFooterAbout">About Store Description</label>
+                                    <textarea id="settingFooterAbout" rows="2" placeholder="About your store..."></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="settingStoreEmail">Contact Email</label>
-                                    <input type="email" id="settingStoreEmail" placeholder="e.g. contact@bongstore.com">
+                                    <label for="settingFooterCopyright">Copyright Text</label>
+                                    <input type="text" id="settingFooterCopyright" placeholder="© 2026 DyMaly Phone Store. All rights reserved.">
                                 </div>
                             </div>
+
                             <div class="settings-form-actions">
                                 <button type="submit" class="btn-save-settings" id="saveStoreSettingsBtn">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span>Save Store Settings</span>
+                                    <span>Save & Sync All Website Information Live</span>
                                 </button>
                             </div>
                         </form>

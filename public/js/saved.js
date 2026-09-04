@@ -173,7 +173,7 @@ async function renderSavedItems() {
 
                             <div class="saved-card-footer">
                                 <div class="saved-price-wrap">
-                                    <span class="saved-card-price">$${product.price.toFixed(2)}</span>
+                                    <span class="saved-card-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</span>
                                 </div>
                                 ${product.stock > 0 ? `
                                 <button type="button" class="saved-add-btn" onclick="addToCart(event, ${product.id})" aria-label="Add ${product.name} to cart">
@@ -447,3 +447,11 @@ if (document.readyState === 'loading') {
 } else {
     loadStoreIdentity();
 }
+
+// React to AI Translate and Currency changes
+window.addEventListener('languageChanged', () => {
+    if (typeof renderSavedItems === 'function') renderSavedItems();
+});
+window.addEventListener('currencyChanged', () => {
+    if (typeof renderSavedItems === 'function') renderSavedItems();
+});

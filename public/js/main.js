@@ -221,7 +221,7 @@ function renderProducts() {
                     </div>
                     <h3 onclick="viewProduct(${product.id})" style="cursor: pointer;">${product.name}</h3>
                     <div class="product-price-row">
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
                         ${product.stock > 0 ? `<button class="add-btn" onclick="addToCart(event, ${product.id})" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` : ''}
                     </div>
                 </div>
@@ -419,7 +419,10 @@ function viewProduct(id) {
         const sizeBadge = product.size ? ` <span class="product-size-badge">${product.size}</span>` : '';
         modalBrand.innerHTML = `<span>${product.brand}</span>${sizeBadge}`;
     }
-    document.getElementById('modalPrice').textContent = `$${product.price.toFixed(2)}`;
+    const modalPriceEl = document.getElementById('modalPrice');
+    if (modalPriceEl) {
+        modalPriceEl.innerHTML = window.BongI18n ? window.BongI18n.formatPrice(product.price, { showBoth: true }) : `$${product.price.toFixed(2)}`;
+    }
     document.getElementById('modalDescription').textContent = product.description || 'No description available.';
     
     // Get reviews for this product
@@ -1225,94 +1228,272 @@ if (scrollToTopBtn) {
     });
 }
 
+// Apply all website settings dynamically across customer store
+function applyWebsiteData(settings) {
+    if (!settings) return;
+
+    // 1. Store Title & Headings
+    if (settings.store_name) {
+        document.querySelectorAll('.brand-text h1, .brand h1, .footer-brand h2, #storeBrandTitle, #footerStoreName').forEach(el => {
+            el.textContent = settings.store_name;
+        });
+        if (document.title.includes('QKZ Store') || document.title.includes('Bong Store') || document.title.includes('DyMaly')) {
+            document.title = `${settings.store_name} - Premium Smartphones`;
+        }
+    }
+    
+    // 2. Store Tagline
+    if (settings.store_tagline) {
+        document.querySelectorAll('.brand-text p, .brand p, #storeBrandTagline').forEach(el => {
+            el.textContent = settings.store_tagline;
+        });
+    }
+    
+    // 3. Custom Store Logo
+    const logoUrl = (settings.store_logo || '').trim();
+    const brandIcons = document.querySelectorAll('.brand-icon, #customerBrandIcon');
+    
+    brandIcons.forEach(iconBox => {
+        let img = iconBox.querySelector('img.brand-custom-logo-img');
+        let svg = iconBox.querySelector('svg');
+        
+        if (!img) {
+            img = document.createElement('img');
+            img.className = 'brand-custom-logo-img';
+            img.alt = settings.store_name || 'Store Logo';
+            img.style.display = 'none';
+            iconBox.appendChild(img);
+        }
+        
+        if (logoUrl) {
+            img.onload = () => {
+                img.style.display = 'block';
+                if (svg) svg.style.display = 'none';
+                iconBox.classList.add('has-logo');
+            };
+            img.onerror = () => {
+                img.style.display = 'none';
+                if (svg) svg.style.display = 'block';
+                iconBox.classList.remove('has-logo');
+            };
+            img.src = logoUrl;
+            
+            if (img.complete && img.naturalWidth > 0) {
+                img.style.display = 'block';
+                if (svg) svg.style.display = 'none';
+                iconBox.classList.add('has-logo');
+            }
+        } else {
+            img.style.display = 'none';
+            if (svg) svg.style.display = 'block';
+            iconBox.classList.remove('has-logo');
+        }
+    });
+
+    // Update favicon
+    if (logoUrl) {
+        let favicon = document.querySelector("link[rel*='icon']");
+        if (!favicon) {
+            favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            document.head.appendChild(favicon);
+        }
+        favicon.href = logoUrl;
+    }
+
+    // 4. Top Announcement Bar
+    const announcementBar = document.getElementById('announcementBar');
+    if (announcementBar) {
+        const isEnabled = settings.announcement_enabled === 'true' || settings.announcement_enabled === true;
+        if (isEnabled && settings.announcement_text) {
+            announcementBar.style.display = 'block';
+            const badgeEl = document.getElementById('announcementBadge');
+            const textEl = document.getElementById('announcementText');
+            const linkEl = document.getElementById('announcementLink');
+            if (badgeEl) badgeEl.textContent = settings.announcement_badge || 'Special Offer';
+            if (textEl) textEl.textContent = settings.announcement_text;
+            if (linkEl) {
+                linkEl.href = settings.announcement_link || '#productsSection';
+                linkEl.style.display = settings.announcement_link ? 'inline' : 'none';
+            }
+        } else {
+            announcementBar.style.display = 'none';
+        }
+    }
+
+    // 5. Hero Promo Banner
+    const firstSlide = document.querySelector('.banner-slide');
+    if (firstSlide && settings.hero_title) {
+        const badgeEl = firstSlide.querySelector('.banner-badge');
+        const titleEl = firstSlide.querySelector('.banner-title');
+        const descEl = firstSlide.querySelector('.banner-desc');
+        const btnEl = firstSlide.querySelector('.banner-btn');
+        if (badgeEl && settings.hero_badge) badgeEl.textContent = settings.hero_badge;
+        if (titleEl) titleEl.textContent = settings.hero_title;
+        if (descEl && settings.hero_subtitle) descEl.textContent = settings.hero_subtitle;
+        if (btnEl && settings.hero_btn_text) btnEl.textContent = settings.hero_btn_text;
+    }
+
+    // 6. Trust Features / Guarantees
+    const trustGrid = document.getElementById('trustFeaturesGrid');
+    if (trustGrid) {
+        const badges = [
+            { icon: settings.badge_1_icon || '🚀', title: settings.badge_1_title || 'Express Delivery', desc: settings.badge_1_desc || 'Fast shipping nationwide' },
+            { icon: settings.badge_2_icon || '🛡️', title: settings.badge_2_title || 'Official Warranty', desc: settings.badge_2_desc || '1-Year genuine warranty' },
+            { icon: settings.badge_3_icon || '💬', title: settings.badge_3_title || '24/7 Support', desc: settings.badge_3_desc || 'Instant help via Telegram' },
+            { icon: settings.badge_4_icon || '🔄', title: settings.badge_4_title || '7-Day Return', desc: settings.badge_4_desc || 'Hassle-free exchange' }
+        ];
+
+        trustGrid.innerHTML = badges.map(b => `
+            <div class="trust-card">
+                <div class="trust-icon-box">${b.icon}</div>
+                <div class="trust-info">
+                    <h4 class="trust-title">${b.title}</h4>
+                    <p class="trust-desc">${b.desc}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 7. Footer About & Copyright
+    const footerAbout = document.getElementById('footerStoreAbout');
+    if (footerAbout && settings.footer_about) {
+        footerAbout.textContent = settings.footer_about;
+    }
+    const footerCopyright = document.getElementById('footerCopyright');
+    if (footerCopyright && settings.footer_copyright) {
+        footerCopyright.textContent = settings.footer_copyright;
+    }
+
+    // 8. Footer Contact Info
+    const phoneLink = document.getElementById('footerPhoneLink');
+    if (phoneLink && settings.store_phone) {
+        phoneLink.textContent = settings.store_phone;
+        phoneLink.href = 'tel:' + settings.store_phone.replace(/\s+/g, '');
+    }
+    const emailLink = document.getElementById('footerEmailLink');
+    if (emailLink && settings.store_email) {
+        emailLink.textContent = settings.store_email;
+        emailLink.href = 'mailto:' + settings.store_email.trim();
+    }
+    const addressText = document.getElementById('footerAddressText');
+    if (addressText && settings.store_address) {
+        addressText.textContent = settings.store_address;
+    }
+    const hoursText = document.getElementById('footerHoursText');
+    if (hoursText && settings.store_hours) {
+        hoursText.textContent = settings.store_hours;
+    }
+
+    // 9. Footer Social Links
+    const socialContainer = document.getElementById('footerSocialLinks');
+    if (socialContainer) {
+        const links = [];
+        if (settings.social_telegram) {
+            links.push(`<a href="${settings.social_telegram}" target="_blank" rel="noopener" class="footer-social-btn">✈️ Telegram</a>`);
+        }
+        if (settings.social_facebook) {
+            links.push(`<a href="${settings.social_facebook}" target="_blank" rel="noopener" class="footer-social-btn">📘 Facebook</a>`);
+        }
+        if (settings.social_tiktok) {
+            links.push(`<a href="${settings.social_tiktok}" target="_blank" rel="noopener" class="footer-social-btn">🎵 TikTok</a>`);
+        }
+        if (settings.social_instagram) {
+            links.push(`<a href="${settings.social_instagram}" target="_blank" rel="noopener" class="footer-social-btn">📸 Instagram</a>`);
+        }
+        socialContainer.innerHTML = links.join('');
+    }
+}
+
 // Load and apply store settings dynamically across customer store
 async function loadStoreIdentity() {
     try {
         const response = await fetch('/api/settings?_t=' + Date.now(), { cache: 'no-cache' });
         if (response.ok) {
             const settings = await response.json();
-            
-            // Store Title & Headings
-            if (settings.store_name) {
-                document.querySelectorAll('.brand-text h1, .brand h1, .footer-brand h2, #storeBrandTitle').forEach(el => {
-                    el.textContent = settings.store_name;
-                });
-                if (document.title.includes('QKZ Store') || document.title.includes('Bong Store')) {
-                    document.title = document.title.replace(/QKZ Store|Bong Store/g, settings.store_name);
-                }
-            }
-            
-            // Store Tagline
-            if (settings.store_tagline) {
-                document.querySelectorAll('.brand-text p, .brand p, #storeBrandTagline').forEach(el => {
-                    el.textContent = settings.store_tagline;
-                });
-            }
-            
-            // Apply custom store logo across all brand-icon containers
-            const logoUrl = (settings.store_logo || '').trim();
-            const brandIcons = document.querySelectorAll('.brand-icon, #customerBrandIcon');
-            
-            brandIcons.forEach(iconBox => {
-                let img = iconBox.querySelector('img.brand-custom-logo-img');
-                let svg = iconBox.querySelector('svg');
-                
-                if (!img) {
-                    img = document.createElement('img');
-                    img.className = 'brand-custom-logo-img';
-                    img.alt = settings.store_name || 'Store Logo';
-                    img.style.display = 'none';
-                    iconBox.appendChild(img);
-                }
-                
-                if (logoUrl) {
-                    img.onload = () => {
-                        img.style.display = 'block';
-                        if (svg) svg.style.display = 'none';
-                        iconBox.classList.add('has-logo');
-                    };
-                    img.onerror = () => {
-                        img.style.display = 'none';
-                        if (svg) svg.style.display = 'block';
-                        iconBox.classList.remove('has-logo');
-                    };
-                    img.src = logoUrl;
-                    
-                    // If image is already loaded in browser memory cache
-                    if (img.complete && img.naturalWidth > 0) {
-                        img.style.display = 'block';
-                        if (svg) svg.style.display = 'none';
-                        iconBox.classList.add('has-logo');
-                    }
-                } else {
-                    img.style.display = 'none';
-                    if (svg) svg.style.display = 'block';
-                    iconBox.classList.remove('has-logo');
-                }
-            });
-
-            // Update favicon dynamically
-            if (logoUrl) {
-                let favicon = document.querySelector("link[rel*='icon']");
-                if (!favicon) {
-                    favicon = document.createElement('link');
-                    favicon.rel = 'icon';
-                    document.head.appendChild(favicon);
-                }
-                favicon.href = logoUrl;
-            }
+            applyWebsiteData(settings);
         }
     } catch (e) {
         console.warn('Could not load store identity:', e);
     }
 }
 
+// ==================== REAL-TIME LIVE STREAM (SSE) ====================
+let sseEventSource = null;
+
+function connectRealtimeStream() {
+    if (window.EventSource) {
+        try {
+            if (sseEventSource) sseEventSource.close();
+            
+            sseEventSource = new EventSource('/api/realtime/stream');
+            
+            sseEventSource.onmessage = function(event) {
+                try {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'connected') {
+                        updateLiveBadge(true);
+                    } else if (msg.type === 'settings_updated') {
+                        applyWebsiteData(msg.payload);
+                        flashLiveSync('Website updated live');
+                    } else if (msg.type === 'products_updated') {
+                        if (typeof loadProducts === 'function') loadProducts();
+                        flashLiveSync('Products updated');
+                    } else if (msg.type === 'brands_updated' || msg.type === 'categories_updated') {
+                        if (typeof loadBrands === 'function') loadBrands();
+                    }
+                } catch (err) {
+                    console.debug('SSE parse:', err);
+                }
+            };
+
+            sseEventSource.onerror = function() {
+                updateLiveBadge(false);
+                if (sseEventSource) sseEventSource.close();
+                // Reconnect after 5 seconds
+                setTimeout(connectRealtimeStream, 5000);
+            };
+        } catch (e) {
+            console.warn('Realtime SSE setup warning:', e);
+        }
+    }
+}
+
+function updateLiveBadge(isConnected) {
+    const badge = document.getElementById('liveSyncBadge');
+    if (!badge) return;
+    const dot = badge.querySelector('.live-pulse-dot');
+    const text = badge.querySelector('.live-status-text');
+    if (isConnected) {
+        if (dot) dot.style.background = '#22c55e';
+        if (text) text.textContent = 'Live Sync Active';
+    } else {
+        if (dot) dot.style.background = '#eab308';
+        if (text) text.textContent = 'Connecting...';
+    }
+}
+
+function flashLiveSync(msg) {
+    const toast = document.getElementById('cartToast');
+    const text = document.getElementById('cartToastText');
+    if (toast && text) {
+        text.textContent = '✨ ' + msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+}
+
 window.loadStoreIdentity = loadStoreIdentity;
+window.applyWebsiteData = applyWebsiteData;
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadStoreIdentity);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStoreIdentity();
+        connectRealtimeStream();
+    });
 } else {
     loadStoreIdentity();
+    connectRealtimeStream();
 }
 
 // React to AI Translate language switch

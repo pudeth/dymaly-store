@@ -197,18 +197,97 @@ app.get('/api/auth/status', (req, res) => {
   }
 });
 
+// ==================== REAL-TIME LIVE STREAM (SSE) ====================
+
+const sseClients = new Set();
+
+function broadcastRealtimeUpdate(type, payload = {}) {
+  const data = JSON.stringify({ type, payload, timestamp: Date.now() });
+  const message = `data: ${data}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(message);
+    } catch (_) {
+      sseClients.delete(client);
+    }
+  }
+}
+
+// Server-Sent Events endpoint for real-time live synchronization
+app.get('/api/realtime/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  // Send initial handshake
+  res.write(`data: ${JSON.stringify({ type: 'connected', timestamp: Date.now() })}\n\n`);
+  sseClients.add(res);
+
+  // Periodic keep-alive comment to prevent cloud proxies from dropping idle connections
+  const keepAliveTimer = setInterval(() => {
+    try {
+      res.write(': keep-alive\n\n');
+    } catch (_) {
+      clearInterval(keepAliveTimer);
+      sseClients.delete(res);
+    }
+  }, 25000);
+
+  req.on('close', () => {
+    clearInterval(keepAliveTimer);
+    sseClients.delete(res);
+  });
+});
+
+// Default settings dictionary for comprehensive website information
+const DEFAULT_SITE_SETTINGS = {
+  store_name: 'DyMaly',
+  store_tagline: 'Phones & audio, delivered fast',
+  store_phone: '+855 12 345 678',
+  store_email: 'contact@dymaly.com',
+  store_logo: '',
+  store_badge: 'Official Store',
+  announcement_enabled: 'true',
+  announcement_text: '🎉 Grand Opening: Free express delivery on all phones + 1-Year Official Warranty 🚚',
+  announcement_link: '#productsSection',
+  announcement_badge: 'Special Offer',
+  hero_badge: '✨ Featured Flagship 2026',
+  hero_title: 'Next-Gen Smartphones',
+  hero_subtitle: 'Titanium design, powerful mobile AI chips & pro-grade triple camera systems.',
+  hero_btn_text: 'Explore Phones →',
+  hero_btn_link: '#productsSection',
+  store_address: 'Preah Monivong Blvd, Phnom Penh, Cambodia',
+  store_hours: 'Mon - Sun: 8:00 AM - 9:00 PM',
+  store_telegram: '@dymaly_store',
+  social_telegram: 'https://t.me/dymaly_store',
+  social_facebook: 'https://facebook.com',
+  social_tiktok: 'https://tiktok.com',
+  social_instagram: 'https://instagram.com',
+  badge_1_icon: '🚀',
+  badge_1_title: 'Express Delivery',
+  badge_1_desc: 'Fast shipping nationwide',
+  badge_2_icon: '🛡️',
+  badge_2_title: 'Official Warranty',
+  badge_2_desc: '1-Year genuine warranty',
+  badge_3_icon: '💬',
+  badge_3_title: '24/7 Support',
+  badge_3_desc: 'Instant help via Telegram',
+  badge_4_icon: '🔄',
+  badge_4_title: '7-Day Return',
+  badge_4_desc: 'Hassle-free exchange',
+  footer_about: 'DyMaly is your trusted premier destination for authentic smartphones, high-end audio, and cutting-edge tech accessories in Cambodia.',
+  footer_copyright: '© 2026 DyMaly Phone Store. All rights reserved.',
+  site_version: String(Date.now())
+};
+
 // ==================== SETTINGS & PROFILE ROUTES ====================
 
-// Get store settings (Public)
+// Get store settings (Public - all website info)
 app.get('/api/settings', async (req, res) => {
   try {
-    const settings = {
-      store_name: 'Bong Store',
-      store_tagline: 'Premium Smartphones & Tech Store',
-      store_phone: '+855 12 345 678',
-      store_email: 'contact@bongstore.com',
-      store_logo: ''
-    };
+    const settings = { ...DEFAULT_SITE_SETTINGS };
 
     if (isMongoConnected()) {
       const docs = await Setting.find({});
@@ -234,47 +313,56 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-// Update store settings (Admin only)
+// Update store settings (Admin only - dynamic for all website info)
 app.put('/api/settings', requireAdmin, async (req, res) => {
-  const { store_name, store_tagline, store_phone, store_email, store_logo } = req.body;
   try {
+    const payload = { ...req.body, site_version: String(Date.now()) };
+
     if (isMongoConnected()) {
-      const pairs = [
-        { key: 'store_name', value: store_name },
-        { key: 'store_tagline', value: store_tagline },
-        { key: 'store_phone', value: store_phone },
-        { key: 'store_email', value: store_email },
-        { key: 'store_logo', value: store_logo }
-      ];
-      for (const pair of pairs) {
-        if (pair.value !== undefined) {
+      for (const [key, rawVal] of Object.entries(payload)) {
+        if (rawVal !== undefined && typeof rawVal !== 'object') {
           await Setting.findOneAndUpdate(
-            { key: pair.key },
-            { value: String(pair.value).trim() },
+            { key },
+            { key, value: String(rawVal).trim() },
             { upsert: true, new: true }
           );
         }
       }
-      return res.json({ success: true, message: 'Settings saved successfully' });
+      
+      // Broadcast real-time update to all connected customers
+      const allDocs = await Setting.find({});
+      const updatedSettings = { ...DEFAULT_SITE_SETTINGS };
+      allDocs.forEach(d => { updatedSettings[d.key] = d.value; });
+      broadcastRealtimeUpdate('settings_updated', updatedSettings);
+
+      return res.json({ success: true, message: 'Settings saved and synced in real-time', settings: updatedSettings });
     }
 
+    // SQLite fallback
     const db = getDatabase();
-    const upsert = (k, v) => {
-      if (v !== undefined) {
+    for (const [key, rawVal] of Object.entries(payload)) {
+      if (rawVal !== undefined && typeof rawVal !== 'object') {
         db.run(`
           INSERT INTO settings (key, value) VALUES (?, ?)
           ON CONFLICT(key) DO UPDATE SET value = excluded.value
-        `, [k, String(v).trim()]);
+        `, [key, String(rawVal).trim()]);
       }
-    };
-    upsert('store_name', store_name);
-    upsert('store_tagline', store_tagline);
-    upsert('store_phone', store_phone);
-    upsert('store_email', store_email);
-    upsert('store_logo', store_logo);
+    }
 
     saveDatabase();
-    res.json({ success: true, message: 'Settings saved successfully' });
+
+    const result = db.exec("SELECT key, value FROM settings");
+    const updatedSettings = { ...DEFAULT_SITE_SETTINGS };
+    if (result.length > 0 && result[0].values) {
+      result[0].values.forEach(([k, v]) => {
+        updatedSettings[k] = v;
+      });
+    }
+
+    // Broadcast real-time update to all connected customers
+    broadcastRealtimeUpdate('settings_updated', updatedSettings);
+
+    res.json({ success: true, message: 'Settings saved and synced in real-time', settings: updatedSettings });
   } catch (error) {
     console.error('Settings update error:', error);
     res.status(500).json({ error: 'Failed to update settings' });
@@ -539,6 +627,7 @@ app.post('/api/products', requireAdmin, async (req, res) => {
         image_url: image_url || getPlaceholderImage('Phone'),
         stock: Number(stock) || 0
       });
+      broadcastRealtimeUpdate('products_updated', { action: 'create', id: product.id });
       return res.json(product);
     }
 
@@ -554,6 +643,7 @@ app.post('/api/products', requireAdmin, async (req, res) => {
     const { columns, values } = result[0];
     const product = mapProduct(columns, values[0]);
 
+    broadcastRealtimeUpdate('products_updated', { action: 'create', id: product.id });
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create product' });
@@ -582,6 +672,7 @@ app.put('/api/products/:id', requireAdmin, async (req, res) => {
       if (stock !== undefined) product.stock = Number(stock);
 
       await product.save();
+      broadcastRealtimeUpdate('products_updated', { action: 'update', id: product.id });
       return res.json(product);
     }
 
@@ -598,6 +689,7 @@ app.put('/api/products/:id', requireAdmin, async (req, res) => {
     const { columns, values } = result[0];
     const product = mapProduct(columns, values[0]);
 
+    broadcastRealtimeUpdate('products_updated', { action: 'update', id: product.id });
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update product' });
@@ -620,6 +712,7 @@ app.delete('/api/products/:id', requireAdmin, async (req, res) => {
         });
         await Product.deleteOne({ _id: product._id });
       }
+      broadcastRealtimeUpdate('products_updated', { action: 'delete', id });
       return res.json({ success: true });
     }
 
@@ -628,6 +721,7 @@ app.delete('/api/products/:id', requireAdmin, async (req, res) => {
     db.run(`DELETE FROM reviews WHERE product_id = ?`, [id]);
     saveDatabase();
 
+    broadcastRealtimeUpdate('products_updated', { action: 'delete', id });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete product' });

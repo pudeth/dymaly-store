@@ -255,7 +255,7 @@ async function loadProductsNeedingAttention(products) {
             <div class="low-stock-item" style="border-left: 4px solid ${statusColor};">
                 <div>
                     <div class="name">${product.name}</div>
-                    <div class="brand">${product.brand} • $${product.price.toFixed(2)}</div>
+                    <div class="brand">${product.brand} • ${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
                 </div>
                 <div class="product-stock ${statusClass}">${statusText}</div>
             </div>
@@ -305,7 +305,7 @@ function renderProducts(products) {
                         </span>
                     </div>
                     <h3>${product.name}</h3>
-                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                    <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price, { showBoth: true }) : `$${product.price.toFixed(2)}`}</div>
                     <p class="product-desc">${product.description || ''}</p>
                     <div class="product-actions">
                         <button class="btn-action btn-edit" onclick="editProduct(${product.id})" aria-label="Edit ${product.name}">
@@ -2180,20 +2180,63 @@ async function loadStoreSettings() {
         if (response.ok) {
             currentStoreSettings = await response.json();
             
-            // Update inputs
-            const nameInput = document.getElementById('settingStoreName');
-            const taglineInput = document.getElementById('settingStoreTagline');
-            const phoneInput = document.getElementById('settingStorePhone');
-            const emailInput = document.getElementById('settingStoreEmail');
-            
-            if (nameInput) nameInput.value = currentStoreSettings.store_name || '';
-            if (taglineInput) taglineInput.value = currentStoreSettings.store_tagline || '';
-            if (phoneInput) phoneInput.value = currentStoreSettings.store_phone || '';
-            if (emailInput) emailInput.value = currentStoreSettings.store_email || '';
-            
-            // Update store logo
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val !== undefined && val !== null ? val : '';
+            };
+
+            // 1. Store Identity
+            setVal('settingStoreName', currentStoreSettings.store_name);
+            setVal('settingStoreTagline', currentStoreSettings.store_tagline);
+            setVal('settingStoreBadge', currentStoreSettings.store_badge);
             applyStoreLogoToAdmin(currentStoreSettings.store_logo || '');
-            
+
+            // 2. Announcement Bar
+            const annEnabled = currentStoreSettings.announcement_enabled === 'true' || currentStoreSettings.announcement_enabled === true;
+            setVal('settingAnnouncementEnabled', annEnabled ? 'true' : 'false');
+            setVal('settingAnnouncementBadge', currentStoreSettings.announcement_badge);
+            setVal('settingAnnouncementText', currentStoreSettings.announcement_text);
+            setVal('settingAnnouncementLink', currentStoreSettings.announcement_link);
+
+            // 3. Hero Promo Banner
+            setVal('settingHeroBadge', currentStoreSettings.hero_badge);
+            setVal('settingHeroTitle', currentStoreSettings.hero_title);
+            setVal('settingHeroSubtitle', currentStoreSettings.hero_subtitle);
+            setVal('settingHeroBtnText', currentStoreSettings.hero_btn_text);
+
+            // 4. Contact & Location
+            setVal('settingStorePhone', currentStoreSettings.store_phone);
+            setVal('settingStoreEmail', currentStoreSettings.store_email);
+            setVal('settingStoreAddress', currentStoreSettings.store_address);
+            setVal('settingStoreHours', currentStoreSettings.store_hours);
+
+            // 5. Social Media Links
+            setVal('settingSocialTelegram', currentStoreSettings.social_telegram);
+            setVal('settingSocialFacebook', currentStoreSettings.social_facebook);
+            setVal('settingSocialTiktok', currentStoreSettings.social_tiktok);
+            setVal('settingSocialInstagram', currentStoreSettings.social_instagram);
+
+            // 6. Guarantees & Trust Badges
+            setVal('settingBadge1Icon', currentStoreSettings.badge_1_icon);
+            setVal('settingBadge1Title', currentStoreSettings.badge_1_title);
+            setVal('settingBadge1Desc', currentStoreSettings.badge_1_desc);
+
+            setVal('settingBadge2Icon', currentStoreSettings.badge_2_icon);
+            setVal('settingBadge2Title', currentStoreSettings.badge_2_title);
+            setVal('settingBadge2Desc', currentStoreSettings.badge_2_desc);
+
+            setVal('settingBadge3Icon', currentStoreSettings.badge_3_icon);
+            setVal('settingBadge3Title', currentStoreSettings.badge_3_title);
+            setVal('settingBadge3Desc', currentStoreSettings.badge_3_desc);
+
+            setVal('settingBadge4Icon', currentStoreSettings.badge_4_icon);
+            setVal('settingBadge4Title', currentStoreSettings.badge_4_title);
+            setVal('settingBadge4Desc', currentStoreSettings.badge_4_desc);
+
+            // 7. Footer Content
+            setVal('settingFooterAbout', currentStoreSettings.footer_about);
+            setVal('settingFooterCopyright', currentStoreSettings.footer_copyright);
+
             // Update live preview banner
             updateStorePreview();
             
@@ -2222,46 +2265,92 @@ window.updateStorePreview = function() {
     const previewTagline = document.getElementById('previewStoreTagline');
     
     if (previewName) {
-        previewName.textContent = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : (currentStoreSettings.store_name || 'Bong Store');
+        previewName.textContent = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : (currentStoreSettings.store_name || 'DyMaly');
     }
     if (previewTagline) {
-        previewTagline.textContent = (taglineInput && taglineInput.value.trim()) ? taglineInput.value.trim() : (currentStoreSettings.store_tagline || 'Premium Smartphones & Tech Store');
+        previewTagline.textContent = (taglineInput && taglineInput.value.trim()) ? taglineInput.value.trim() : (currentStoreSettings.store_tagline || 'Phones & audio, delivered fast');
     }
 };
 
-// Save store settings
+// Save store settings (All website information synced in real-time)
 window.handleSaveStoreSettings = async function(event) {
     if (event) event.preventDefault();
     const saveBtn = document.getElementById('saveStoreSettingsBtn');
     const originalText = saveBtn ? saveBtn.innerHTML : '';
     
-    const store_name = document.getElementById('settingStoreName').value.trim();
-    const store_tagline = document.getElementById('settingStoreTagline').value.trim();
-    const store_phone = document.getElementById('settingStorePhone').value.trim();
-    const store_email = document.getElementById('settingStoreEmail').value.trim();
-    const store_logo = (document.getElementById('settingStoreLogo') ? document.getElementById('settingStoreLogo').value : '').trim();
-    
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    };
+
+    const store_name = getVal('settingStoreName');
     if (!store_name) {
         alert('Please enter a store name.');
         return;
     }
-    
+
+    const payload = {
+        store_name,
+        store_tagline: getVal('settingStoreTagline'),
+        store_badge: getVal('settingStoreBadge'),
+        store_logo: (document.getElementById('settingStoreLogo') ? document.getElementById('settingStoreLogo').value : '').trim(),
+        
+        announcement_enabled: getVal('settingAnnouncementEnabled'),
+        announcement_badge: getVal('settingAnnouncementBadge'),
+        announcement_text: getVal('settingAnnouncementText'),
+        announcement_link: getVal('settingAnnouncementLink'),
+        
+        hero_badge: getVal('settingHeroBadge'),
+        hero_title: getVal('settingHeroTitle'),
+        hero_subtitle: getVal('settingHeroSubtitle'),
+        hero_btn_text: getVal('settingHeroBtnText'),
+        
+        store_phone: getVal('settingStorePhone'),
+        store_email: getVal('settingStoreEmail'),
+        store_address: getVal('settingStoreAddress'),
+        store_hours: getVal('settingStoreHours'),
+        
+        social_telegram: getVal('settingSocialTelegram'),
+        social_facebook: getVal('settingSocialFacebook'),
+        social_tiktok: getVal('settingSocialTiktok'),
+        social_instagram: getVal('settingSocialInstagram'),
+        
+        badge_1_icon: getVal('settingBadge1Icon'),
+        badge_1_title: getVal('settingBadge1Title'),
+        badge_1_desc: getVal('settingBadge1Desc'),
+        
+        badge_2_icon: getVal('settingBadge2Icon'),
+        badge_2_title: getVal('settingBadge2Title'),
+        badge_2_desc: getVal('settingBadge2Desc'),
+        
+        badge_3_icon: getVal('settingBadge3Icon'),
+        badge_3_title: getVal('settingBadge3Title'),
+        badge_3_desc: getVal('settingBadge3Desc'),
+        
+        badge_4_icon: getVal('settingBadge4Icon'),
+        badge_4_title: getVal('settingBadge4Title'),
+        badge_4_desc: getVal('settingBadge4Desc'),
+        
+        footer_about: getVal('settingFooterAbout'),
+        footer_copyright: getVal('settingFooterCopyright')
+    };
+
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span>Saving...</span>';
+        saveBtn.innerHTML = '<span>Saving & Syncing Live...</span>';
     }
     
     try {
         const response = await fetch('/api/settings', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ store_name, store_tagline, store_phone, store_email, store_logo })
+            body: JSON.stringify(payload)
         });
         
         const result = await response.json();
         if (response.ok && result.success) {
-            currentStoreSettings = { store_name, store_tagline, store_phone, store_email, store_logo };
-            applyStoreLogoToAdmin(store_logo);
+            currentStoreSettings = { ...currentStoreSettings, ...payload };
+            applyStoreLogoToAdmin(payload.store_logo);
             
             // Update header title in real time
             const headerTitle = document.getElementById('headerStoreTitle');
@@ -2274,7 +2363,7 @@ window.handleSaveStoreSettings = async function(event) {
             // Update document title
             document.title = `Admin Dashboard - ${store_name}`;
             
-            showToast('✓ Store settings saved successfully!');
+            showToast('✓ All website information saved and synced live in real-time!');
         } else {
             alert(result.error || 'Failed to save store settings');
         }
@@ -2594,3 +2683,9 @@ if (document.readyState === 'loading') {
     initializeStoreLogoUpload();
     initializeAdminAvatarUpload();
 }
+
+// React to currency changes in Admin
+window.addEventListener('currencyChanged', () => {
+    if (typeof loadProducts === 'function') loadProducts();
+    if (typeof loadStats === 'function') loadStats();
+});

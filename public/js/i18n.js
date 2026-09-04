@@ -6,12 +6,47 @@
 (function() {
     window.BongI18n = {
         currentLang: localStorage.getItem('bong_store_language') || 'en',
+        currentCurrency: localStorage.getItem('bong_store_currency') || 'USD',
+        usdToKhrRate: 4100, // 1 USD = 4,100 KHR
+
+        currencies: [
+            { code: 'USD', symbol: '$', name: 'US Dollar', flag: '🇺🇸', label: 'USD ($)' },
+            { code: 'KHR', symbol: '៛', name: 'Khmer Riel', flag: '🇰🇭', label: 'KHR (៛)' }
+        ],
 
         languages: [
             { code: 'en', name: 'English', nativeName: 'English', sub: 'Default · United States', flag: '🇺🇸', short: 'EN' },
             { code: 'km', name: 'Khmer', nativeName: 'ភាសាខ្មែរ', sub: 'Khmer · Cambodia', flag: '🇰🇭', short: 'ខ្មែរ' },
             { code: 'zh', name: 'Chinese', nativeName: '中文', sub: 'Chinese · 简体中文', flag: '🇨🇳', short: '中文' }
         ],
+
+        formatPrice: function(amountInUsd, opts = {}) {
+            const num = Number(amountInUsd) || 0;
+            if (this.currentCurrency === 'KHR') {
+                const riel = Math.round(num * this.usdToKhrRate);
+                const formatted = riel.toLocaleString('en-US');
+                if (opts.showBoth) {
+                    return `${formatted} ៛ <span class="price-sub-usd">($${num.toFixed(2)})</span>`;
+                }
+                return `${formatted} ៛`;
+            } else {
+                const formatted = num.toFixed(2);
+                if (opts.showBoth) {
+                    const riel = Math.round(num * this.usdToKhrRate).toLocaleString('en-US');
+                    return `$${formatted} <span class="price-sub-khr">(${riel} ៛)</span>`;
+                }
+                return `$${formatted}`;
+            }
+        },
+
+        setCurrency: function(curr) {
+            if (curr !== 'USD' && curr !== 'KHR') return;
+            this.currentCurrency = curr;
+            localStorage.setItem('bong_store_currency', curr);
+            this.updateSwitcherUI();
+            window.dispatchEvent(new CustomEvent('currencyChanged', { detail: { currency: curr } }));
+            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang: this.currentLang } }));
+        },
 
         dict: {
             en: {
@@ -314,20 +349,37 @@
                     '</button>';
             });
 
-            switcher.innerHTML = '<button type="button" class="ai-lang-trigger" id="aiLangTrigger" aria-label="AI Language Translate">' +
+            switcher.innerHTML = '<button type="button" class="ai-lang-trigger" id="aiLangTrigger" aria-label="AI Language & Currency">' +
                 '<span class="ai-spark-chip">✨ AI</span>' +
                 '<span class="ai-flag" id="aiCurrentFlag">' + current.flag + '</span>' +
                 '<span class="ai-lang-name" id="aiCurrentName">' + current.short + '</span>' +
+                '<span class="ai-curr-pill" id="aiCurrentCurr">' + (this.currentCurrency === 'KHR' ? '៛ KHR' : '$ USD') + '</span>' +
                 '<span class="ai-arrow"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>' +
                 '</button>' +
                 '<div class="ai-lang-dropdown" id="aiLangDropdown">' +
                     '<div class="ai-dropdown-header">' +
                         '<div class="ai-dropdown-badge-row">' +
-                            '<span class="ai-badge">✨ AI TRANSLATION</span>' +
-                            '<span class="ai-lang-count">3 Languages</span>' +
+                            '<span class="ai-badge">✨ AI LOCALIZATION</span>' +
+                            '<span class="ai-lang-count">3 Langs · 2 Currencies</span>' +
                         '</div>' +
-                        '<p class="ai-dropdown-hint">Select your preferred language for instant store translation</p>' +
+                        '<p class="ai-dropdown-hint">Select language & local currency (USD / Khmer Riel)</p>' +
                     '</div>' +
+                    '<!-- Currency Switcher Row -->' +
+                    '<div class="ai-currency-section">' +
+                        '<div class="ai-currency-label"><span>CURRENCY / រូបិយប័ណ្ណ</span><span class="ai-rate-hint">1$ ≈ 4,100៛</span></div>' +
+                        '<div class="ai-currency-toggle-group">' +
+                            '<button type="button" class="ai-curr-btn ' + (this.currentCurrency === 'USD' ? 'active' : '') + '" data-curr="USD">' +
+                                '<span class="curr-flag">🇺🇸</span>' +
+                                '<span class="curr-name">USD ($)</span>' +
+                            '</button>' +
+                            '<button type="button" class="ai-curr-btn ' + (this.currentCurrency === 'KHR' ? 'active' : '') + '" data-curr="KHR">' +
+                                '<span class="curr-flag">🇰🇭</span>' +
+                                '<span class="curr-name">KHR (៛ Riel)</span>' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="ai-section-divider"></div>' +
+                    '<div class="ai-lang-section-label">LANGUAGE / ភាសា</div>' +
                     '<div class="ai-dropdown-list">' + optsHtml + '</div>' +
                     '<div class="ai-dropdown-footer">' +
                         '<span>⚡ Powered by Bong AI Engine</span>' +
@@ -371,6 +423,14 @@
                         switcher.classList.remove('open');
                     });
                 });
+                dropdown.querySelectorAll('.ai-curr-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const curr = this.getAttribute('data-curr');
+                        window.BongI18n.setCurrency(curr);
+                        switcher.classList.remove('open');
+                    });
+                });
             }
         },
 
@@ -378,8 +438,20 @@
             const current = this.getLangInfo(this.currentLang);
             const flagEl = document.getElementById('aiCurrentFlag');
             const nameEl = document.getElementById('aiCurrentName');
+            const currEl = document.getElementById('aiCurrentCurr');
             if (flagEl) flagEl.textContent = current.flag;
             if (nameEl) nameEl.textContent = current.short;
+            if (currEl) currEl.textContent = this.currentCurrency === 'KHR' ? '៛ KHR' : '$ USD';
+
+            // Update active currency buttons
+            document.querySelectorAll('.ai-curr-btn').forEach(btn => {
+                const c = btn.getAttribute('data-curr');
+                if (c === this.currentCurrency) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
 
             const opts = document.querySelectorAll('.ai-lang-opt');
             opts.forEach(function(opt) {

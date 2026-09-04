@@ -11,6 +11,15 @@
     <script src="js/i18n.js"></script>
 </head>
 <body>
+    <!-- Real-Time Top Announcement Bar -->
+    <aside class="top-announcement-bar" id="announcementBar" style="display: none;">
+        <div class="container announcement-content">
+            <span class="announcement-badge" id="announcementBadge">Special Offer</span>
+            <span class="announcement-text" id="announcementText">Welcome to DyMaly!</span>
+            <a href="#productsSection" class="announcement-link" id="announcementLink">Shop Now →</a>
+        </div>
+    </aside>
+
     <header class="site-header">
         <div class="container">
             <div class="header-row">
@@ -124,6 +133,15 @@
         </div>
     </section>
 
+    <!-- Real-Time Trust Guarantees Section -->
+    <section class="trust-features-section" id="trustFeaturesSection">
+        <div class="container">
+            <div class="trust-grid" id="trustFeaturesGrid">
+                <!-- Dynamically populated from database in real-time -->
+            </div>
+        </div>
+    </section>
+
     <!-- Shop by Brand Section -->
     <section class="brands-section" id="brandsSection">
         <div class="container">
@@ -230,6 +248,56 @@
             </div>
         </div>
     </div>
+
+    <!-- Real-Time Modern Site Footer -->
+    <footer class="site-footer" id="siteFooter">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col footer-brand-col">
+                    <div class="footer-brand-title">
+                        <span class="footer-brand-icon" id="footerBrandIcon">📱</span>
+                        <h3 id="footerStoreName">DyMaly</h3>
+                    </div>
+                    <p class="footer-store-about" id="footerStoreAbout">DyMaly is your trusted premier destination for authentic smartphones, high-end audio, and cutting-edge tech accessories in Cambodia.</p>
+                    <div class="footer-social-links" id="footerSocialLinks">
+                        <!-- Populated dynamically from database in real-time -->
+                    </div>
+                </div>
+                <div class="footer-col footer-contact-col">
+                    <h4 class="footer-heading">Customer Support</h4>
+                    <ul class="footer-contact-list">
+                        <li id="footerPhoneItem">
+                            <span class="contact-icon">📞</span>
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+85512345678" id="footerPhoneLink">+855 12 345 678</a>
+                        </li>
+                        <li id="footerEmailItem">
+                            <span class="contact-icon">✉️</span>
+                            <span class="contact-label">Email:</span>
+                            <a href="mailto:contact@dymaly.com" id="footerEmailLink">contact@dymaly.com</a>
+                        </li>
+                        <li id="footerAddressItem">
+                            <span class="contact-icon">📍</span>
+                            <span class="contact-label">Location:</span>
+                            <span id="footerAddressText">Preah Monivong Blvd, Phnom Penh</span>
+                        </li>
+                        <li id="footerHoursItem">
+                            <span class="contact-icon">🕒</span>
+                            <span class="contact-label">Hours:</span>
+                            <span id="footerHoursText">Mon - Sun: 8:00 AM - 9:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p id="footerCopyright">© 2026 DyMaly Phone Store. All rights reserved.</p>
+                <div class="live-sync-badge" id="liveSyncBadge" title="Real-Time Connected to Database">
+                    <span class="live-pulse-dot"></span>
+                    <span class="live-status-text">Live Sync Active</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-nav">

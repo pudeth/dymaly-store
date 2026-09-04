@@ -106,8 +106,9 @@ function renderCart() {
             <!-- Items List -->
             <div class="cart-items-container">
                 ${cart.map(item => {
-                    const itemTotal = (item.price * item.quantity).toFixed(2);
+                    const itemTotal = item.price * item.quantity;
                     const safeImage = item.image_url || 'https://via.placeholder.com/150?text=Phone';
+                    const formatPrice = (p, opts) => window.BongI18n ? window.BongI18n.formatPrice(p, opts) : `$${Number(p).toFixed(2)}`;
 
                     return `
                     <div class="cart-item-card" data-item-id="${item.id}">
@@ -136,8 +137,8 @@ function renderCart() {
 
                             <div class="cart-item-bottom-row">
                                 <div class="cart-price-block">
-                                    <span class="cart-item-total-price">$${itemTotal}</span>
-                                    ${item.quantity > 1 ? `<span class="cart-item-unit-price">$${item.price.toFixed(2)} each</span>` : ''}
+                                    <span class="cart-item-total-price">${formatPrice(itemTotal)}</span>
+                                    ${item.quantity > 1 ? `<span class="cart-item-unit-price">${formatPrice(item.price)} each</span>` : ''}
                                 </div>
 
                                 <div class="cart-quantity-stepper">
@@ -163,7 +164,7 @@ function renderCart() {
                     <div class="summary-line-items">
                         <div class="summary-line">
                             <span class="line-title">${t('subtotal', 'Subtotal')}</span>
-                            <span class="line-amount">$${subtotal.toFixed(2)}</span>
+                            <span class="line-amount">${window.BongI18n ? window.BongI18n.formatPrice(subtotal) : `$${subtotal.toFixed(2)}`}</span>
                         </div>
                         <div class="summary-line">
                             <span class="line-title">
@@ -174,7 +175,7 @@ function renderCart() {
                         </div>
                         <div class="summary-line">
                             <span class="line-title">Estimated Sales Tax</span>
-                            <span class="line-amount">$0.00</span>
+                            <span class="line-amount">${window.BongI18n ? window.BongI18n.formatPrice(0) : '$0.00'}</span>
                         </div>
                         ${discount > 0 ? `
                         <div class="summary-line discount-active">
@@ -182,7 +183,7 @@ function renderCart() {
                                 Discount (${appliedPromo.toUpperCase()})
                                 <button type="button" class="remove-promo-btn" onclick="removePromoCode()" title="Remove promo">✕</button>
                             </span>
-                            <span class="line-amount">-$${discount.toFixed(2)}</span>
+                            <span class="line-amount">-${window.BongI18n ? window.BongI18n.formatPrice(discount) : `$${discount.toFixed(2)}`}</span>
                         </div>
                         ` : ''}
                     </div>
@@ -211,7 +212,7 @@ function renderCart() {
                             <span class="final-tax-hint">Including all taxes & duties</span>
                         </div>
                         <div class="final-price-wrap">
-                            <span class="final-total-price">$${finalTotal.toFixed(2)}</span>
+                            <span class="final-total-price">${window.BongI18n ? window.BongI18n.formatPrice(finalTotal, { showBoth: true }) : `$${finalTotal.toFixed(2)}`}</span>
                         </div>
                     </div>
 
@@ -396,7 +397,8 @@ function checkout() {
         }
         
         setTimeout(() => {
-            alert(`🎉 Order Placed Successfully!\n\nOrder Total: $${finalTotal.toFixed(2)}\nEstimated Delivery: 2–3 Business Days\n\nThank you for choosing QKZ Store!`);
+            const displayTotal = window.BongI18n ? window.BongI18n.formatPrice(finalTotal) : `$${finalTotal.toFixed(2)}`;
+            alert(`🎉 Order Placed Successfully!\n\nOrder Total: ${displayTotal}\nEstimated Delivery: 2–3 Business Days\n\nThank you for choosing QKZ Store!`);
             cart = [];
             appliedPromo = '';
             localStorage.removeItem('cart_promo');

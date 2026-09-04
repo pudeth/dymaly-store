@@ -102,10 +102,54 @@ async function seedMongoDB() {
     // 2. Seed Default Settings
     const defaultSettings = [
       { key: 'store_name', value: 'DyMaly' },
-      { key: 'store_tagline', value: 'Premium Smartphones & Tech Store' },
+      { key: 'store_tagline', value: 'Phones & audio, delivered fast' },
       { key: 'store_phone', value: '+855 12 345 678' },
       { key: 'store_email', value: 'contact@dymaly.com' },
-      { key: 'store_logo', value: '' }
+      { key: 'store_logo', value: '' },
+      { key: 'store_badge', value: 'Official Store' },
+      
+      // Top Announcement Bar
+      { key: 'announcement_enabled', value: 'true' },
+      { key: 'announcement_text', value: '🎉 Grand Opening: Free express delivery on all phones + 1-Year Official Warranty 🚚' },
+      { key: 'announcement_link', value: '#productsSection' },
+      { key: 'announcement_badge', value: 'Special Offer' },
+      
+      // Hero Promo Banner
+      { key: 'hero_badge', value: '✨ Featured Flagship 2026' },
+      { key: 'hero_title', value: 'Next-Gen Smartphones' },
+      { key: 'hero_subtitle', value: 'Titanium design, powerful mobile AI chips & pro-grade triple camera systems.' },
+      { key: 'hero_btn_text', value: 'Explore Phones →' },
+      { key: 'hero_btn_link', value: '#productsSection' },
+      
+      // Contact & Store Location
+      { key: 'store_address', value: 'Preah Monivong Blvd, Phnom Penh, Cambodia' },
+      { key: 'store_hours', value: 'Mon - Sun: 8:00 AM - 9:00 PM' },
+      { key: 'store_telegram', value: '@dymaly_store' },
+      
+      // Social Profiles
+      { key: 'social_telegram', value: 'https://t.me/dymaly_store' },
+      { key: 'social_facebook', value: 'https://facebook.com' },
+      { key: 'social_tiktok', value: 'https://tiktok.com' },
+      { key: 'social_instagram', value: 'https://instagram.com' },
+      
+      // Trust Guarantees
+      { key: 'badge_1_icon', value: '🚀' },
+      { key: 'badge_1_title', value: 'Express Delivery' },
+      { key: 'badge_1_desc', value: 'Fast shipping nationwide' },
+      { key: 'badge_2_icon', value: '🛡️' },
+      { key: 'badge_2_title', value: 'Official Warranty' },
+      { key: 'badge_2_desc', value: '1-Year genuine warranty' },
+      { key: 'badge_3_icon', value: '💬' },
+      { key: 'badge_3_title', value: '24/7 Support' },
+      { key: 'badge_3_desc', value: 'Instant help via Telegram' },
+      { key: 'badge_4_icon', value: '🔄' },
+      { key: 'badge_4_title', value: '7-Day Return' },
+      { key: 'badge_4_desc', value: 'Hassle-free exchange' },
+      
+      // Footer Content
+      { key: 'footer_about', value: 'DyMaly is your trusted premier destination for authentic smartphones, high-end audio, and cutting-edge tech accessories in Cambodia.' },
+      { key: 'footer_copyright', value: '© 2026 DyMaly Phone Store. All rights reserved.' },
+      { key: 'site_version', value: String(Date.now()) }
     ];
 
     for (const s of defaultSettings) {
