@@ -5,6 +5,29 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const { initDatabase, saveDatabase, getDatabase } = require('./database');
+const {
+  mongoose,
+  User,
+  Setting,
+  Brand,
+  Category,
+  Product,
+  Review,
+  connectMongoDB,
+  isMongoConnected
+} = require('./models');
+
+// Helper to query MongoDB by either _id or legacy integer id
+function findByIdOrLegacy(model, id) {
+  if (!id) return model.findOne({ _id: null });
+  if (mongoose.isValidObjectId(id)) {
+    return model.findOne({ $or: [{ _id: id }, { legacy_id: isNaN(Number(id)) ? -1 : Number(id) }] });
+  } else if (!isNaN(Number(id))) {
+    return model.findOne({ legacy_id: Number(id) });
+  } else {
+    return model.findOne({ _id: id });
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -94,35 +117,55 @@ function requireAdmin(req, res, next) {
 
 // ==================== AUTH ROUTES ====================
 
-// Login
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
-  const db = getDatabase();
 
   try {
-    const result = db.exec(`SELECT * FROM users WHERE username = ?`, [username]);
-    
-    if (result.length === 0 || result[0].values.length === 0) {
+    let user = null;
+    let passwordHash = null;
+
+    if (isMongoConnected()) {
+      const doc = await User.findOne({ username });
+      if (doc) {
+        user = {
+          id: doc.id,
+          username: doc.username,
+          role: doc.role,
+          display_name: doc.display_name,
+          email: doc.email,
+          phone: doc.phone,
+          avatar_url: doc.avatar_url
+        };
+        passwordHash = doc.password;
+      }
+    } else {
+      const db = getDatabase();
+      const result = db.exec(`SELECT * FROM users WHERE username = ?`, [username]);
+      if (result.length > 0 && result[0].values.length > 0) {
+        const row = result[0].values[0];
+        user = {
+          id: row[0],
+          username: row[1],
+          role: row[3],
+          display_name: row[4] || 'Store Administrator',
+          email: row[5] || 'admin@bongstore.com',
+          phone: row[6] || '+855 12 345 678',
+          avatar_url: row[7] || ''
+        };
+        passwordHash = row[2];
+      }
+    }
+
+    if (!user || !passwordHash) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = {
-      id: result[0].values[0][0],
-      username: result[0].values[0][1],
-      password: result[0].values[0][2],
-      role: result[0].values[0][3]
-    };
-
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, passwordHash);
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      role: user.role
-    };
+    req.session.user = user;
 
     res.json({ 
       success: true, 
@@ -157,10 +200,8 @@ app.get('/api/auth/status', (req, res) => {
 // ==================== SETTINGS & PROFILE ROUTES ====================
 
 // Get store settings (Public)
-app.get('/api/settings', (req, res) => {
-  const db = getDatabase();
+app.get('/api/settings', async (req, res) => {
   try {
-    const result = db.exec("SELECT key, value FROM settings");
     const settings = {
       store_name: 'Bong Store',
       store_tagline: 'Premium Smartphones & Tech Store',
@@ -168,11 +209,22 @@ app.get('/api/settings', (req, res) => {
       store_email: 'contact@bongstore.com',
       store_logo: ''
     };
-    if (result.length > 0 && result[0].values) {
-      result[0].values.forEach(([k, v]) => {
-        settings[k] = v;
+
+    if (isMongoConnected()) {
+      const docs = await Setting.find({});
+      docs.forEach(d => {
+        settings[d.key] = d.value;
       });
+    } else {
+      const db = getDatabase();
+      const result = db.exec("SELECT key, value FROM settings");
+      if (result.length > 0 && result[0].values) {
+        result[0].values.forEach(([k, v]) => {
+          settings[k] = v;
+        });
+      }
     }
+
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
@@ -183,10 +235,30 @@ app.get('/api/settings', (req, res) => {
 });
 
 // Update store settings (Admin only)
-app.put('/api/settings', requireAdmin, (req, res) => {
+app.put('/api/settings', requireAdmin, async (req, res) => {
   const { store_name, store_tagline, store_phone, store_email, store_logo } = req.body;
-  const db = getDatabase();
   try {
+    if (isMongoConnected()) {
+      const pairs = [
+        { key: 'store_name', value: store_name },
+        { key: 'store_tagline', value: store_tagline },
+        { key: 'store_phone', value: store_phone },
+        { key: 'store_email', value: store_email },
+        { key: 'store_logo', value: store_logo }
+      ];
+      for (const pair of pairs) {
+        if (pair.value !== undefined) {
+          await Setting.findOneAndUpdate(
+            { key: pair.key },
+            { value: String(pair.value).trim() },
+            { upsert: true, new: true }
+          );
+        }
+      }
+      return res.json({ success: true, message: 'Settings saved successfully' });
+    }
+
+    const db = getDatabase();
     const upsert = (k, v) => {
       if (v !== undefined) {
         db.run(`
@@ -210,10 +282,27 @@ app.put('/api/settings', requireAdmin, (req, res) => {
 });
 
 // Get admin profile (Admin only)
-app.get('/api/admin/profile', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.get('/api/admin/profile', requireAdmin, async (req, res) => {
   try {
     const userId = req.session.user.id;
+
+    if (isMongoConnected()) {
+      const user = await findByIdOrLegacy(User, userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      return res.json({
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        display_name: user.display_name || 'Store Administrator',
+        email: user.email || 'admin@bongstore.com',
+        phone: user.phone || '+855 12 345 678',
+        avatar_url: user.avatar_url || ''
+      });
+    }
+
+    const db = getDatabase();
     const result = db.exec("SELECT id, username, role, display_name, email, phone, avatar_url FROM users WHERE id = ?", [userId]);
     if (result.length === 0 || result[0].values.length === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -236,11 +325,61 @@ app.get('/api/admin/profile', requireAdmin, (req, res) => {
 // Update admin profile & password (Admin only)
 app.put('/api/admin/profile', requireAdmin, async (req, res) => {
   const { username, display_name, email, phone, avatar_url, current_password, new_password } = req.body;
-  const db = getDatabase();
   const userId = req.session.user.id;
 
   try {
-    // Fetch current user
+    if (isMongoConnected()) {
+      const user = await findByIdOrLegacy(User, userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (new_password) {
+        if (!current_password) {
+          return res.status(400).json({ error: 'Current password is required to set a new password' });
+        }
+        const valid = await bcrypt.compare(current_password, user.password);
+        if (!valid) {
+          return res.status(400).json({ error: 'Incorrect current password' });
+        }
+        user.password = await bcrypt.hash(new_password, 10);
+      }
+
+      if (username && username !== user.username) {
+        const conflict = await User.findOne({ username, _id: { $ne: user._id } });
+        if (conflict) {
+          return res.status(400).json({ error: 'Username already taken' });
+        }
+        user.username = username.trim();
+      }
+
+      if (display_name !== undefined) user.display_name = display_name.trim();
+      if (email !== undefined) user.email = email.trim();
+      if (phone !== undefined) user.phone = phone.trim();
+      if (avatar_url !== undefined) user.avatar_url = avatar_url.trim();
+
+      await user.save();
+
+      req.session.user.username = user.username;
+      req.session.user.display_name = user.display_name;
+      req.session.user.avatar_url = user.avatar_url;
+
+      return res.json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: {
+          id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          email: user.email,
+          phone: user.phone,
+          avatar_url: user.avatar_url
+        }
+      });
+    }
+
+    // SQLite fallback
+    const db = getDatabase();
     const result = db.exec("SELECT * FROM users WHERE id = ?", [userId]);
     if (result.length === 0 || result[0].values.length === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -329,9 +468,14 @@ function mapProduct(columns, row) {
 }
 
 // Get all products
-app.get('/api/products', (req, res) => {
-  const db = getDatabase();
+app.get('/api/products', async (req, res) => {
   try {
+    if (isMongoConnected()) {
+      const products = await Product.find({}).sort({ createdAt: -1 });
+      return res.json(products);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`SELECT * FROM products ORDER BY created_at DESC`);
     
     if (result.length === 0) {
@@ -348,11 +492,19 @@ app.get('/api/products', (req, res) => {
 });
 
 // Get single product
-app.get('/api/products/:id', (req, res) => {
-  const db = getDatabase();
+app.get('/api/products/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const product = await findByIdOrLegacy(Product, id);
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      return res.json(product);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`SELECT * FROM products WHERE id = ?`, [id]);
     
     if (result.length === 0 || result[0].values.length === 0) {
@@ -369,11 +521,28 @@ app.get('/api/products/:id', (req, res) => {
 });
 
 // Create product (admin only)
-app.post('/api/products', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.post('/api/products', requireAdmin, async (req, res) => {
   const { name, brand, category, price, size, description, image_url, stock } = req.body;
 
   try {
+    if (isMongoConnected()) {
+      const highest = await Product.findOne({}).sort({ legacy_id: -1 });
+      const nextLegacyId = (highest && highest.legacy_id) ? highest.legacy_id + 1 : Date.now();
+      const product = await Product.create({
+        legacy_id: nextLegacyId,
+        name,
+        brand,
+        category: category || '',
+        price: Number(price) || 0,
+        size: size || '',
+        description: description || '',
+        image_url: image_url || getPlaceholderImage('Phone'),
+        stock: Number(stock) || 0
+      });
+      return res.json(product);
+    }
+
+    const db = getDatabase();
     db.run(`
       INSERT INTO products (name, brand, category, price, size, description, image_url, stock)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -392,12 +561,31 @@ app.post('/api/products', requireAdmin, (req, res) => {
 });
 
 // Update product (admin only)
-app.put('/api/products/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.put('/api/products/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, brand, category, price, size, description, image_url, stock } = req.body;
 
   try {
+    if (isMongoConnected()) {
+      const product = await findByIdOrLegacy(Product, id);
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+
+      if (name !== undefined) product.name = name;
+      if (brand !== undefined) product.brand = brand;
+      if (category !== undefined) product.category = category;
+      if (price !== undefined) product.price = Number(price);
+      if (size !== undefined) product.size = size;
+      if (description !== undefined) product.description = description;
+      if (image_url !== undefined) product.image_url = image_url;
+      if (stock !== undefined) product.stock = Number(stock);
+
+      await product.save();
+      return res.json(product);
+    }
+
+    const db = getDatabase();
     db.run(`
       UPDATE products 
       SET name = ?, brand = ?, category = ?, price = ?, size = ?, description = ?, image_url = ?, stock = ?
@@ -417,11 +605,25 @@ app.put('/api/products/:id', requireAdmin, (req, res) => {
 });
 
 // Delete product (admin only)
-app.delete('/api/products/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.delete('/api/products/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const product = await findByIdOrLegacy(Product, id);
+      if (product) {
+        await Review.deleteMany({
+          $or: [
+            { product_id: product.id },
+            { product_id: String(product.legacy_id || '') }
+          ]
+        });
+        await Product.deleteOne({ _id: product._id });
+      }
+      return res.json({ success: true });
+    }
+
+    const db = getDatabase();
     db.run(`DELETE FROM products WHERE id = ?`, [id]);
     db.run(`DELETE FROM reviews WHERE product_id = ?`, [id]);
     saveDatabase();
@@ -435,11 +637,22 @@ app.delete('/api/products/:id', requireAdmin, (req, res) => {
 // ==================== REVIEW ROUTES ====================
 
 // Get reviews for a product
-app.get('/api/products/:id/reviews', (req, res) => {
-  const db = getDatabase();
+app.get('/api/products/:id/reviews', async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const product = await findByIdOrLegacy(Product, id);
+      const pidQueries = [{ product_id: String(id) }];
+      if (product) {
+        pidQueries.push({ product_id: product.id });
+        if (product.legacy_id) pidQueries.push({ product_id: String(product.legacy_id) });
+      }
+      const reviews = await Review.find({ $or: pidQueries }).sort({ createdAt: -1 });
+      return res.json(reviews);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`
       SELECT * FROM reviews 
       WHERE product_id = ? 
@@ -466,10 +679,25 @@ app.get('/api/products/:id/reviews', (req, res) => {
 });
 
 // Get all reviews (admin only)
-app.get('/api/reviews', requireAdmin, (req, res) => {
-  const db = getDatabase();
-
+app.get('/api/reviews', requireAdmin, async (req, res) => {
   try {
+    if (isMongoConnected()) {
+      const reviews = await Review.find({}).sort({ createdAt: -1 }).lean({ virtuals: true });
+      const products = await Product.find({}).lean({ virtuals: true });
+      const productMap = {};
+      products.forEach(p => {
+        productMap[p._id.toString()] = p.name;
+        if (p.legacy_id) productMap[String(p.legacy_id)] = p.name;
+      });
+      const enriched = reviews.map(r => ({
+        ...r,
+        id: r._id.toString(),
+        product_name: productMap[r.product_id] || 'Product'
+      }));
+      return res.json(enriched);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`
       SELECT r.*, p.name as product_name 
       FROM reviews r
@@ -498,8 +726,7 @@ app.get('/api/reviews', requireAdmin, (req, res) => {
 });
 
 // Create review
-app.post('/api/products/:id/reviews', (req, res) => {
-  const db = getDatabase();
+app.post('/api/products/:id/reviews', async (req, res) => {
   const { id } = req.params;
   const { customer_name, rating, comment } = req.body;
 
@@ -512,6 +739,20 @@ app.post('/api/products/:id/reviews', (req, res) => {
   }
 
   try {
+    if (isMongoConnected()) {
+      const highest = await Review.findOne({}).sort({ legacy_id: -1 });
+      const nextLegacyId = (highest && highest.legacy_id) ? highest.legacy_id + 1 : Date.now();
+      const review = await Review.create({
+        legacy_id: nextLegacyId,
+        product_id: String(id),
+        customer_name,
+        rating: Number(rating),
+        comment: comment || ''
+      });
+      return res.json(review);
+    }
+
+    const db = getDatabase();
     db.run(`
       INSERT INTO reviews (product_id, customer_name, rating, comment)
       VALUES (?, ?, ?, ?)
@@ -537,11 +778,19 @@ app.post('/api/products/:id/reviews', (req, res) => {
 });
 
 // Delete review (admin only)
-app.delete('/api/reviews/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.delete('/api/reviews/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const review = await findByIdOrLegacy(Review, id);
+      if (review) {
+        await Review.deleteOne({ _id: review._id });
+      }
+      return res.json({ success: true });
+    }
+
+    const db = getDatabase();
     db.run(`DELETE FROM reviews WHERE id = ?`, [id]);
     saveDatabase();
 
@@ -553,10 +802,23 @@ app.delete('/api/reviews/:id', requireAdmin, (req, res) => {
 
 // ==================== STATS ROUTES (Admin) ====================
 
-app.get('/api/stats', requireAdmin, (req, res) => {
-  const db = getDatabase();
-
+app.get('/api/stats', requireAdmin, async (req, res) => {
   try {
+    if (isMongoConnected()) {
+      const totalProducts = await Product.countDocuments();
+      const totalReviews = await Review.countDocuments();
+      const avgAgg = await Review.aggregate([
+        { $group: { _id: null, avgRating: { $avg: '$rating' } } }
+      ]);
+      const averageRating = avgAgg.length > 0 ? (avgAgg[0].avgRating || 0) : 0;
+      return res.json({
+        totalProducts,
+        totalReviews,
+        averageRating: Number(averageRating.toFixed(1))
+      });
+    }
+
+    const db = getDatabase();
     const productsResult = db.exec(`SELECT COUNT(*) as count FROM products`);
     const reviewsResult = db.exec(`SELECT COUNT(*) as count FROM reviews`);
     const avgRatingResult = db.exec(`SELECT AVG(rating) as avg FROM reviews`);
@@ -650,9 +912,14 @@ app.delete('/api/delete-image', requireAdmin, (req, res) => {
 // ==================== BRAND ROUTES ====================
 
 // Get all brands
-app.get('/api/brands', (req, res) => {
-  const db = getDatabase();
+app.get('/api/brands', async (req, res) => {
   try {
+    if (isMongoConnected()) {
+      const brands = await Brand.find({}).sort({ name: 1 });
+      return res.json(brands);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`SELECT * FROM brands ORDER BY name ASC`);
     
     if (result.length === 0) {
@@ -674,8 +941,7 @@ app.get('/api/brands', (req, res) => {
 });
 
 // Create brand (admin only)
-app.post('/api/brands', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.post('/api/brands', requireAdmin, async (req, res) => {
   const { name, description, logo_url } = req.body;
 
   if (!name) {
@@ -683,6 +949,19 @@ app.post('/api/brands', requireAdmin, (req, res) => {
   }
 
   try {
+    if (isMongoConnected()) {
+      const highest = await Brand.findOne({}).sort({ legacy_id: -1 });
+      const nextLegacyId = (highest && highest.legacy_id) ? highest.legacy_id + 1 : Date.now();
+      const brand = await Brand.create({
+        legacy_id: nextLegacyId,
+        name: name.trim(),
+        description: description || '',
+        logo_url: logo_url || getPlaceholderImage(name, 100, 100)
+      });
+      return res.json(brand);
+    }
+
+    const db = getDatabase();
     db.run(`
       INSERT INTO brands (name, description, logo_url)
       VALUES (?, ?, ?)
@@ -702,7 +981,7 @@ app.post('/api/brands', requireAdmin, (req, res) => {
 
     res.json(brand);
   } catch (error) {
-    if (error.message && error.message.includes('UNIQUE')) {
+    if (error.message && (error.message.includes('UNIQUE') || error.code === 11000)) {
       res.status(400).json({ error: 'Brand already exists' });
     } else {
       res.status(500).json({ error: 'Failed to create brand' });
@@ -711,12 +990,24 @@ app.post('/api/brands', requireAdmin, (req, res) => {
 });
 
 // Update brand (admin only)
-app.put('/api/brands/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.put('/api/brands/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, description, logo_url } = req.body;
 
   try {
+    if (isMongoConnected()) {
+      const brand = await findByIdOrLegacy(Brand, id);
+      if (!brand) {
+        return res.status(404).json({ error: 'Brand not found' });
+      }
+      if (name !== undefined) brand.name = name.trim();
+      if (description !== undefined) brand.description = description;
+      if (logo_url !== undefined) brand.logo_url = logo_url;
+      await brand.save();
+      return res.json(brand);
+    }
+
+    const db = getDatabase();
     db.run(`
       UPDATE brands 
       SET name = ?, description = ?, logo_url = ?
@@ -742,11 +1033,25 @@ app.put('/api/brands/:id', requireAdmin, (req, res) => {
 });
 
 // Delete brand (admin only)
-app.delete('/api/brands/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.delete('/api/brands/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const brand = await findByIdOrLegacy(Brand, id);
+      if (brand) {
+        const productCount = await Product.countDocuments({ brand: brand.name });
+        if (productCount > 0) {
+          return res.status(400).json({ 
+            error: `Cannot delete brand. ${productCount} product(s) are using this brand.` 
+          });
+        }
+        await Brand.deleteOne({ _id: brand._id });
+      }
+      return res.json({ success: true });
+    }
+
+    const db = getDatabase();
     // Check if any products use this brand
     const checkResult = db.exec(`SELECT name FROM brands WHERE id = ?`, [id]);
     if (checkResult.length > 0 && checkResult[0].values.length > 0) {
@@ -773,9 +1078,14 @@ app.delete('/api/brands/:id', requireAdmin, (req, res) => {
 // ==================== CATEGORY ROUTES ====================
 
 // Get all categories
-app.get('/api/categories', (req, res) => {
-  const db = getDatabase();
+app.get('/api/categories', async (req, res) => {
   try {
+    if (isMongoConnected()) {
+      const categories = await Category.find({}).sort({ name: 1 });
+      return res.json(categories);
+    }
+
+    const db = getDatabase();
     const result = db.exec(`SELECT * FROM categories ORDER BY name ASC`);
     
     if (result.length === 0) {
@@ -797,8 +1107,7 @@ app.get('/api/categories', (req, res) => {
 });
 
 // Create category (admin only)
-app.post('/api/categories', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.post('/api/categories', requireAdmin, async (req, res) => {
   const { name, description, icon } = req.body;
 
   if (!name) {
@@ -806,6 +1115,19 @@ app.post('/api/categories', requireAdmin, (req, res) => {
   }
 
   try {
+    if (isMongoConnected()) {
+      const highest = await Category.findOne({}).sort({ legacy_id: -1 });
+      const nextLegacyId = (highest && highest.legacy_id) ? highest.legacy_id + 1 : Date.now();
+      const category = await Category.create({
+        legacy_id: nextLegacyId,
+        name: name.trim(),
+        description: description || '',
+        icon: icon || '📦'
+      });
+      return res.json(category);
+    }
+
+    const db = getDatabase();
     db.run(`
       INSERT INTO categories (name, description, icon)
       VALUES (?, ?, ?)
@@ -825,7 +1147,7 @@ app.post('/api/categories', requireAdmin, (req, res) => {
 
     res.json(category);
   } catch (error) {
-    if (error.message && error.message.includes('UNIQUE')) {
+    if (error.message && (error.message.includes('UNIQUE') || error.code === 11000)) {
       res.status(400).json({ error: 'Category already exists' });
     } else {
       res.status(500).json({ error: 'Failed to create category' });
@@ -834,12 +1156,24 @@ app.post('/api/categories', requireAdmin, (req, res) => {
 });
 
 // Update category (admin only)
-app.put('/api/categories/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.put('/api/categories/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { name, description, icon } = req.body;
 
   try {
+    if (isMongoConnected()) {
+      const category = await findByIdOrLegacy(Category, id);
+      if (!category) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+      if (name !== undefined) category.name = name.trim();
+      if (description !== undefined) category.description = description;
+      if (icon !== undefined) category.icon = icon;
+      await category.save();
+      return res.json(category);
+    }
+
+    const db = getDatabase();
     db.run(`
       UPDATE categories 
       SET name = ?, description = ?, icon = ?
@@ -865,11 +1199,25 @@ app.put('/api/categories/:id', requireAdmin, (req, res) => {
 });
 
 // Delete category (admin only)
-app.delete('/api/categories/:id', requireAdmin, (req, res) => {
-  const db = getDatabase();
+app.delete('/api/categories/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (isMongoConnected()) {
+      const category = await findByIdOrLegacy(Category, id);
+      if (category) {
+        const productCount = await Product.countDocuments({ category: category.name });
+        if (productCount > 0) {
+          return res.status(400).json({ 
+            error: `Cannot delete category. ${productCount} product(s) are using this category.` 
+          });
+        }
+        await Category.deleteOne({ _id: category._id });
+      }
+      return res.json({ success: true });
+    }
+
+    const db = getDatabase();
     // Check if any products use this category
     const checkResult = db.exec(`SELECT name FROM categories WHERE id = ?`, [id]);
     if (checkResult.length > 0 && checkResult[0].values.length > 0) {
@@ -897,11 +1245,21 @@ app.delete('/api/categories/:id', requireAdmin, (req, res) => {
 
 async function startServer() {
   try {
-    await initDatabase();
-    console.log('✓ Database initialized');
+    let usingMongo = false;
+    if (process.env.MONGODB_URI) {
+      usingMongo = await connectMongoDB(process.env.MONGODB_URI);
+    }
+
+    if (!usingMongo) {
+      await initDatabase();
+      console.log('✓ SQLite Database initialized (Fallback)');
+    } else {
+      console.log('✓ MongoDB Atlas initialized as Primary Database');
+    }
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✓ Phone Store server running on http://localhost:${PORT}`);
+      console.log(`✓ Database mode: ${usingMongo ? 'MongoDB Atlas (Cloud)' : 'SQLite (Local)'}`);
       console.log(`✓ Admin login: username=admin, password=admin123`);
     });
   } catch (error) {
