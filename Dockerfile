@@ -1,4 +1,4 @@
-﻿# Production Dockerfile for DyMaly Phone Store (Bong Store System)
+# Production Dockerfile for DyMaly Phone Store (Bong Store System)
 FROM node:20-alpine
 
 # Set working directory
@@ -21,4 +21,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Start server
-CMD [node, server.js]
+CMD ["node", "server.js"]
