@@ -122,7 +122,7 @@ function renderCart() {
                                     ${item.brand ? `<span class="cart-item-brand-label">${item.brand}</span>` : ''}
                                     <h3 class="cart-item-name">${item.name}</h3>
                                 </div>
-                                <button type="button" class="cart-remove-icon-btn" onclick="removeFromCart(${item.id})" title="Remove item" aria-label="Remove ${item.name}">
+                                <button type="button" class="cart-remove-icon-btn" onclick="removeFromCart('${item.id}')" title="Remove item" aria-label="Remove ${item.name}">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="3 6 5 6 21 6"></polyline>
                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -142,9 +142,9 @@ function renderCart() {
                                 </div>
 
                                 <div class="cart-quantity-stepper">
-                                    <button type="button" class="stepper-btn minus-btn" onclick="updateQuantity(${item.id}, -1)" aria-label="Decrease quantity">−</button>
+                                    <button type="button" class="stepper-btn minus-btn" onclick="updateQuantity('${item.id}', -1)" aria-label="Decrease quantity">−</button>
                                     <span class="stepper-num">${item.quantity}</span>
-                                    <button type="button" class="stepper-btn plus-btn" onclick="updateQuantity(${item.id}, 1)" aria-label="Increase quantity">+</button>
+                                    <button type="button" class="stepper-btn plus-btn" onclick="updateQuantity('${item.id}', 1)" aria-label="Increase quantity">+</button>
                                 </div>
                             </div>
                         </div>

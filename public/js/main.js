@@ -200,16 +200,17 @@ function renderProducts() {
         const soldOutBadge = product.stock === 0 ? `<span class="sold-out-badge">${t('sold_out', 'Sold out')}</span>` : '';
         const sizeBadge = product.size ? `<span class="product-size-badge">${product.size}</span>` : '';
         
+        const pid = product.id;
         return `
             <div class="product-card">
                 ${soldOutBadge}
                 <button class="fav-btn ${isSaved ? 'active' : ''}" 
-                        onclick="toggleSaved(event, ${product.id})" 
+                        onclick="toggleSaved(event, '${pid}')" 
                         title="${isSaved ? 'Remove from saved' : 'Save for later'}"
                         aria-label="${isSaved ? 'Remove from saved' : 'Save for later'}">
                     ${isSaved ? '❤️' : '🤍'}
                 </button>
-                <div class="product-img-wrap" onclick="viewProduct(${product.id})">
+                <div class="product-img-wrap" onclick="viewProduct('${pid}')">
                     <div class="product-img-frame">
                         <img src="${product.image_url}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${product.name.replace(/'/g, "\\'")}', '${(product.brand || '').replace(/'/g, "\\'")}');">
                     </div>
@@ -219,10 +220,10 @@ function renderProducts() {
                         <span class="product-brand-name" onclick="filterByBrand('${product.brand}')" style="cursor: pointer;" title="Filter by ${product.brand}">${product.brand}</span>
                         ${sizeBadge}
                     </div>
-                    <h3 onclick="viewProduct(${product.id})" style="cursor: pointer;">${product.name}</h3>
+                    <h3 onclick="viewProduct('${pid}')" style="cursor: pointer;">${product.name}</h3>
                     <div class="product-price-row">
                         <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</div>
-                        ${product.stock > 0 ? `<button class="add-btn" onclick="addToCart(event, ${product.id})" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` : ''}
+                        ${product.stock > 0 ? `<button class="add-btn" onclick="addToCart(event, '${pid}')" title="${t('add_to_cart', 'Add to cart')}" aria-label="${t('add_to_cart', 'Add to cart')}">+</button>` : ''}
                     </div>
                 </div>
             </div>

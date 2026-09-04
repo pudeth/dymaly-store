@@ -152,17 +152,17 @@ async function renderSavedItems() {
                     
                     return `
                         <div class="saved-card" data-product-id="${product.id}">
-                            <button type="button" class="saved-remove-btn active" onclick="toggleSaved(event, ${product.id})" title="Remove from wishlist" aria-label="Remove ${product.name}">
+                            <button type="button" class="saved-remove-btn active" onclick="toggleSaved(event, '${product.id}')" title="Remove from wishlist" aria-label="Remove ${product.name}">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                 </svg>
                             </button>
 
-                            <div class="saved-card-image" onclick="viewProduct(${product.id})">
+                            <div class="saved-card-image" onclick="viewProduct('${product.id}')">
                                 <img src="${safeImage}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderImage('${safeName}', '${safeBrand}');">
                             </div>
 
-                            <div class="saved-card-body" onclick="viewProduct(${product.id})">
+                            <div class="saved-card-body" onclick="viewProduct('${product.id}')">
                                 <div class="saved-meta-row">
                                     <span class="saved-brand-label">${product.brand}</span>
                                     ${product.size ? `<span class="saved-spec-pill">💾 ${product.size}</span>` : ''}
@@ -176,7 +176,7 @@ async function renderSavedItems() {
                                     <span class="saved-card-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price) : `$${product.price.toFixed(2)}`}</span>
                                 </div>
                                 ${product.stock > 0 ? `
-                                <button type="button" class="saved-add-btn" onclick="addToCart(event, ${product.id})" aria-label="Add ${product.name} to cart">
+                                <button type="button" class="saved-add-btn" onclick="addToCart(event, '${product.id}')" aria-label="Add ${product.name} to cart">
                                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
                                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                         <line x1="3" y1="6" x2="21" y2="6"></line>

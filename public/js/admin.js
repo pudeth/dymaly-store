@@ -308,14 +308,14 @@ function renderProducts(products) {
                     <div class="product-price">${window.BongI18n ? window.BongI18n.formatPrice(product.price, { showBoth: true }) : `$${product.price.toFixed(2)}`}</div>
                     <p class="product-desc">${product.description || ''}</p>
                     <div class="product-actions">
-                        <button class="btn-action btn-edit" onclick="editProduct(${product.id})" aria-label="Edit ${product.name}">
+                        <button class="btn-action btn-edit" onclick="editProduct('${product.id}')" aria-label="Edit ${product.name}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                             <span>Edit</span>
                         </button>
-                        <button class="btn-action btn-delete" onclick="deleteProduct(${product.id})" aria-label="Delete ${product.name}">
+                        <button class="btn-action btn-delete" onclick="deleteProduct('${product.id}')" aria-label="Delete ${product.name}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -458,7 +458,7 @@ async function loadReviews() {
                 <div class="review-customer">${review.customer_name}</div>
                 <div class="review-date">${new Date(review.created_at).toLocaleDateString()}</div>
                 <div class="review-comment">${review.comment}</div>
-                <button class="btn btn-danger btn-small" onclick="deleteReview(${review.id})">Delete</button>
+                <button class="btn btn-danger btn-small" onclick="deleteReview('${review.id}')">Delete</button>
             </div>
         `).join('');
     } catch (error) {
@@ -756,14 +756,14 @@ function renderBrands(brands) {
                     </svg>
                     <span>Products</span>
                 </button>
-                <button class="btn-action btn-edit" onclick="editBrand(${brand.id})" aria-label="Edit ${brand.name}">
+                <button class="btn-action btn-edit" onclick="editBrand('${brand.id}')" aria-label="Edit ${brand.name}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     <span>Edit</span>
                 </button>
-                <button class="btn-action btn-delete" onclick="deleteBrand(${brand.id}, '${safeBrandName}')" aria-label="Delete ${brand.name}">
+                <button class="btn-action btn-delete" onclick="deleteBrand('${brand.id}', '${safeBrandName}')" aria-label="Delete ${brand.name}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -997,14 +997,14 @@ function renderCategories(categories) {
                     </svg>
                     <span>Products</span>
                 </button>
-                <button class="btn-action btn-edit" onclick="editCategory(${category.id})" aria-label="Edit ${category.name}">
+                <button class="btn-action btn-edit" onclick="editCategory('${category.id}')" aria-label="Edit ${category.name}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                     <span>Edit</span>
                 </button>
-                <button class="btn-action btn-delete" onclick="deleteCategory(${category.id}, '${safeCatName}')" aria-label="Delete ${category.name}">
+                <button class="btn-action btn-delete" onclick="deleteCategory('${category.id}', '${safeCatName}')" aria-label="Delete ${category.name}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -2070,18 +2070,17 @@ async function autoSaveStoreLogo(newLogoUrl) {
 async function handleStoreLogoUpload(file) {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-        alert('Please select an image file (PNG, JPG, SVG, or WEBP).');
+        showToast('❌ Please select an image file (PNG, JPG, SVG, or WEBP).');
         return;
     }
     if (file.size > 5 * 1024 * 1024) {
-        alert('Image size exceeds 5MB limit.');
+        showToast('❌ Image size exceeds 5MB limit.');
         return;
     }
 
     const chooseBtn = document.getElementById('chooseStoreLogoBtn');
     const chooseBtnText = document.getElementById('chooseStoreLogoBtnText');
     if (chooseBtnText) chooseBtnText.textContent = 'Uploading...';
-    if (chooseBtn) chooseBtn.disabled = true;
 
     try {
         const formData = new FormData();
@@ -2092,10 +2091,15 @@ async function handleStoreLogoUpload(file) {
             body: formData
         });
 
-        if (response.ok) {
-            const data = await response.json();
+        const data = await response.json();
+
+        if (response.ok && data.imageUrl) {
             applyStoreLogoToAdmin(data.imageUrl);
             
+            // Update the URL input field too
+            const logoUrlInput = document.getElementById('settingStoreLogo');
+            if (logoUrlInput) logoUrlInput.value = data.imageUrl;
+
             // Auto-save setting so the logo immediately goes live across the store
             const saved = await autoSaveStoreLogo(data.imageUrl);
             if (saved) {
@@ -2104,13 +2108,12 @@ async function handleStoreLogoUpload(file) {
                 showToast('✓ Store logo uploaded! Click "Save Store Settings" to finalize.');
             }
         } else {
-            alert('Failed to upload store logo. Please try again.');
+            showToast('❌ Failed to upload store logo: ' + (data.error || 'Please try again.'));
         }
     } catch (err) {
         console.error('Error uploading store logo:', err);
-        alert('Network error while uploading store logo.');
+        showToast('❌ Network error while uploading store logo.');
     } finally {
-        if (chooseBtn) chooseBtn.disabled = false;
         if (chooseBtnText) chooseBtnText.textContent = 'Change Logo';
     }
 }
@@ -2118,14 +2121,13 @@ async function handleStoreLogoUpload(file) {
 // Initialize Store Logo Upload events
 function initializeStoreLogoUpload() {
     const fileInput = document.getElementById('storeLogoFileInput');
-    const chooseBtn = document.getElementById('chooseStoreLogoBtn');
     const removeBtn = document.getElementById('removeStoreLogoBtn');
     const dropzone = document.getElementById('storeLogoUploader');
     const previewBox = document.getElementById('storeLogoPreviewBox');
+    const logoUrlInput = document.getElementById('settingStoreLogo');
+    const previewLogoUrlBtn = document.getElementById('btnPreviewStoreLogoUrl');
 
-    if (chooseBtn && fileInput) {
-        chooseBtn.addEventListener('click', () => fileInput.click());
-    }
+    // previewBox click triggers file dialog
     if (previewBox && fileInput) {
         previewBox.addEventListener('click', () => fileInput.click());
         previewBox.style.cursor = 'pointer';
@@ -2140,9 +2142,25 @@ function initializeStoreLogoUpload() {
         });
     }
 
+    // Apply URL button
+    if (previewLogoUrlBtn && logoUrlInput) {
+        previewLogoUrlBtn.addEventListener('click', async () => {
+            const url = logoUrlInput.value.trim();
+            if (!url) { showToast('Please enter an image URL first.'); return; }
+            applyStoreLogoToAdmin(url);
+            const saved = await autoSaveStoreLogo(url);
+            if (saved) {
+                showToast('✓ Store logo URL applied & saved live!');
+            } else {
+                showToast('Preview applied. Click "Save & Sync" to finalize.');
+            }
+        });
+    }
+
     if (removeBtn) {
         removeBtn.addEventListener('click', async () => {
             applyStoreLogoToAdmin('');
+            if (logoUrlInput) logoUrlInput.value = '';
             const saved = await autoSaveStoreLogo('');
             if (saved) {
                 showToast('✓ Store logo removed & updated across store.');
@@ -2189,6 +2207,7 @@ async function loadStoreSettings() {
             setVal('settingStoreName', currentStoreSettings.store_name);
             setVal('settingStoreTagline', currentStoreSettings.store_tagline);
             setVal('settingStoreBadge', currentStoreSettings.store_badge);
+            setVal('settingStoreLogo', currentStoreSettings.store_logo || '');
             applyStoreLogoToAdmin(currentStoreSettings.store_logo || '');
 
             // 2. Announcement Bar
@@ -2445,11 +2464,11 @@ function applyAdminAvatarToUI(avatarUrl, displayName) {
 async function handleAdminAvatarUpload(file) {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-        alert('Please select an image file (PNG, JPG, or WEBP).');
+        showToast('❌ Please select an image file (PNG, JPG, or WEBP).');
         return;
     }
     if (file.size > 5 * 1024 * 1024) {
-        alert('Image size exceeds 5MB limit.');
+        showToast('❌ Image size exceeds 5MB limit.');
         return;
     }
 
@@ -2465,13 +2484,18 @@ async function handleAdminAvatarUpload(file) {
             body: formData
         });
 
-        if (response.ok) {
-            const data = await response.json();
+        const data = await response.json();
+
+        if (response.ok && data.imageUrl) {
             const avatarUrl = data.imageUrl;
+            // Update the visible URL field
+            const urlInput = document.getElementById('profileAvatarUrl');
+            if (urlInput) urlInput.value = avatarUrl;
+
             applyAdminAvatarToUI(avatarUrl, currentAdminProfile.display_name);
 
             // Auto-save to server so avatar persists immediately
-            await fetch('/api/admin/profile', {
+            const saveRes = await fetch('/api/admin/profile', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -2482,14 +2506,19 @@ async function handleAdminAvatarUpload(file) {
                     avatar_url: avatarUrl
                 })
             });
-            currentAdminProfile.avatar_url = avatarUrl;
-            showToast('✓ Profile photo updated successfully!');
+            const saveData = await saveRes.json();
+            if (saveRes.ok && saveData.success) {
+                currentAdminProfile.avatar_url = avatarUrl;
+                showToast('✓ Profile photo updated successfully!');
+            } else {
+                showToast('⚠️ Photo uploaded but failed to save: ' + (saveData.error || 'Unknown error'));
+            }
         } else {
-            alert('Failed to upload profile photo.');
+            showToast('❌ Failed to upload profile photo: ' + (data.error || 'Unknown error'));
         }
     } catch (err) {
         console.error('Error uploading admin avatar:', err);
-        alert('Network error while uploading profile photo.');
+        showToast('❌ Network error while uploading profile photo.');
     } finally {
         if (chooseBtnText) chooseBtnText.textContent = currentAdminProfile.avatar_url ? 'Change Photo' : 'Upload Photo';
     }
@@ -2498,16 +2527,14 @@ async function handleAdminAvatarUpload(file) {
 // Initialize Admin Avatar Upload events
 function initializeAdminAvatarUpload() {
     const fileInput = document.getElementById('adminAvatarFileInput');
-    const cameraBtn = document.getElementById('btnUploadAdminAvatar');
-    const chooseBtn = document.getElementById('chooseAdminAvatarBtn');
-    const removeBtn = document.getElementById('removeAdminAvatarBtn');
     const avatarLarge = document.getElementById('profileAvatarLarge');
     const avatarImg = document.getElementById('profileAvatarImg');
+    const removeBtn = document.getElementById('removeAdminAvatarBtn');
+    const urlInput = document.getElementById('profileAvatarUrl');
+    const previewUrlBtn = document.getElementById('btnPreviewAvatarUrl');
 
+    // Direct click on avatar area to trigger file input (in case label fails)
     const triggerUpload = () => fileInput && fileInput.click();
-
-    if (cameraBtn) cameraBtn.addEventListener('click', triggerUpload);
-    if (chooseBtn) chooseBtn.addEventListener('click', triggerUpload);
     if (avatarLarge) {
         avatarLarge.addEventListener('click', triggerUpload);
         avatarLarge.style.cursor = 'pointer';
@@ -2526,9 +2553,42 @@ function initializeAdminAvatarUpload() {
         });
     }
 
+    // URL preview & apply
+    if (previewUrlBtn && urlInput) {
+        previewUrlBtn.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            if (!url) { showToast('Please enter an image URL first.'); return; }
+            applyAdminAvatarToUI(url, currentAdminProfile.display_name);
+            // Auto-save
+            try {
+                const saveRes = await fetch('/api/admin/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        display_name: currentAdminProfile.display_name,
+                        username: currentAdminProfile.username,
+                        email: currentAdminProfile.email,
+                        phone: currentAdminProfile.phone,
+                        avatar_url: url
+                    })
+                });
+                const saveData = await saveRes.json();
+                if (saveRes.ok && saveData.success) {
+                    currentAdminProfile.avatar_url = url;
+                    showToast('✓ Profile photo URL applied & saved!');
+                } else {
+                    showToast('⚠️ Preview applied but failed to save: ' + (saveData.error || ''));
+                }
+            } catch (e) {
+                showToast('⚠️ Preview applied but could not save.');
+            }
+        });
+    }
+
     if (removeBtn) {
         removeBtn.addEventListener('click', async () => {
             applyAdminAvatarToUI('', currentAdminProfile.display_name);
+            if (urlInput) urlInput.value = '';
             try {
                 await fetch('/api/admin/profile', {
                     method: 'PUT',
@@ -2562,11 +2622,13 @@ async function loadAdminProfile() {
             const userInput = document.getElementById('profileUsername');
             const emailInput = document.getElementById('profileEmail');
             const phoneInput = document.getElementById('profilePhone');
+            const urlInput = document.getElementById('profileAvatarUrl');
             
             if (nameInput) nameInput.value = currentAdminProfile.display_name || '';
             if (userInput) userInput.value = currentAdminProfile.username || '';
             if (emailInput) emailInput.value = currentAdminProfile.email || '';
             if (phoneInput) phoneInput.value = currentAdminProfile.phone || '';
+            if (urlInput) urlInput.value = currentAdminProfile.avatar_url || '';
             
             // Update Avatar (photo or initial)
             applyAdminAvatarToUI(currentAdminProfile.avatar_url || '', currentAdminProfile.display_name);
