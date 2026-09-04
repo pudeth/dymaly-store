@@ -164,7 +164,7 @@
                         <rect x="3" y="16" width="7" height="5" rx="1"></rect>
                     </svg>
                 </span>
-                <span class="tab-label">Overview</span>
+                <span class="tab-label" data-i18n="nav_overview">Overview</span>
             </button>
             <button class="tab-btn" data-tab="catalog">
                 <span class="tab-icon">
@@ -174,7 +174,7 @@
                         <polyline points="2 12 12 17 22 12"></polyline>
                     </svg>
                 </span>
-                <span class="tab-label">Catalog</span>
+                <span class="tab-label" data-i18n="nav_catalog">Catalog</span>
             </button>
             <button class="tab-btn" data-tab="reviews">
                 <span class="tab-icon">
@@ -182,7 +182,7 @@
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </span>
-                <span class="tab-label">Reviews</span>
+                <span class="tab-label" data-i18n="nav_reviews">Reviews</span>
             </button>
             <button class="tab-btn" data-tab="settings">
                 <span class="tab-icon">
@@ -191,7 +191,7 @@
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                 </span>
-                <span class="tab-label">Settings</span>
+                <span class="tab-label" data-i18n="nav_settings">Settings</span>
             </button>
         </nav>
 
@@ -207,7 +207,7 @@
                             </svg>
                         </div>
                         <div class="stat-value" id="totalProducts">0</div>
-                        <div class="stat-label-new">Total Products</div>
+                        <div class="stat-label-new" data-i18n="stat_total_products">Total Products</div>
                         <div class="stat-meta" id="totalUnits">0 total units</div>
                     </div>
                     
@@ -219,8 +219,8 @@
                             </svg>
                         </div>
                         <div class="stat-value" id="stockValue">$0</div>
-                        <div class="stat-label-new">Stock Value</div>
-                        <div class="stat-meta">Total inventory</div>
+                        <div class="stat-label-new" data-i18n="stat_stock_value">Stock Value</div>
+                        <div class="stat-meta" data-i18n="stat_total_inventory">Total inventory</div>
                     </div>
                     
                     <div class="stat-card-new stat-rating-new">
@@ -230,7 +230,7 @@
                             </svg>
                         </div>
                         <div class="stat-value" id="avgRating">0.0</div>
-                        <div class="stat-label-new">Average Rating</div>
+                        <div class="stat-label-new" data-i18n="stat_avg_rating">Average Rating</div>
                         <div class="stat-meta" id="totalReviewsMeta">0 reviews</div>
                     </div>
                     
@@ -243,46 +243,46 @@
                             </svg>
                         </div>
                         <div class="stat-value" id="needRestock">0</div>
-                        <div class="stat-label-new">Need Restock</div>
-                        <div class="stat-meta">Low stock items</div>
+                        <div class="stat-label-new" data-i18n="stat_need_restock">Need Restock</div>
+                        <div class="stat-meta" data-i18n="stat_low_stock_items">Low stock items</div>
                     </div>
                 </div>
 
                 <div class="stock-distribution-section">
-                    <h3 class="section-title-new">Stock Distribution</h3>
+                    <h3 class="section-title-new" data-i18n="stock_distribution">Stock Distribution</h3>
                     <div class="stock-distribution-card">
                         <div class="stock-item">
                             <div class="stock-info">
                                 <span class="stock-dot stock-out"></span>
-                                <span class="stock-label">Out of Stock</span>
+                                <span class="stock-label" data-i18n="out_of_stock">Out of Stock</span>
                             </div>
                             <span class="stock-count" id="outOfStockCount">0</span>
                         </div>
                         <div class="stock-item">
                             <div class="stock-info">
                                 <span class="stock-dot stock-critical"></span>
-                                <span class="stock-label">Critical</span>
+                                <span class="stock-label" data-i18n="stock_critical">Critical</span>
                             </div>
                             <span class="stock-count" id="criticalCount">0</span>
                         </div>
                         <div class="stock-item">
                             <div class="stock-info">
                                 <span class="stock-dot stock-low"></span>
-                                <span class="stock-label">Low Stock</span>
+                                <span class="stock-label" data-i18n="low_stock">Low Stock</span>
                             </div>
                             <span class="stock-count" id="lowStockCount">0</span>
                         </div>
                         <div class="stock-item">
                             <div class="stock-info">
                                 <span class="stock-dot stock-normal"></span>
-                                <span class="stock-label">Normal</span>
+                                <span class="stock-label" data-i18n="stock_normal">Normal</span>
                             </div>
                             <span class="stock-count" id="normalCount">0</span>
                         </div>
                         <div class="stock-item">
                             <div class="stock-info">
                                 <span class="stock-dot stock-high"></span>
-                                <span class="stock-label">High Stock</span>
+                                <span class="stock-label" data-i18n="stock_high">High Stock</span>
                             </div>
                             <span class="stock-count" id="highStockCount">0</span>
                         </div>
@@ -290,7 +290,7 @@
                 </div>
 
                 <div class="attention-section">
-                    <h3 class="section-title-new">Products Needing Attention</h3>
+                    <h3 class="section-title-new" data-i18n="products_needing_attention">Products Needing Attention</h3>
                     <div class="low-stock-list" id="lowStockList"></div>
                 </div>
             </div>
@@ -299,8 +299,8 @@
             <div id="catalogTab" class="tab-content">
                 <div class="page-header catalog-page-header">
                     <div>
-                        <h2>Catalog Management</h2>
-                        <p class="page-subtitle">Products, brands, and categories in one unified hub</p>
+                        <h2 data-i18n="catalog_management">Catalog Management</h2>
+                        <p class="page-subtitle" data-i18n="catalog_subtitle">Products, brands, and categories in one unified hub</p>
                     </div>
                     <div class="catalog-header-actions">
                         <button id="catalogAddBtn" class="btn-add-item" onclick="handleCatalogAdd()">
@@ -308,7 +308,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            <span id="catalogAddBtnText">Add Product</span>
+                            <span id="catalogAddBtnText" data-i18n="add_product">Add Product</span>
                         </button>
                         <!-- Preserved IDs for background handlers -->
                         <button id="addProductBtn" style="display:none;"></button>
@@ -324,7 +324,7 @@
                             <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
                             <line x1="12" y1="18" x2="12.01" y2="18"></line>
                         </svg>
-                        <span>Products</span>
+                        <span data-i18n="tab_products">Products</span>
                         <span class="catalog-count-pill" id="catalogProductsCount">0</span>
                     </button>
                     <button type="button" class="catalog-segment-btn" data-subtab="brands" onclick="switchCatalogSubtab('brands')">
@@ -332,7 +332,7 @@
                             <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                             <line x1="7" y1="7" x2="7.01" y2="7"></line>
                         </svg>
-                        <span>Brands</span>
+                        <span data-i18n="tab_brands">Brands</span>
                         <span class="catalog-count-pill" id="catalogBrandsCount">0</span>
                     </button>
                     <button type="button" class="catalog-segment-btn" data-subtab="categories" onclick="switchCatalogSubtab('categories')">
@@ -341,7 +341,7 @@
                             <polyline points="2 17 12 22 22 17"></polyline>
                             <polyline points="2 12 12 17 22 12"></polyline>
                         </svg>
-                        <span>Categories</span>
+                        <span data-i18n="tab_categories">Categories</span>
                         <span class="catalog-count-pill" id="catalogCategoriesCount">0</span>
                     </button>
                 </div>
@@ -356,19 +356,19 @@
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </span>
-                            <input type="text" id="productSearch" placeholder="Search products by name, brand, or price...">
+                            <input type="text" id="productSearch" placeholder="Search products by name, brand, or price..." data-i18n-placeholder="search_products_placeholder">
                         </div>
                         <div class="catalog-quick-filters">
                             <div class="catalog-filter-dropdown">
-                                <label for="filterBrandSelect">Brand:</label>
+                                <label for="filterBrandSelect" data-i18n="filter_brand_label">Brand:</label>
                                 <select id="filterBrandSelect" onchange="applyProductFilters()">
-                                    <option value="">All Brands</option>
+                                    <option value="" data-i18n="all_brands">All Brands</option>
                                 </select>
                             </div>
                             <div class="catalog-filter-dropdown">
-                                <label for="filterCategorySelect">Category:</label>
+                                <label for="filterCategorySelect" data-i18n="filter_category_label">Category:</label>
                                 <select id="filterCategorySelect" onchange="applyProductFilters()">
-                                    <option value="">All Categories</option>
+                                    <option value="" data-i18n="all_categories">All Categories</option>
                                 </select>
                             </div>
                         </div>
@@ -387,14 +387,14 @@
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </span>
-                            <input type="text" id="brandSearch" placeholder="Search brands...">
+                            <input type="text" id="brandSearch" placeholder="Search brands..." data-i18n-placeholder="search_brands_placeholder">
                         </div>
                         <button type="button" class="btn-add-item btn-subview-add" onclick="openAddBrandModal()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            <span>Add Brand</span>
+                            <span data-i18n="add_brand">Add Brand</span>
                         </button>
                     </div>
                     
@@ -411,14 +411,14 @@
                                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                 </svg>
                             </span>
-                            <input type="text" id="categorySearch" placeholder="Search categories...">
+                            <input type="text" id="categorySearch" placeholder="Search categories..." data-i18n-placeholder="search_categories_placeholder">
                         </div>
                         <button type="button" class="btn-add-item btn-subview-add" onclick="openAddCategoryModal()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            <span>Add Category</span>
+                            <span data-i18n="add_category">Add Category</span>
                         </button>
                     </div>
                     
@@ -429,8 +429,8 @@
             <!-- Reviews Tab -->
             <div id="reviewsTab" class="tab-content">
                 <div class="page-header">
-                    <h2>Customer Reviews</h2>
-                    <p class="page-subtitle">Manage customer feedback</p>
+                    <h2 data-i18n="customer_reviews_title">Customer Reviews</h2>
+                    <p class="page-subtitle" data-i18n="customer_reviews_subtitle">Manage customer feedback</p>
                 </div>
                 <div id="reviewsList" class="reviews-list"></div>
             </div>
@@ -439,8 +439,8 @@
             <div id="settingsTab" class="tab-content">
                 <div class="page-header">
                     <div>
-                        <h2>Store & Admin Settings</h2>
-                        <p class="page-subtitle">Configure your store identity and administrator account</p>
+                        <h2 data-i18n="store_admin_settings">Store & Admin Settings</h2>
+                        <p class="page-subtitle" data-i18n="settings_subtitle">Configure your store identity and administrator account</p>
                     </div>
                 </div>
 
@@ -455,8 +455,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Store Identity</h3>
-                                <p class="settings-card-desc">Edit store name, tagline, and customer contact info</p>
+                                <h3 data-i18n="store_identity">Store Identity</h3>
+                                <p class="settings-card-desc" data-i18n="store_identity_desc">Edit store name, tagline, and customer contact info</p>
                             </div>
                         </div>
 
@@ -479,7 +479,7 @@
                                 <img id="previewBannerImg" src="" alt="Store Logo" class="preview-logo-img" style="display: none;">
                             </div>
                             <div class="preview-banner-text">
-                                <span class="preview-live-tag">LIVE PREVIEW</span>
+                                <span class="preview-live-tag" data-i18n="live_preview">LIVE PREVIEW</span>
                                 <h4 id="previewStoreName">DyMaly</h4>
                                 <p id="previewStoreTagline">Phones & audio, delivered fast</p>
                             </div>
@@ -488,10 +488,10 @@
                         <form id="storeSettingsForm" onsubmit="handleSaveStoreSettings(event)">
                             <!-- Section A: Store Identity -->
                             <div class="settings-sub-section">
-                                <h4 class="sub-section-title">🏪 1. Store Identity & Branding</h4>
+                                <h4 class="sub-section-title" data-i18n="section_identity">🏪 1. Store Identity & Branding</h4>
                                 <div class="form-group store-logo-field">
                                     <label class="label-with-badge">
-                                        <span>Store Logo / Brand Icon</span>
+                                        <span data-i18n="store_logo_label">Store Logo / Brand Icon</span>
                                         <span class="field-hint">PNG, JPG, SVG, WEBP (Cloud Stored)</span>
                                     </label>
                                     <div class="store-logo-uploader" id="storeLogoUploader">
@@ -513,14 +513,14 @@
                                                         <polyline points="17 8 12 3 7 8"></polyline>
                                                         <line x1="12" y1="3" x2="12" y2="15"></line>
                                                     </svg>
-                                                    <span id="chooseStoreLogoBtnText">Upload Store Logo</span>
+                                                    <span id="chooseStoreLogoBtnText" data-i18n="upload_store_logo">Upload Store Logo</span>
                                                 </label>
                                                 <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                         <polyline points="3 6 5 6 21 6"></polyline>
                                                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                                     </svg>
-                                                    <span>Remove</span>
+                                                    <span data-i18n="remove">Remove</span>
                                                 </button>
                                             </div>
                                             <div class="store-logo-url-row" style="margin-top: 8px; display: flex; gap: 8px; width: 100%;">
@@ -534,23 +534,23 @@
 
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="settingStoreName">Store Name *</label>
+                                        <label for="settingStoreName" data-i18n="store_name_label">Store Name *</label>
                                         <input type="text" id="settingStoreName" placeholder="e.g. DyMaly" required oninput="updateStorePreview()">
                                     </div>
                                     <div class="form-group">
-                                        <label for="settingStoreBadge">Header Badge</label>
+                                        <label for="settingStoreBadge" data-i18n="header_badge_label">Header Badge</label>
                                         <input type="text" id="settingStoreBadge" placeholder="e.g. Official Store">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="settingStoreTagline">Store Tagline / Slogan</label>
+                                    <label for="settingStoreTagline" data-i18n="store_tagline_label">Store Tagline / Slogan</label>
                                     <input type="text" id="settingStoreTagline" placeholder="e.g. Phones & audio, delivered fast" oninput="updateStorePreview()">
                                 </div>
                             </div>
 
                             <!-- Section B: Announcement Bar -->
                             <div class="settings-sub-section">
-                                <h4 class="sub-section-title">📢 2. Top Announcement Bar</h4>
+                                <h4 class="sub-section-title" data-i18n="section_announcement">📢 2. Top Announcement Bar</h4>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="settingAnnouncementEnabled">Display Announcement Bar?</label>
@@ -576,7 +576,7 @@
 
                             <!-- Section C: Hero Banner Content -->
                             <div class="settings-sub-section">
-                                <h4 class="sub-section-title">✨ 3. Hero Promo Banner (Homepage)</h4>
+                                <h4 class="sub-section-title" data-i18n="section_hero">✨ 3. Hero Promo Banner (Homepage)</h4>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="settingHeroBadge">Promo Badge</label>
@@ -599,32 +599,32 @@
 
                             <!-- Section D: Contact & Location Details -->
                             <div class="settings-sub-section">
-                                <h4 class="sub-section-title">📞 4. Customer Support & Store Location</h4>
+                                <h4 class="sub-section-title" data-i18n="section_contact">📞 4. Customer Support & Store Location</h4>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="settingStorePhone">Contact Phone</label>
+                                        <label for="settingStorePhone" data-i18n="contact_phone">Contact Phone</label>
                                         <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
                                     </div>
                                     <div class="form-group">
-                                        <label for="settingStoreEmail">Contact Email</label>
+                                        <label for="settingStoreEmail" data-i18n="contact_email">Contact Email</label>
                                         <input type="email" id="settingStoreEmail" placeholder="e.g. contact@dymaly.com">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="settingStoreAddress">Physical Address / City</label>
+                                        <label for="settingStoreAddress" data-i18n="physical_address">Physical Address / City</label>
                                         <input type="text" id="settingStoreAddress" placeholder="e.g. Preah Monivong Blvd, Phnom Penh, Cambodia">
                                     </div>
                                     <div class="form-group">
-                                        <label for="settingStoreHours">Operating Hours</label>
+                                        <label for="settingStoreHours" data-i18n="operating_hours">Operating Hours</label>
                                         <input type="text" id="settingStoreHours" placeholder="e.g. Mon - Sun: 8:00 AM - 9:00 PM">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Section E: Social Media Links -->
+                            <!-- Section E: Social Media Channels -->
                             <div class="settings-sub-section">
-                                <h4 class="sub-section-title">🌐 5. Social Media Channels</h4>
+                                <h4 class="sub-section-title" data-i18n="section_social">🌐 5. Social Media Channels</h4>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="settingSocialTelegram">Telegram Link / Username</label>
@@ -706,7 +706,7 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span>Save & Sync All Website Information Live</span>
+                                    <span data-i18n="save_store_settings">Save & Sync All Website Information Live</span>
                                 </button>
                             </div>
                         </form>
@@ -722,8 +722,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Admin Profile</h3>
-                                <p class="settings-card-desc">Edit administrator details and change password</p>
+                                <h3 data-i18n="admin_account">Admin Profile</h3>
+                                <p class="settings-card-desc" data-i18n="admin_account_desc">Edit administrator details and change password</p>
                             </div>
                         </div>
 
@@ -751,9 +751,9 @@
                                             <polyline points="17 8 12 3 7 8"></polyline>
                                             <line x1="12" y1="3" x2="12" y2="15"></line>
                                         </svg>
-                                        <span id="chooseAvatarBtnText">Upload Photo</span>
+                                        <span id="chooseAvatarBtnText" data-i18n="choose_file">Upload Photo</span>
                                     </label>
-                                    <button type="button" class="btn-avatar-pill-remove" id="removeAdminAvatarBtn" style="display: none;">Remove</button>
+                                    <button type="button" class="btn-avatar-pill-remove" id="removeAdminAvatarBtn" style="display: none;" data-i18n="remove">Remove</button>
                                 </div>
                             </div>
                         </div>
@@ -770,7 +770,7 @@
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="profileDisplayName">Display Name *</label>
+                                    <label for="profileDisplayName" data-i18n="display_name">Display Name *</label>
                                     <input type="text" id="profileDisplayName" placeholder="e.g. Store Administrator" required>
                                 </div>
                                 <div class="form-group">
@@ -780,11 +780,11 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="profileEmail">Admin Email</label>
+                                    <label for="profileEmail" data-i18n="email_label">Admin Email</label>
                                     <input type="email" id="profileEmail" placeholder="e.g. admin@bongstore.com">
                                 </div>
                                 <div class="form-group">
-                                    <label for="profilePhone">Admin Phone</label>
+                                    <label for="profilePhone" data-i18n="phone_label">Admin Phone</label>
                                     <input type="text" id="profilePhone" placeholder="e.g. +855 12 345 678">
                                 </div>
                             </div>
@@ -799,12 +799,12 @@
                                     <span>Change Password (Optional)</span>
                                 </div>
                                 <div class="form-group">
-                                    <label for="profileCurrentPassword">Current Password</label>
+                                    <label for="profileCurrentPassword" data-i18n="current_password">Current Password</label>
                                     <input type="password" id="profileCurrentPassword" placeholder="Enter current password to verify" autocomplete="current-password">
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="profileNewPassword">New Password</label>
+                                        <label for="profileNewPassword" data-i18n="new_password">New Password</label>
                                         <input type="password" id="profileNewPassword" placeholder="New password (min 6 characters)" autocomplete="new-password">
                                     </div>
                                     <div class="form-group">
@@ -819,7 +819,7 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span>Update Profile</span>
+                                    <span data-i18n="update_profile">Update Profile</span>
                                 </button>
                             </div>
                         </form>
@@ -830,7 +830,7 @@
 
         <!-- Mobile Bottom Navigation -->
         <nav class="admin-bottom-nav">
-            <button class="tab-btn nav-item active" data-tab="stats" aria-label="Overview">
+            <button class="tab-btn nav-item active" data-tab="stats" aria-label="Overview" data-i18n-aria="nav_overview">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="7" height="9" rx="1"></rect>
@@ -839,9 +839,9 @@
                         <rect x="3" y="16" width="7" height="5" rx="1"></rect>
                     </svg>
                 </span>
-                <span class="nav-label">Overview</span>
+                <span class="nav-label" data-i18n="nav_overview">Overview</span>
             </button>
-            <button class="tab-btn nav-item" data-tab="catalog" aria-label="Catalog">
+            <button class="tab-btn nav-item" data-tab="catalog" aria-label="Catalog" data-i18n-aria="nav_catalog">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -849,24 +849,24 @@
                         <polyline points="2 12 12 17 22 12"></polyline>
                     </svg>
                 </span>
-                <span class="nav-label">Catalog</span>
+                <span class="nav-label" data-i18n="nav_catalog">Catalog</span>
             </button>
-            <button class="tab-btn nav-item" data-tab="reviews" aria-label="Reviews">
+            <button class="tab-btn nav-item" data-tab="reviews" aria-label="Reviews" data-i18n-aria="nav_reviews">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </span>
-                <span class="nav-label">Reviews</span>
+                <span class="nav-label" data-i18n="nav_reviews">Reviews</span>
             </button>
-            <button class="tab-btn nav-item" data-tab="settings" aria-label="Settings">
+            <button class="tab-btn nav-item" data-tab="settings" aria-label="Settings" data-i18n-aria="nav_settings">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                 </span>
-                <span class="nav-label">Settings</span>
+                <span class="nav-label" data-i18n="nav_settings">Settings</span>
             </button>
         </nav>
     </div>
@@ -876,7 +876,7 @@
         <div class="modal-content">
             <div class="modal-drag-handle"></div>
             <div class="modal-header">
-                <h2 id="modalTitle">Add New Product</h2>
+                <h2 id="modalTitle" data-i18n="add_new_product">Add New Product</h2>
                 <button class="modal-close" onclick="closeProductModal()" aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -887,18 +887,18 @@
             <form id="productForm">
                 <input type="hidden" id="productId">
                 <div class="form-group">
-                    <label for="productName">Product Name *</label>
+                    <label for="productName" data-i18n="product_name_label">Product Name *</label>
                     <input type="text" id="productName" placeholder="e.g., iPhone 15 Pro" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="productBrand">Brand *</label>
+                        <label for="productBrand" data-i18n="brand_label">Brand *</label>
                         <select id="productBrand" required>
                             <option value="">Select brand...</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="productCategory">Category</label>
+                        <label for="productCategory" data-i18n="category_label">Category</label>
                         <select id="productCategory">
                             <option value="">Select category...</option>
                         </select>
@@ -906,25 +906,25 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="productPrice">Price ($) *</label>
+                        <label for="productPrice" data-i18n="price_label">Price ($) *</label>
                         <input type="number" id="productPrice" step="0.01" placeholder="999.00" required>
                     </div>
                     <div class="form-group">
-                        <label for="productSize">Storage/Size</label>
+                        <label for="productSize" data-i18n="storage_specs_label">Storage/Size</label>
                         <input type="text" id="productSize" placeholder="256GB, 512GB, etc.">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="productStock">Stock Quantity *</label>
+                    <label for="productStock" data-i18n="stock_qty_label">Stock Quantity *</label>
                     <input type="number" id="productStock" placeholder="50" required>
                 </div>
                 <div class="form-group">
-                    <label for="productDescription">Description</label>
+                    <label for="productDescription" data-i18n="description_label">Description</label>
                     <textarea id="productDescription" rows="3" placeholder="Enter product description..."></textarea>
                 </div>
                 <div class="form-group">
                     <div class="label-with-badge">
-                        <label>Product Image</label>
+                        <label data-i18n="product_image_label">Product Image</label>
                         <span class="recommend-tag">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -1012,8 +1012,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Product</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="save_product">Save Product</button>
                 </div>
             </form>
         </div>
@@ -1024,7 +1024,7 @@
         <div class="modal-content">
             <div class="modal-drag-handle"></div>
             <div class="modal-header">
-                <h2 id="brandModalTitle">Add New Brand</h2>
+                <h2 id="brandModalTitle" data-i18n="add_new_brand">Add New Brand</h2>
                 <button class="modal-close" onclick="closeBrandModal()" aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -1035,11 +1035,11 @@
             <form id="brandForm">
                 <input type="hidden" id="brandId">
                 <div class="form-group">
-                    <label for="brandName">Brand Name *</label>
+                    <label for="brandName" data-i18n="brand_name_label">Brand Name *</label>
                     <input type="text" id="brandName" placeholder="e.g., Apple" required>
                 </div>
                 <div class="form-group">
-                    <label for="brandDescription">Description</label>
+                    <label for="brandDescription" data-i18n="description_label">Description</label>
                     <textarea id="brandDescription" rows="2" placeholder="Enter brand description..."></textarea>
                 </div>
                 <div class="form-group">
@@ -1074,7 +1074,7 @@
                                     <circle cx="12" cy="12" r="10"></circle>
                                     <line x1="12" y1="16" x2="12" y2="12"></line>
                                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                </svg>
+                                </div>
                                 <span>Recommended Logo Specs</span>
                             </div>
                             <div class="recommend-guide-chips">
@@ -1115,21 +1115,21 @@
                                     <polyline points="17 8 12 3 7 8"></polyline>
                                     <line x1="12" y1="3" x2="12" y2="15"></line>
                                 </svg>
-                                <span>Choose Logo</span>
+                                <span data-i18n="choose_logo">Choose Logo</span>
                             </button>
                             <button type="button" class="btn-upload-action btn-upload-remove" id="removeBrandLogoBtn" style="display: none;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                 </svg>
-                                <span>Remove</span>
+                                <span data-i18n="remove">Remove</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeBrandModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Brand</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeBrandModal()" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="save_brand">Save Brand</button>
                 </div>
             </form>
         </div>
@@ -1140,7 +1140,7 @@
         <div class="modal-content">
             <div class="modal-drag-handle"></div>
             <div class="modal-header">
-                <h2 id="categoryModalTitle">Add New Category</h2>
+                <h2 id="categoryModalTitle" data-i18n="add_new_category">Add New Category</h2>
                 <button class="modal-close" onclick="closeCategoryModal()" aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -1151,11 +1151,11 @@
             <form id="categoryForm">
                 <input type="hidden" id="categoryId">
                 <div class="form-group">
-                    <label for="categoryName">Category Name *</label>
+                    <label for="categoryName" data-i18n="category_name_label">Category Name *</label>
                     <input type="text" id="categoryName" placeholder="e.g., Smartphones" required>
                 </div>
                 <div class="form-group">
-                    <label for="categoryDescription">Description</label>
+                    <label for="categoryDescription" data-i18n="description_label">Description</label>
                     <textarea id="categoryDescription" rows="2" placeholder="Enter category description..."></textarea>
                 </div>
                 <div class="form-group">
@@ -1163,8 +1163,8 @@
                     <input type="text" id="categoryIcon" placeholder="📱" maxlength="2">
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Category</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="save_category">Save Category</button>
                 </div>
             </form>
         </div>

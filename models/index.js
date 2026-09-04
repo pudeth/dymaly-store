@@ -11,6 +11,7 @@ const Brand = require('./Brand');
 const Category = require('./Category');
 const Product = require('./Product');
 const Review = require('./Review');
+const Order = require('./Order');
 
 function getBrandLogoDataUri(brandName) {
   const normalized = (brandName || '').toLowerCase().trim();
@@ -230,6 +231,7 @@ module.exports = {
   Category,
   Product,
   Review,
+  Order,
   connectMongoDB,
   seedMongoDB,
   isMongoConnected: () => isConnected,

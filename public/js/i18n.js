@@ -149,7 +149,128 @@
                 shipping_unlocked: 'Free Express Shipping Unlocked!',
                 shipping_unlocked_sub: 'Guaranteed delivery in 2–3 business days',
                 freq_added: 'Frequently Added Together',
-                freq_added_sub: 'Essential accessories for your new device'
+                freq_added_sub: 'Essential accessories for your new device',
+
+                // Navigation & Tabs
+                nav_overview: 'Overview',
+                nav_catalog: 'Catalog',
+                nav_reviews: 'Reviews',
+                nav_settings: 'Settings',
+
+                // Admin Stats & Metrics
+                stat_total_products: 'Total Products',
+                stat_total_units_desc: 'total units',
+                stat_stock_value: 'Stock Value',
+                stat_total_inventory: 'Total inventory',
+                stat_avg_rating: 'Average Rating',
+                stat_reviews_count: 'reviews',
+                stat_need_restock: 'Need Restock',
+                stat_low_stock_items: 'Low stock items',
+
+                // Stock Distribution
+                stock_distribution: 'Stock Distribution',
+                stock_critical: 'Critical',
+                stock_normal: 'Normal',
+                stock_high: 'High Stock',
+
+                // Products Needing Attention
+                products_needing_attention: 'Products Needing Attention',
+                all_stocked_healthy: 'All products are well stocked!',
+
+                // Catalog Management
+                catalog_management: 'Catalog Management',
+                catalog_subtitle: 'Products, brands, and categories in one unified hub',
+                add_product: 'Add Product',
+                add_brand: 'Add Brand',
+                add_category: 'Add Category',
+                tab_products: 'Products',
+                tab_brands: 'Brands',
+                tab_categories: 'Categories',
+                search_products_placeholder: 'Search products by name, brand, or price...',
+                filter_brand_label: 'Brand:',
+                filter_category_label: 'Category:',
+                all_categories: 'All Categories',
+                search_brands_placeholder: 'Search brands...',
+                search_categories_placeholder: 'Search categories...',
+                no_products_found_admin: 'No products found. Add your first product!',
+                no_brands_found: 'No brands found. Add your first brand!',
+                no_categories_found: 'No categories found. Add your first category!',
+
+                // Modals & Form Fields
+                add_new_product: 'Add New Product',
+                edit_product: 'Edit Product',
+                product_name_label: 'Product Name *',
+                brand_label: 'Brand *',
+                category_label: 'Category *',
+                price_label: 'Price ($) *',
+                stock_qty_label: 'Stock Quantity *',
+                storage_specs_label: 'Storage Size / Specs',
+                description_label: 'Description',
+                product_image_label: 'Product Image',
+                cancel: 'Cancel',
+                save_product: 'Save Product',
+                add_new_brand: 'Add New Brand',
+                edit_brand: 'Edit Brand',
+                brand_name_label: 'Brand Name *',
+                save_brand: 'Save Brand',
+                add_new_category: 'Add New Category',
+                edit_category: 'Edit Category',
+                category_name_label: 'Category Name *',
+                save_category: 'Save Category',
+                choose_logo: 'Choose Logo',
+                choose_file: 'Choose Image',
+
+                // Reviews
+                customer_reviews_title: 'Customer Reviews',
+                customer_reviews_subtitle: 'Manage customer feedback',
+                no_reviews_yet: 'No reviews found',
+                delete_review: 'Delete',
+
+                // Settings
+                store_admin_settings: 'Store & Admin Settings',
+                settings_subtitle: 'Configure your store identity and administrator account',
+                store_identity: 'Store Identity',
+                store_identity_desc: 'Edit store name, tagline, and customer contact info',
+                live_preview: 'LIVE PREVIEW',
+                store_logo_label: 'Store Logo / Brand Icon',
+                upload_store_logo: 'Upload Store Logo',
+                remove: 'Remove',
+                store_name_label: 'Store Name *',
+                header_badge_label: 'Header Badge',
+                store_tagline_label: 'Store Tagline / Slogan',
+                section_identity: '🏪 1. Store Identity & Branding',
+                section_announcement: '📢 2. Top Announcement Bar',
+                section_hero: '✨ 3. Hero Promo Banner (Homepage)',
+                section_contact: '📞 4. Customer Support & Store Location',
+                section_social: '🌐 5. Social Media Channels',
+                contact_phone: 'Contact Phone',
+                contact_email: 'Contact Email',
+                physical_address: 'Physical Address / City',
+                operating_hours: 'Operating Hours',
+                save_store_settings: 'Save Store Settings',
+                admin_account: 'Administrator Account',
+                admin_account_desc: 'Update admin display name, contact, and login password',
+                display_name: 'Display Name',
+                email_label: 'Email',
+                phone_label: 'Phone Number',
+                current_password: 'Current Password *',
+                new_password: 'New Password (Optional)',
+                update_profile: 'Update Profile',
+
+                // Cart & Checkout
+                customer_info: 'Customer Information',
+                full_name: 'Full Name',
+                delivery_address: 'Delivery Address',
+                payment_method: 'Payment Method',
+                cash_on_delivery: 'Cash on Delivery',
+                aba_khqr: 'ABA KHQR (Scan to Pay)',
+                place_order: 'Confirm & Place Order',
+                order_success_title: 'Order Placed Successfully!',
+                order_success_desc: 'Thank you for shopping with DyMaly. We will contact you shortly to confirm delivery.',
+                frequently_added: 'Frequently Added Together',
+                frequently_added_desc: 'Essential accessories for your new device',
+                express_shipping_title: 'Free Express Shipping Unlocked!',
+                express_shipping_desc: 'Guaranteed delivery in 2–3 business days'
             },
             km: {
                 ai_translate: 'បកប្រែ AI',
@@ -251,7 +372,128 @@
                 shipping_unlocked: 'ការដឹកជញ្ជូនរហ័សឥតគិតថ្លៃ!',
                 shipping_unlocked_sub: 'ធានាដឹកជញ្ជូនដល់ក្នុងរយៈពេល ២-៣ ថ្ងៃនៃថ្ងៃធ្វើការ',
                 freq_added: 'គ្រឿងបន្លាស់ដែលពេញនិយមទិញជាមួយគ្នា',
-                freq_added_sub: 'គ្រឿងបន្លាស់ចាំបាច់សម្រាប់ឧបករណ៍ថ្មីរបស់អ្នក'
+                freq_added_sub: 'គ្រឿងបន្លាស់ចាំបាច់សម្រាប់ឧបករណ៍ថ្មីរបស់អ្នក',
+
+                // Navigation & Tabs
+                nav_overview: 'ទិដ្ឋភាពទូទៅ',
+                nav_catalog: 'កាតាឡុក',
+                nav_reviews: 'ការវាយតម្លៃ',
+                nav_settings: 'ការកំណត់',
+
+                // Admin Stats & Metrics
+                stat_total_products: 'ផលិតផលសរុប',
+                stat_total_units_desc: 'គ្រឿងសរុប',
+                stat_stock_value: 'តម្លៃស្តុកសរុប',
+                stat_total_inventory: 'តម្លៃសារពើភ័ណ្ឌសរុប',
+                stat_avg_rating: 'ពិន្ទុវាយតម្លៃមធ្យម',
+                stat_reviews_count: 'ការវាយតម្លៃ',
+                stat_need_restock: 'ត្រូវការបញ្ចូលស្តុក',
+                stat_low_stock_items: 'ទំនិញស្តុកតិច',
+
+                // Stock Distribution
+                stock_distribution: 'ការបែងចែកស្តុក',
+                stock_critical: 'ជិតអស់ខ្លាំង',
+                stock_normal: 'ធម្មតា',
+                stock_high: 'ស្តុកច្រើន',
+
+                // Products Needing Attention
+                products_needing_attention: 'ផលិតផលដែលត្រូវការការយកចិត្តទុកដាក់',
+                all_stocked_healthy: 'ផលិតផលទាំងអស់មានស្តុកគ្រប់គ្រាន់!',
+
+                // Catalog Management
+                catalog_management: 'ការគ្រប់គ្រងកាតាឡុក',
+                catalog_subtitle: 'ផលិតផល ម៉ាក និងប្រភេទទាំងអស់ក្នុងមជ្ឈមណ្ឌលតែមួយ',
+                add_product: 'បន្ថែមផលិតផល',
+                add_brand: 'បន្ថែមម៉ាក',
+                add_category: 'បន្ថែមប្រភេទ',
+                tab_products: 'ផលិតផល',
+                tab_brands: 'ម៉ាកផលិតផល',
+                tab_categories: 'ប្រភេទ',
+                search_products_placeholder: 'ស្វែងរកផលិតផលតាមឈ្មោះ ម៉ាក ឬតម្លៃ...',
+                filter_brand_label: 'ម៉ាក:',
+                filter_category_label: 'ប្រភេទ:',
+                all_categories: 'គ្រប់ប្រភេទទាំងអស់',
+                search_brands_placeholder: 'ស្វែងរកម៉ាក...',
+                search_categories_placeholder: 'ស្វែងរកប្រភេទ...',
+                no_products_found_admin: 'មិនមានផលិតផលទេ។ សូមបន្ថែមផលិតផលដំបូងរបស់អ្នក!',
+                no_brands_found: 'មិនមានម៉ាកទេ។ សូមបន្ថែមម៉ាកដំបូងរបស់អ្នក!',
+                no_categories_found: 'មិនមានប្រភេទទេ។ សូមបន្ថែមប្រភេទដំបូងរបស់អ្នក!',
+
+                // Modals & Form Fields
+                add_new_product: 'បន្ថែមផលិតផលថ្មី',
+                edit_product: 'កែប្រែផលិតផល',
+                product_name_label: 'ឈ្មោះផលិតផល *',
+                brand_label: 'ម៉ាក *',
+                category_label: 'ប្រភេទ *',
+                price_label: 'តម្លៃ ($) *',
+                stock_qty_label: 'ចំនួនស្តុក *',
+                storage_specs_label: 'ទំហំផ្ទុក / លក្ខណៈបច្ចេកទេស',
+                description_label: 'ការពិពណ៌នា',
+                product_image_label: 'រូបភាពផលិតផល',
+                cancel: 'បោះបង់',
+                save_product: 'រក្សាទុកផលិតផល',
+                add_new_brand: 'បន្ថែមម៉ាកថ្មី',
+                edit_brand: 'កែប្រែម៉ាក',
+                brand_name_label: 'ឈ្មោះម៉ាក *',
+                save_brand: 'រក្សាទុកម៉ាក',
+                add_new_category: 'បន្ថែមប្រភេទថ្មី',
+                edit_category: 'កែប្រែប្រភេទ',
+                category_name_label: 'ឈ្មោះប្រភេទ *',
+                save_category: 'រក្សាទុកប្រភេទ',
+                choose_logo: 'ជ្រើសរើសរូបសញ្ញា',
+                choose_file: 'ជ្រើសរើសរូបភាព',
+
+                // Reviews
+                customer_reviews_title: 'ការវាយតម្លៃពីអតិថិជន',
+                customer_reviews_subtitle: 'គ្រប់គ្រងមតិកែលម្អរបស់អតិថិជន',
+                no_reviews_yet: 'មិនទាន់មានការវាយតម្លៃនៅឡើយទេ',
+                delete_review: 'លុបការវាយតម្លៃ',
+
+                // Settings
+                store_admin_settings: 'ការកំណត់ហាង & អ្នកគ្រប់គ្រង',
+                settings_subtitle: 'កំណត់អត្តសញ្ញាណហាង និងគណនីអ្នកគ្រប់គ្រងរបស់អ្នក',
+                store_identity: 'អត្តសញ្ញាណហាង',
+                store_identity_desc: 'កែប្រែឈ្មោះហាង ពាក្យស្លោក និងព័ត៌មានទំនាក់ទំនង',
+                live_preview: 'ការមើលផ្ទាល់',
+                store_logo_label: 'ឡូហ្គោហាង / រូបតំណាងម៉ាក',
+                upload_store_logo: 'បញ្ចូលឡូហ្គោហាង',
+                remove: 'លុបចេញ',
+                store_name_label: 'ឈ្មោះហាង *',
+                header_badge_label: 'ផ្លាកក្បាលទំព័រ',
+                store_tagline_label: 'ពាក្យស្លោកហាង',
+                section_identity: '🏪 ១. អត្តសញ្ញាណហាង និងម៉ាកយីហោ',
+                section_announcement: '📢 ២. របារសេចក្តីជូនដំណឹងខាងលើ',
+                section_hero: '✨ ៣. ផ្ទាំងផ្សាយពាណិជ្ជកម្មចម្បង',
+                section_contact: '📞 ៤. សេវាអតិថិជន និងទីតាំងហាង',
+                section_social: '🌐 ៥. បណ្តាញសង្គម',
+                contact_phone: 'លេខទូរស័ព្ទទំនាក់ទំនង',
+                contact_email: 'អ៊ីមែលទំនាក់ទំនង',
+                physical_address: 'អាសយដ្ឋានហាង / ទីក្រុង',
+                operating_hours: 'ម៉ោងបើកដំណើរការ',
+                save_store_settings: 'រក្សាទុកការកំណត់ហាង',
+                admin_account: 'គណនីអ្នកគ្រប់គ្រង',
+                admin_account_desc: 'ធ្វើបច្ចុប្បន្នភាពឈ្មោះ ទំនាក់ទំនង និងពាក្យសម្ងាត់',
+                display_name: 'ឈ្មោះបង្ហាញ',
+                email_label: 'អ៊ីមែល',
+                phone_label: 'លេខទូរស័ព្ទ',
+                current_password: 'ពាក្យសម្ងាត់បច្ចុប្បន្ន *',
+                new_password: 'ពាក្យសម្ងាត់ថ្មី (មិនបង្ខំ)',
+                update_profile: 'ធ្វើបច្ចុប្បន្នភាពគណនី',
+
+                // Cart & Checkout
+                customer_info: 'ព័ត៌មានអតិថិជន',
+                full_name: 'ឈ្មោះពេញ',
+                delivery_address: 'អាសយដ្ឋានដឹកជញ្ជូន',
+                payment_method: 'វិធីសាស្ត្រទូទាត់',
+                cash_on_delivery: 'ទូទាត់ពេលទទួលទំនិញ (COD)',
+                aba_khqr: 'ABA KHQR (ស្កេនទូទាត់)',
+                place_order: 'បញ្ជាក់ និងកុម្ម៉ង់ទិញ',
+                order_success_title: 'ការកុម្ម៉ង់ទទួលបានជោគជ័យ!',
+                order_success_desc: 'សូមអរគុណសម្រាប់ការទិញទំនិញពី DyMaly។ យើងខ្ញុំនឹងទាក់ទងលោកអ្នកក្នុងពេលឆាប់ៗនេះដើម្បីបញ្ជាក់ការដឹកជញ្ជូន។',
+                frequently_added: 'គ្រឿងបន្លាស់ពេញនិយមជាមួយគ្នា',
+                frequently_added_desc: 'គ្រឿងបន្លាស់ចាំបាច់សម្រាប់ឧបករណ៍ថ្មីរបស់អ្នក',
+                express_shipping_title: 'ទទួលបានការដឹកជញ្ជូនរហ័សឥតគិតថ្លៃ!',
+                express_shipping_desc: 'ធានាដឹកជញ្ជូនក្នុងរយៈពេល ២-៣ ថ្ងៃនៃថ្ងៃធ្វើការ'
             },
             zh: {
                 ai_translate: 'AI 翻译',
@@ -278,13 +520,13 @@
                 stock_filter_all: '📦 全部库存',
                 stock_filter_instock: '✓ 现货在库',
                 stock_filter_low: '⚡ 低库存 (≤ 5)',
-                stock_filter_out: '🚫 暂时缺货',
+                stock_filter_out: '🚫 缺货售罄',
                 add_to_cart: '加入购物车',
                 added_to_cart: '已加入购物车',
                 sold_out: '已售罄',
-                in_stock: '现货充足',
-                out_of_stock: '暂时缺货',
-                low_stock: '低库存预警',
+                in_stock: '现货在库',
+                out_of_stock: '已售罄',
+                low_stock: '库存紧俏',
                 only: '仅剩',
                 left: '件',
                 phone_unit: '台',
@@ -353,15 +595,136 @@
                 shipping_unlocked: '已解锁极速免运费！',
                 shipping_unlocked_sub: '保证 2–3 个工作日内送达',
                 freq_added: '最佳搭配配件',
-                freq_added_sub: '为您心仪的设备挑选必备实用配件'
+                freq_added_sub: '为您心仪的设备挑选必备实用配件',
+
+                // Navigation & Tabs
+                nav_overview: '总览概况',
+                nav_catalog: '商品目录',
+                nav_reviews: '用户评价',
+                nav_settings: '系统设置',
+
+                // Admin Stats & Metrics
+                stat_total_products: '产品总数',
+                stat_total_units_desc: '件总库存',
+                stat_stock_value: '库存总货值',
+                stat_total_inventory: '全部在库资产',
+                stat_avg_rating: '平均好评度',
+                stat_reviews_count: '条评价',
+                stat_need_restock: '急需补货',
+                stat_low_stock_items: '低库存警报',
+
+                // Stock Distribution
+                stock_distribution: '库存状态分布',
+                stock_critical: '极度紧缺',
+                stock_normal: '库存正常',
+                stock_high: '库存充足',
+
+                // Products Needing Attention
+                products_needing_attention: '待关注及缺货商品',
+                all_stocked_healthy: '所有商品库存充足！',
+
+                // Catalog Management
+                catalog_management: '商品目录管理',
+                catalog_subtitle: '产品、品牌与分类一站式管理中心',
+                add_product: '添加产品',
+                add_brand: '添加品牌',
+                add_category: '添加分类',
+                tab_products: '产品列表',
+                tab_brands: '品牌列表',
+                tab_categories: '分类列表',
+                search_products_placeholder: '按名称、品牌或价格搜索产品...',
+                filter_brand_label: '品牌:',
+                filter_category_label: '分类:',
+                all_categories: '所有分类',
+                search_brands_placeholder: '搜索品牌...',
+                search_categories_placeholder: '搜索分类...',
+                no_products_found_admin: '未找到产品。请添加您的第一个产品！',
+                no_brands_found: '未找到品牌。请添加您的第一个品牌！',
+                no_categories_found: '未找到分类。请添加您的第一个分类！',
+
+                // Modals & Form Fields
+                add_new_product: '添加新产品',
+                edit_product: '编辑产品',
+                product_name_label: '产品名称 *',
+                brand_label: '品牌 *',
+                category_label: '分类 *',
+                price_label: '价格 ($) *',
+                stock_qty_label: '库存数量 *',
+                storage_specs_label: '存储容量 / 规格',
+                description_label: '详细描述',
+                product_image_label: '产品图片',
+                cancel: '取消',
+                save_product: '保存产品',
+                add_new_brand: '添加新品牌',
+                edit_brand: '编辑品牌',
+                brand_name_label: '品牌名称 *',
+                save_brand: '保存品牌',
+                add_new_category: '添加新分类',
+                edit_category: '编辑分类',
+                category_name_label: '分类名称 *',
+                save_category: '保存分类',
+                choose_logo: '选择图标',
+                choose_file: '选择图片',
+
+                // Reviews
+                customer_reviews_title: '顾客真实评价',
+                customer_reviews_subtitle: '管理来自顾客的评价与留言',
+                no_reviews_yet: '暂无用户评价',
+                delete_review: '删除评价',
+
+                // Settings
+                store_admin_settings: '商城与管理员设置',
+                settings_subtitle: '配置您的品牌商城信息与管理员账户',
+                store_identity: '品牌与店铺标识',
+                store_identity_desc: '修改店铺名称、广告语及顾客联系方式',
+                live_preview: '实时预览',
+                store_logo_label: '商城标志 / 品牌Logo',
+                upload_store_logo: '上传商城Logo',
+                remove: '移除',
+                store_name_label: '店铺名称 *',
+                header_badge_label: '页头角标',
+                store_tagline_label: '店铺口号 / 标语',
+                section_identity: '🏪 1. 店铺标识与品牌形象',
+                section_announcement: '📢 2. 顶部公告栏',
+                section_hero: '✨ 3. 首页巨幕推广横幅',
+                section_contact: '📞 4. 客户服务与实体店地址',
+                section_social: '🌐 5. 社交媒体渠道',
+                contact_phone: '联系电话',
+                contact_email: '电子邮箱',
+                physical_address: '实体店详细地址',
+                operating_hours: '营业时间',
+                save_store_settings: '保存商城设置',
+                admin_account: '管理员账户',
+                admin_account_desc: '更新管理员显示名称、联系方式与登录密码',
+                display_name: '显示昵称',
+                email_label: '电子邮箱',
+                phone_label: '联系电话',
+                current_password: '当前登录密码 *',
+                new_password: '新密码（可选）',
+                update_profile: '更新资料',
+
+                // Cart & Checkout
+                customer_info: '顾客收货信息',
+                full_name: '收货人姓名',
+                delivery_address: '详细收货地址',
+                payment_method: '支付方式',
+                cash_on_delivery: '货到付款 (现金)',
+                aba_khqr: 'ABA KHQR (扫码支付)',
+                place_order: '确认并提交订单',
+                order_success_title: '订单提交成功！',
+                order_success_desc: '感谢您在 DyMaly 购物。我们将尽快与您联系以确认送货事宜。',
+                frequently_added: '最佳搭配配件',
+                frequently_added_desc: '为您心仪的设备挑选必备实用配件',
+                express_shipping_title: '已解锁极速免运费！',
+                express_shipping_desc: '保证 2–3 个工作日内送达'
             }
         },
 
-        t: function(key) {
+        t: function(key, fallback) {
             const lang = this.currentLang;
             if (this.dict[lang] && this.dict[lang][key] !== undefined) return this.dict[lang][key];
             if (this.dict['en'] && this.dict['en'][key] !== undefined) return this.dict['en'][key];
-            return key;
+            return fallback !== undefined ? fallback : key;
         },
 
         setLanguage: function(lang) {
@@ -376,6 +739,10 @@
 
         getLangInfo: function(code) {
             return this.languages.find(function(l) { return l.code === code; }) || this.languages[0];
+        },
+
+        applyTranslations: function() {
+            this.translatePage();
         },
 
         translatePage: function() {
@@ -394,6 +761,11 @@
                 const key = el.getAttribute('data-i18n-title');
                 const val = self.t(key);
                 if (val) el.setAttribute('title', val);
+            });
+            document.querySelectorAll('[data-i18n-aria]').forEach(function(el) {
+                const key = el.getAttribute('data-i18n-aria');
+                const val = self.t(key);
+                if (val) el.setAttribute('aria-label', val);
             });
 
             const searchInput = document.getElementById('searchInput');

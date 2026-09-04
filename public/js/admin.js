@@ -199,10 +199,12 @@ async function loadStats() {
         
         // Update UI
         document.getElementById('totalProducts').textContent = totalProducts;
-        document.getElementById('totalUnits').textContent = `${totalUnits} total units`;
-        document.getElementById('stockValue').textContent = `$${stockValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        const totalUnitsDesc = window.BongI18n ? window.BongI18n.t('stat_total_units_desc', 'total units') : 'total units';
+        document.getElementById('totalUnits').textContent = `${totalUnits} ${totalUnitsDesc}`;
+        document.getElementById('stockValue').textContent = window.BongI18n ? window.BongI18n.formatPrice(stockValue) : `$${stockValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
         document.getElementById('avgRating').textContent = avgRating.toFixed(1);
-        document.getElementById('totalReviewsMeta').textContent = `${totalReviews} review${totalReviews !== 1 ? 's' : ''}`;
+        const reviewsCountDesc = window.BongI18n ? window.BongI18n.t('stat_reviews_count', 'reviews') : 'reviews';
+        document.getElementById('totalReviewsMeta').textContent = `${totalReviews} ${reviewsCountDesc}`;
         document.getElementById('needRestock').textContent = needRestock;
         
         // Stock distribution counts
@@ -227,10 +229,11 @@ async function loadProductsNeedingAttention(products) {
     const container = document.getElementById('lowStockList');
     
     if (needingAttention.length === 0) {
+        const allStockedMsg = window.BongI18n ? window.BongI18n.t('all_stocked_healthy', 'All products are well stocked!') : 'All products are well stocked!';
         container.innerHTML = `
             <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
                 <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-                <p style="font-weight: 600;">All products are well stocked!</p>
+                <p style="font-weight: 600;">${allStockedMsg}</p>
             </div>
         `;
         return;
@@ -238,16 +241,18 @@ async function loadProductsNeedingAttention(products) {
     
     container.innerHTML = needingAttention.map(product => {
         let statusClass = 'low';
-        let statusText = `${product.stock} left`;
+        const leftWord = window.BongI18n ? window.BongI18n.t('left', 'left') : 'left';
+        let statusText = `${product.stock} ${leftWord}`;
         let statusColor = '#ffd93d';
         
         if (product.stock === 0) {
             statusClass = 'out';
-            statusText = 'Out of Stock';
+            statusText = window.BongI18n ? window.BongI18n.t('out_of_stock', 'Out of Stock') : 'Out of Stock';
             statusColor = '#ef4444';
         } else if (product.stock <= 3) {
             statusClass = 'critical';
-            statusText = `Only ${product.stock} left`;
+            const onlyWord = window.BongI18n ? window.BongI18n.t('only', 'Only') : 'Only';
+            statusText = `${onlyWord} ${product.stock} ${leftWord}`;
             statusColor = '#ff9f43';
         }
         
@@ -2784,4 +2789,14 @@ window.addEventListener('currencyChanged', () => {
     if (typeof loadProducts === 'function') loadProducts();
     if (typeof loadStats === 'function') loadStats();
 });
+
+// React to language changes in Admin
+window.addEventListener('languageChanged', () => {
+    if (window.BongI18n && typeof window.BongI18n.applyTranslations === 'function') {
+        window.BongI18n.applyTranslations();
+    }
+    if (typeof loadProducts === 'function') loadProducts();
+    if (typeof loadStats === 'function') loadStats();
+});
+
 

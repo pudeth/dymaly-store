@@ -225,10 +225,30 @@ function migrateDatabase() {
           WHERE role = 'admin'
         `);
       }
+      // Ensure orders table exists
+      db.run(`
+        CREATE TABLE IF NOT EXISTS orders (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          order_number TEXT UNIQUE NOT NULL,
+          customer_name TEXT DEFAULT 'Customer',
+          customer_phone TEXT DEFAULT '',
+          customer_address TEXT DEFAULT '',
+          customer_notes TEXT DEFAULT '',
+          items TEXT NOT NULL,
+          subtotal REAL NOT NULL DEFAULT 0,
+          discount REAL NOT NULL DEFAULT 0,
+          total_amount REAL NOT NULL DEFAULT 0,
+          promo_code TEXT DEFAULT '',
+          payment_method TEXT DEFAULT 'Cash on Delivery',
+          status TEXT NOT NULL DEFAULT 'completed',
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
       saveDatabase();
-      console.log('✓ Database migrated: verified settings table, store logo & admin avatar fields');
+      console.log('✓ Database migrated: verified settings table, store logo, admin avatar & orders table');
     } catch (e) {
-      console.warn('Settings table migration notice:', e);
+      console.warn('Settings/orders table migration notice:', e);
     }
   } catch (error) {
     console.error('Migration error:', error);
@@ -307,6 +327,26 @@ async function createTables() {
       comment TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (product_id) REFERENCES products(id)
+    )
+  `);
+
+  // Orders table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_number TEXT UNIQUE NOT NULL,
+      customer_name TEXT DEFAULT 'Customer',
+      customer_phone TEXT DEFAULT '',
+      customer_address TEXT DEFAULT '',
+      customer_notes TEXT DEFAULT '',
+      items TEXT NOT NULL,
+      subtotal REAL NOT NULL DEFAULT 0,
+      discount REAL NOT NULL DEFAULT 0,
+      total_amount REAL NOT NULL DEFAULT 0,
+      promo_code TEXT DEFAULT '',
+      payment_method TEXT DEFAULT 'Cash on Delivery',
+      status TEXT NOT NULL DEFAULT 'completed',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 }

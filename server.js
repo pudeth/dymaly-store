@@ -13,6 +13,7 @@ const {
   Category,
   Product,
   Review,
+  Order,
   connectMongoDB,
   isMongoConnected
 } = require('./models');
@@ -570,6 +571,39 @@ function mapProduct(columns, row) {
   };
 }
 
+function mapOrder(columns, row) {
+  const o = {};
+  columns.forEach((col, idx) => {
+    o[col] = row[idx];
+  });
+  let parsedItems = [];
+  if (typeof o.items === 'string') {
+    try {
+      parsedItems = JSON.parse(o.items);
+    } catch (e) {
+      parsedItems = [];
+    }
+  } else if (Array.isArray(o.items)) {
+    parsedItems = o.items;
+  }
+  return {
+    id: o.id,
+    order_number: o.order_number,
+    customer_name: o.customer_name || 'Customer',
+    customer_phone: o.customer_phone || '',
+    customer_address: o.customer_address || '',
+    customer_notes: o.customer_notes || '',
+    items: parsedItems,
+    subtotal: Number(o.subtotal) || 0,
+    discount: Number(o.discount) || 0,
+    total_amount: Number(o.total_amount) || 0,
+    promo_code: o.promo_code || '',
+    payment_method: o.payment_method || 'Cash on Delivery',
+    status: o.status || 'completed',
+    created_at: o.created_at || new Date().toISOString()
+  };
+}
+
 // Get all products
 app.get('/api/products', async (req, res) => {
   try {
@@ -841,7 +875,70 @@ app.post('/api/checkout', async (req, res) => {
       saveDatabase();
     }
 
-    // Step 3: Broadcast real-time live events to all connected clients
+    // Step 3: Save order to database
+    const customerName = (customer && customer.name) ? customer.name.trim() : (req.body.customer_name || 'Online Customer');
+    const customerPhone = (customer && customer.phone) ? customer.phone.trim() : (req.body.customer_phone || '');
+    const customerAddress = (customer && customer.address) ? customer.address.trim() : (req.body.customer_address || '');
+    const customerNotes = (customer && customer.notes) ? customer.notes.trim() : (req.body.customer_notes || '');
+    const orderItemsData = validatedItems.map(v => ({
+      id: String(v.productId),
+      name: v.productName,
+      price: v.price,
+      quantity: v.requestedQty,
+      size: v.productDoc.size || '',
+      image_url: v.productDoc.image_url || ''
+    }));
+
+    const subtotal = validatedItems.reduce((sum, i) => sum + (i.price * i.requestedQty), 0);
+    const discount = Number(req.body.discount_amount || req.body.discount || 0) || 0;
+    const totalAmount = Math.max(0, subtotal - discount);
+    const orderNumber = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+    let createdOrder = null;
+
+    if (isMongo) {
+      const highest = await Order.findOne({}).sort({ legacy_id: -1 });
+      const nextLegacyId = (highest && highest.legacy_id) ? highest.legacy_id + 1 : Date.now();
+      createdOrder = await Order.create({
+        legacy_id: nextLegacyId,
+        order_number: orderNumber,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        customer_address: customerAddress,
+        customer_notes: customerNotes,
+        items: orderItemsData,
+        subtotal,
+        discount,
+        total_amount: totalAmount,
+        promo_code: promo_code || '',
+        payment_method: payment_method || 'Cash on Delivery',
+        status: 'completed'
+      });
+    } else {
+      db.run(`
+        INSERT INTO orders (order_number, customer_name, customer_phone, customer_address, customer_notes, items, subtotal, discount, total_amount, promo_code, payment_method, status, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'completed', datetime('now'))
+      `, [
+        orderNumber,
+        customerName,
+        customerPhone,
+        customerAddress,
+        customerNotes,
+        JSON.stringify(orderItemsData),
+        subtotal,
+        discount,
+        totalAmount,
+        promo_code || '',
+        payment_method || 'Cash on Delivery'
+      ]);
+      saveDatabase();
+
+      const lastOrderRes = db.exec("SELECT * FROM orders ORDER BY id DESC LIMIT 1");
+      if (lastOrderRes.length > 0 && lastOrderRes[0].values.length > 0) {
+        createdOrder = mapOrder(lastOrderRes[0].columns, lastOrderRes[0].values[0]);
+      }
+    }
+
+    // Broadcast real-time live events to all connected clients
     broadcastRealtimeUpdate('stock_updated', {
       action: 'checkout_purchase',
       items: stockUpdates,
@@ -852,15 +949,26 @@ app.post('/api/checkout', async (req, res) => {
       items: stockUpdates,
       timestamp: Date.now()
     });
-
-    const orderId = 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(1000 + Math.random() * 9000);
-    const orderTotal = validatedItems.reduce((sum, i) => sum + (i.price * i.requestedQty), 0);
+    broadcastRealtimeUpdate('order_created', {
+      order_number: orderNumber,
+      customer_name: customerName,
+      total_amount: totalAmount,
+      timestamp: Date.now()
+    });
+    broadcastRealtimeUpdate('orders_updated', {
+      action: 'create',
+      order_number: orderNumber
+    });
 
     return res.json({
       success: true,
-      message: 'Order placed successfully! Stock updated in real-time.',
-      orderId,
-      orderTotal,
+      message: 'Order placed successfully and saved in database!',
+      orderId: orderNumber,
+      orderNumber,
+      order: createdOrder,
+      orderTotal: totalAmount,
+      subtotal,
+      discount,
       purchasedItems: stockUpdates,
       timestamp: new Date().toISOString()
     });
@@ -1074,6 +1182,95 @@ app.delete('/api/reviews/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// ==================== ORDER MANAGEMENT ROUTES (Admin) ====================
+
+// Get all orders
+app.get('/api/orders', requireAdmin, async (req, res) => {
+  try {
+    if (isMongoConnected()) {
+      const orders = await Order.find({}).sort({ createdAt: -1 });
+      return res.json(orders);
+    }
+
+    const db = getDatabase();
+    const result = db.exec("SELECT * FROM orders ORDER BY id DESC");
+    if (result.length === 0 || !result[0].values) {
+      return res.json([]);
+    }
+    const orders = result[0].values.map(row => mapOrder(result[0].columns, row));
+    res.json(orders);
+  } catch (error) {
+    console.error('Fetch orders error:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+// Delete specific order
+app.delete('/api/orders/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (isMongoConnected()) {
+      const order = await findByIdOrLegacy(Order, id);
+      if (order) {
+        await Order.deleteOne({ _id: order._id });
+      }
+    } else {
+      const db = getDatabase();
+      db.run("DELETE FROM orders WHERE id = ? OR order_number = ?", [id, id]);
+      saveDatabase();
+    }
+
+    broadcastRealtimeUpdate('orders_updated', { action: 'delete', id });
+    res.json({ success: true, message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    res.status(500).json({ error: 'Failed to delete order' });
+  }
+});
+
+// Clear all orders (wipes all orders and resets revenue to $0)
+app.delete('/api/orders', requireAdmin, async (req, res) => {
+  try {
+    if (isMongoConnected()) {
+      await Order.deleteMany({});
+    } else {
+      const db = getDatabase();
+      db.run("DELETE FROM orders");
+      saveDatabase();
+    }
+
+    broadcastRealtimeUpdate('orders_updated', { action: 'clear_all' });
+    res.json({ success: true, message: 'All orders cleared successfully' });
+  } catch (error) {
+    console.error('Clear orders error:', error);
+    res.status(500).json({ error: 'Failed to clear orders' });
+  }
+});
+
+// Update order status
+app.put('/api/orders/:id/status', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    if (isMongoConnected()) {
+      const order = await findByIdOrLegacy(Order, id);
+      if (!order) return res.status(404).json({ error: 'Order not found' });
+      order.status = status;
+      await order.save();
+      broadcastRealtimeUpdate('orders_updated', { action: 'status_change', id });
+      return res.json({ success: true, order });
+    }
+
+    const db = getDatabase();
+    db.run("UPDATE orders SET status = ? WHERE id = ? OR order_number = ?", [status, id, id]);
+    saveDatabase();
+    broadcastRealtimeUpdate('orders_updated', { action: 'status_change', id });
+    res.json({ success: true, message: 'Status updated' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update order status' });
+  }
+});
+
 // ==================== STATS ROUTES (Admin) ====================
 
 app.get('/api/stats', requireAdmin, async (req, res) => {
@@ -1081,13 +1278,20 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
     if (isMongoConnected()) {
       const totalProducts = await Product.countDocuments();
       const totalReviews = await Review.countDocuments();
+      const totalOrders = await Order.countDocuments();
       const avgAgg = await Review.aggregate([
         { $group: { _id: null, avgRating: { $avg: '$rating' } } }
       ]);
+      const revAgg = await Order.aggregate([
+        { $group: { _id: null, totalRevenue: { $sum: '$total_amount' } } }
+      ]);
       const averageRating = avgAgg.length > 0 ? (avgAgg[0].avgRating || 0) : 0;
+      const totalRevenue = revAgg.length > 0 ? (revAgg[0].totalRevenue || 0) : 0;
       return res.json({
         totalProducts,
         totalReviews,
+        totalOrders,
+        totalRevenue,
         averageRating: Number(averageRating.toFixed(1))
       });
     }
@@ -1097,9 +1301,21 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
     const reviewsResult = db.exec(`SELECT COUNT(*) as count FROM reviews`);
     const avgRatingResult = db.exec(`SELECT AVG(rating) as avg FROM reviews`);
 
+    let totalOrders = 0;
+    let totalRevenue = 0;
+    try {
+      const ordersResult = db.exec(`SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as rev FROM orders`);
+      if (ordersResult.length > 0 && ordersResult[0].values.length > 0) {
+        totalOrders = ordersResult[0].values[0][0] || 0;
+        totalRevenue = Number(ordersResult[0].values[0][1]) || 0;
+      }
+    } catch (e) {}
+
     const stats = {
       totalProducts: productsResult[0].values[0][0],
       totalReviews: reviewsResult[0].values[0][0],
+      totalOrders,
+      totalRevenue,
       averageRating: avgRatingResult[0].values[0][0] || 0
     };
 
