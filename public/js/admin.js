@@ -2925,6 +2925,31 @@ function initializeAdminAvatarUpload() {
         avatarImg.style.cursor = 'pointer';
     }
 
+    // Setup dropzone drag and drop
+    const dropzone = document.getElementById('profileAvatarDropzone');
+    if (dropzone) {
+        ['dragenter', 'dragover'].forEach(name => {
+            dropzone.addEventListener(name, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('avatar-drag-over');
+            });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+            dropzone.addEventListener(name, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('avatar-drag-over');
+            });
+        });
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files[0]) {
+                handleAdminAvatarUpload(dt.files[0]);
+            }
+        });
+    }
+
     if (fileInput) {
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
@@ -2967,29 +2992,163 @@ function initializeAdminAvatarUpload() {
     }
 
     if (removeBtn) {
-        removeBtn.addEventListener('click', async () => {
-            applyAdminAvatarToUI('', currentAdminProfile.display_name);
-            if (urlInput) urlInput.value = '';
-            try {
-                await fetch('/api/admin/profile', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        display_name: currentAdminProfile.display_name,
-                        username: currentAdminProfile.username,
-                        email: currentAdminProfile.email,
-                        phone: currentAdminProfile.phone,
-                        avatar_url: ''
-                    })
-                });
-                currentAdminProfile.avatar_url = '';
-                showToast('Profile photo removed.');
-            } catch (err) {
-                console.error('Error removing admin avatar:', err);
-            }
+        removeBtn.addEventListener('click', () => {
+            window.removeAdminAvatar();
         });
     }
 }
+
+// Subnav section switcher between Store Setup & Admin Profile
+window.switchSettingsSection = function(section) {
+    const storeSec = document.getElementById('settingsStoreSection');
+    const profileSec = document.getElementById('settingsProfileSection');
+    const storeBtn = document.getElementById('subnavStoreBtn');
+    const profileBtn = document.getElementById('subnavProfileBtn');
+
+    if (section === 'profile') {
+        if (storeSec) {
+            storeSec.style.display = 'none';
+            storeSec.classList.remove('active');
+        }
+        if (profileSec) {
+            profileSec.style.display = 'block';
+            profileSec.classList.add('active');
+        }
+        if (storeBtn) storeBtn.classList.remove('active');
+        if (profileBtn) profileBtn.classList.add('active');
+        loadAdminProfile();
+    } else {
+        if (profileSec) {
+            profileSec.style.display = 'none';
+            profileSec.classList.remove('active');
+        }
+        if (storeSec) {
+            storeSec.style.display = 'block';
+            storeSec.classList.add('active');
+        }
+        if (profileBtn) profileBtn.classList.remove('active');
+        if (storeBtn) storeBtn.classList.add('active');
+    }
+};
+
+// Quick-access helper directly to Admin Profile from header or other tabs
+window.openAdminProfile = function() {
+    if (typeof switchToTab === 'function') {
+        switchToTab('settings');
+    }
+    window.switchSettingsSection('profile');
+    const profileSection = document.getElementById('settingsProfileSection');
+    if (profileSection) {
+        profileSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+// Toggle Avatar URL drawer
+window.toggleAvatarUrlDrawer = function(force) {
+    const drawer = document.getElementById('avatarUrlDrawer');
+    if (!drawer) return;
+    const isVisible = drawer.style.display !== 'none';
+    const shouldShow = typeof force === 'boolean' ? force : !isVisible;
+    drawer.style.display = shouldShow ? 'block' : 'none';
+    if (shouldShow) {
+        const input = document.getElementById('profileAvatarUrl');
+        if (input) input.focus();
+    }
+};
+
+// Handle real-time typing in Avatar URL input
+window.handleAvatarUrlInput = function(url) {
+    const clean = (url || '').trim();
+    if (!clean) return;
+    if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('/uploads/') || clean.startsWith('data:image/')) {
+        applyAdminAvatarToUI(clean, currentAdminProfile.display_name);
+    }
+};
+
+// Remove Admin Avatar
+window.removeAdminAvatar = async function() {
+    if (!confirm('Are you sure you want to remove your profile photo?')) return;
+    applyAdminAvatarToUI('', currentAdminProfile.display_name);
+    const urlInput = document.getElementById('profileAvatarUrl');
+    if (urlInput) urlInput.value = '';
+    try {
+        const res = await fetch('/api/admin/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                display_name: currentAdminProfile.display_name,
+                username: currentAdminProfile.username,
+                email: currentAdminProfile.email,
+                phone: currentAdminProfile.phone,
+                avatar_url: ''
+            })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            currentAdminProfile.avatar_url = '';
+            showToast('✓ Profile photo removed.');
+        } else {
+            showToast('⚠️ Could not remove photo: ' + (data.error || ''));
+        }
+    } catch (err) {
+        console.error('Error removing admin avatar:', err);
+        showToast('❌ Network error while removing profile photo.');
+    }
+};
+
+// Toggle password visibility (Eye toggle)
+window.togglePasswordVisibility = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+
+    if (btn) {
+        if (isPassword) {
+            // Show crossed eye
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+            btn.setAttribute('title', 'Hide password');
+        } else {
+            // Show open eye
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+            btn.setAttribute('title', 'Show password');
+        }
+    }
+};
+
+// Real-time password match validator
+window.checkPasswordMatch = function() {
+    const newPwd = (document.getElementById('profileNewPassword')?.value || '');
+    const confirmPwd = (document.getElementById('profileConfirmPassword')?.value || '');
+    const hint = document.getElementById('passwordMatchHint');
+    if (!hint) return;
+
+    if (!newPwd && !confirmPwd) {
+        hint.style.display = 'none';
+        hint.innerHTML = '';
+        return;
+    }
+
+    hint.style.display = 'inline-flex';
+    if (newPwd.length > 0 && newPwd.length < 6) {
+        hint.className = 'password-match-tag match-warning';
+        hint.innerHTML = '⚠️ Min 6 characters required';
+        return;
+    }
+
+    if (!confirmPwd) {
+        hint.style.display = 'none';
+        return;
+    }
+
+    if (newPwd === confirmPwd) {
+        hint.className = 'password-match-tag match-success';
+        hint.innerHTML = '✓ Passwords match';
+    } else {
+        hint.className = 'password-match-tag match-error';
+        hint.innerHTML = '✕ Passwords do not match';
+    }
+};
 
 // Load admin profile
 async function loadAdminProfile() {
@@ -3018,10 +3177,14 @@ async function loadAdminProfile() {
             const headerName = document.getElementById('headerAdminName');
             const cardDisplayName = document.getElementById('profileCardDisplayName');
             const cardUsername = document.getElementById('profileCardUsername');
+            const cardEmail = document.getElementById('profileCardEmail');
+            const removeBtn = document.getElementById('removeAdminAvatarBtn');
             
             if (headerName) headerName.textContent = currentAdminProfile.display_name || currentAdminProfile.username;
             if (cardDisplayName) cardDisplayName.textContent = currentAdminProfile.display_name || 'Store Administrator';
-            if (cardUsername) cardUsername.textContent = `@${currentAdminProfile.username}`;
+            if (cardUsername) cardUsername.textContent = `@${currentAdminProfile.username || 'admin'}`;
+            if (cardEmail) cardEmail.textContent = currentAdminProfile.email || 'No email set';
+            if (removeBtn) removeBtn.style.display = currentAdminProfile.avatar_url ? 'inline-flex' : 'none';
         }
     } catch (error) {
         console.error('Error loading admin profile:', error);
@@ -3086,10 +3249,12 @@ window.handleSaveAdminProfile = async function(event) {
         if (response.ok && result.success) {
             currentAdminProfile = { ...currentAdminProfile, display_name, username, email, phone, avatar_url };
             
-            // Clear password fields
+            // Clear password fields and hint
             document.getElementById('profileCurrentPassword').value = '';
             document.getElementById('profileNewPassword').value = '';
             document.getElementById('profileConfirmPassword').value = '';
+            const pwdHint = document.getElementById('passwordMatchHint');
+            if (pwdHint) { pwdHint.style.display = 'none'; pwdHint.innerHTML = ''; }
             
             // Update UI avatar
             applyAdminAvatarToUI(avatar_url, display_name);
@@ -3097,9 +3262,11 @@ window.handleSaveAdminProfile = async function(event) {
             const headerName = document.getElementById('headerAdminName');
             const cardDisplayName = document.getElementById('profileCardDisplayName');
             const cardUsername = document.getElementById('profileCardUsername');
+            const cardEmail = document.getElementById('profileCardEmail');
             if (headerName) headerName.textContent = display_name;
             if (cardDisplayName) cardDisplayName.textContent = display_name;
             if (cardUsername) cardUsername.textContent = `@${username}`;
+            if (cardEmail) cardEmail.textContent = email || 'No email set';
             
             showToast('✓ Admin profile updated successfully!');
         } else {
