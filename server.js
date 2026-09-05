@@ -1378,32 +1378,117 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 
 // ==================== BRAND ROUTES ====================
 
-// Upload image endpoint
+// ==================== PERMANENT CLOUD STORAGE HELPER ====================
+async function uploadToPermanentCloud(filePath, originalFilename, mimeType) {
+  // Tier 1: Cloudinary (If user provided CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME)
+  if (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_URL) {
+    try {
+      const cloudinary = require('cloudinary').v2;
+      const result = await cloudinary.uploader.upload(filePath, {
+        folder: 'dymaly-store-uploads',
+        resource_type: 'auto'
+      });
+      if (result && result.secure_url) {
+        console.log('✓ Uploaded to Cloudinary:', result.secure_url);
+        return result.secure_url;
+      }
+    } catch (cloudErr) {
+      console.warn('Cloudinary upload warning:', cloudErr.message);
+    }
+  }
+
+  // Tier 2: Freeimage.host (Fast, free permanent image CDN)
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const base64Data = fileBuffer.toString('base64');
+    const formParams = new URLSearchParams();
+    formParams.append('key', '6d207e02198a847aa98d0a2a901485a5');
+    formParams.append('action', 'upload');
+    formParams.append('source', base64Data);
+    formParams.append('format', 'json');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch('https://freeimage.host/api/1/upload', {
+      method: 'POST',
+      body: formParams,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.image && data.image.url) {
+        console.log('✓ Uploaded to Freeimage Cloud:', data.image.url);
+        return data.image.url;
+      }
+    }
+  } catch (freeimageErr) {
+    console.warn('Freeimage upload warning:', freeimageErr.message);
+  }
+
+  // Tier 3: Catbox (Direct permanent file host)
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    const blob = new Blob([fileBuffer], { type: mimeType || 'image/jpeg' });
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', blob, originalFilename || 'image.jpg');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const cloudUrl = (await res.text()).trim();
+      if (cloudUrl.startsWith('http://') || cloudUrl.startsWith('https://')) {
+        console.log('✓ Uploaded to Catbox Cloud:', cloudUrl);
+        return cloudUrl;
+      }
+    }
+  } catch (catboxErr) {
+    console.warn('Catbox upload warning:', catboxErr.message);
+  }
+
+  return null; // Fallback to local /uploads/
+}
+
+// Upload image endpoint (Automatically saves to permanent cloud host)
 app.post('/api/upload-image', requireAdmin, (req, res) => {
   // 1. Support Base64 Data URL if submitted as JSON
   if (req.is('application/json') && req.body && req.body.image) {
-    try {
-      const dataUri = req.body.image;
-      if (typeof dataUri === 'string' && dataUri.startsWith('data:image/')) {
-        const matches = dataUri.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
-        if (matches) {
-          const ext = matches[1].replace('jpeg', 'jpg').replace('+xml', 'svg');
-          const buffer = Buffer.from(matches[2], 'base64');
-          const filename = 'product-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + ext;
-          const filePath = path.join(uploadsDir, filename);
-          fs.writeFileSync(filePath, buffer);
-          return res.json({
-            success: true,
-            imageUrl: '/uploads/' + filename,
-            filename: filename
-          });
+    (async () => {
+      try {
+        const dataUri = req.body.image;
+        if (typeof dataUri === 'string' && dataUri.startsWith('data:image/')) {
+          const matches = dataUri.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+          if (matches) {
+            const ext = matches[1].replace('jpeg', 'jpg').replace('+xml', 'svg');
+            const buffer = Buffer.from(matches[2], 'base64');
+            const filename = 'product-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + ext;
+            const filePath = path.join(uploadsDir, filename);
+            fs.writeFileSync(filePath, buffer);
+
+            const cloudUrl = await uploadToPermanentCloud(filePath, filename, `image/${matches[1]}`);
+            return res.json({
+              success: true,
+              imageUrl: cloudUrl || ('/uploads/' + filename),
+              filename: filename
+            });
+          }
         }
+        return res.json({ success: true, imageUrl: req.body.image });
+      } catch (err) {
+        console.error('Base64 image write error:', err);
+        return res.status(500).json({ error: 'Failed to process base64 image' });
       }
-      return res.json({ success: true, imageUrl: req.body.image });
-    } catch (err) {
-      console.error('Base64 image write error:', err);
-      return res.status(500).json({ error: 'Failed to process base64 image' });
-    }
+    })();
+    return;
   }
 
   // 2. Standard Multipart File Upload
@@ -1417,31 +1502,14 @@ app.post('/api/upload-image', requireAdmin, (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      // Cloudinary cloud storage if configured
-      if (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_URL) {
-        try {
-          const cloudinary = require('cloudinary').v2;
-          const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'phone-store-products'
-          });
-          if (result && result.secure_url) {
-            return res.json({
-              success: true,
-              imageUrl: result.secure_url,
-              filename: req.file.filename
-            });
-          }
-        } catch (cloudErr) {
-          console.warn('Cloudinary upload error, falling back to local storage:', cloudErr.message);
-        }
-      }
+      // Upload directly to permanent cloud storage (Cloudinary, Freeimage, or Catbox)
+      const cloudUrl = await uploadToPermanentCloud(req.file.path, req.file.originalname, req.file.mimetype);
+      const finalUrl = cloudUrl || ('/uploads/' + req.file.filename);
 
-      // Default: Saved to uploadsDir (/data/uploads or public/uploads)
-      const imageUrl = '/uploads/' + req.file.filename;
-      res.json({ 
-        success: true, 
-        imageUrl: imageUrl,
-        filename: req.file.filename 
+      res.json({
+        success: true,
+        imageUrl: finalUrl,
+        filename: req.file.filename
       });
     } catch (error) {
       console.error('Upload handler error:', error);
