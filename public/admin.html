@@ -572,16 +572,7 @@
                             </div>
                         </div>
 
-                        <!-- Real-time live sync status banner -->
-                        <div class="realtime-status-alert">
-                            <div class="realtime-status-dot"></div>
-                            <div>
-                                <strong>Real-Time Live Database Active</strong>
-                                <p>Any updates saved below are stored in MongoDB Atlas and immediately sync live to all visitor screens without refreshing.</p>
-                            </div>
-                        </div>
-
-                        <!-- Live Brand Preview Box -->
+                        <!-- Streamlined Live Brand Preview & Cloud Status Ribbon -->
                         <div class="store-preview-banner">
                             <div class="preview-banner-icon" id="previewBannerIcon">
                                 <svg id="previewBannerSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -591,29 +582,19 @@
                                 <img id="previewBannerImg" src="" alt="Store Logo" class="preview-logo-img" style="display: none;">
                             </div>
                             <div class="preview-banner-text">
-                                <span class="preview-live-tag" data-i18n="live_preview">LIVE PREVIEW</span>
+                                <div class="preview-top-tags">
+                                    <span class="preview-live-tag" data-i18n="live_preview">LIVE PREVIEW</span>
+                                    <span class="store-status-chip chip-live">
+                                        <span class="status-live-beacon"></span>
+                                        <span>Atlas Sync</span>
+                                    </span>
+                                    <span class="store-status-chip chip-cloud">
+                                        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                                        <span>Cloud CDN</span>
+                                    </span>
+                                </div>
                                 <h4 id="previewStoreName">DyMaly</h4>
                                 <p id="previewStoreTagline">Phones & audio, delivered fast</p>
-                            </div>
-                        </div>
-
-                        <!-- Permanent Cloud Storage Status Notice -->
-                        <div class="cloud-storage-banner">
-                            <div class="cloud-banner-icon">
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-                                    <polyline points="13 14 16 11 19 14"></polyline>
-                                    <line x1="16" y1="11" x2="16" y2="18"></line>
-                                </svg>
-                            </div>
-                            <div class="cloud-banner-info">
-                                <div class="cloud-banner-title">
-                                    <strong>Permanent Cloud Image Storage: Active</strong>
-                                    <span class="cloud-status-badge">🟢 Online CDN</span>
-                                </div>
-                                <p class="cloud-banner-desc">
-                                    All product photos, store logos, and profile avatars are automatically preserved on permanent high-speed cloud storage. Your images will <strong>never be lost</strong> when Render restarts or sleeps.
-                                </p>
                             </div>
                         </div>
 
