@@ -522,21 +522,18 @@
                         <h2 data-i18n="store_admin_settings">Settings & Account</h2>
                         <p class="page-subtitle" data-i18n="settings_subtitle">Configure your store identity and administrator account</p>
                     </div>
-                    <!-- Segmented Tab Switcher: Store Setup vs Admin Profile -->
+                    <!-- Segmented Tab Switcher: Store Setup vs Cloudinary vs Admin Profile -->
                     <div class="settings-subnav" role="tablist">
                         <button type="button" class="settings-subnav-btn active" id="subnavStoreBtn" onclick="switchSettingsSection('store')">
-                            <span class="subnav-step-badge" data-i18n="part_1">Part 1</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             <span data-i18n="store_identity">Store Setup</span>
                         </button>
                         <button type="button" class="settings-subnav-btn" id="subnavCloudinaryBtn" onclick="switchSettingsSection('cloudinary')">
-                            <span class="subnav-step-badge" data-i18n="part_2">Part 2</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
                             <span>Cloudinary Cloud</span>
                             <span class="subnav-pill-badge" id="cloudinarySubnavBadge">Pro Storage</span>
                         </button>
                         <button type="button" class="settings-subnav-btn" id="subnavProfileBtn" onclick="switchSettingsSection('profile')">
-                            <span class="subnav-step-badge" data-i18n="part_3">Part 3</span>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                             <span data-i18n="admin_account">Admin Profile</span>
                             <span class="subnav-pill-badge badge-master">👑 Master</span>
@@ -607,235 +604,312 @@
                             </div>
                         </div>
 
+                        <!-- Store Identity 3-Part Step Navigation Bar -->
+                        <div class="store-parts-nav" role="tablist">
+                            <button type="button" class="store-part-tab-btn active" id="storePartBtn1" onclick="switchStorePart(1)">
+                                <span class="store-part-num">Part 1</span>
+                                <div class="store-part-labels">
+                                    <span class="store-part-name" data-i18n="store_part_1_title">Identity & Bar</span>
+                                    <span class="store-part-desc" data-i18n="store_part_1_sub">Logo, Name & Announcement</span>
+                                </div>
+                            </button>
+                            <div class="store-part-line"></div>
+                            <button type="button" class="store-part-tab-btn" id="storePartBtn2" onclick="switchStorePart(2)">
+                                <span class="store-part-num">Part 2</span>
+                                <div class="store-part-labels">
+                                    <span class="store-part-name" data-i18n="store_part_2_title">Hero & Highlights</span>
+                                    <span class="store-part-desc" data-i18n="store_part_2_sub">Promo Banner & Trust Badges</span>
+                                </div>
+                            </button>
+                            <div class="store-part-line"></div>
+                            <button type="button" class="store-part-tab-btn" id="storePartBtn3" onclick="switchStorePart(3)">
+                                <span class="store-part-num">Part 3</span>
+                                <div class="store-part-labels">
+                                    <span class="store-part-name" data-i18n="store_part_3_title">Contact & Footer</span>
+                                    <span class="store-part-desc" data-i18n="store_part_3_sub">Location, Social & Copyright</span>
+                                </div>
+                            </button>
+                        </div>
+
                         <form id="storeSettingsForm" onsubmit="handleSaveStoreSettings(event)">
-                            <!-- Section A: Store Identity -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title" data-i18n="section_identity">🏪 1. Store Identity & Branding</h4>
-                                <div class="form-group store-logo-field">
-                                    <label class="label-with-badge">
-                                        <span data-i18n="store_logo_label">Store Logo / Brand Icon</span>
-                                        <span class="field-hint">PNG, JPG, SVG, WEBP (Cloud Stored)</span>
-                                    </label>
-                                    <div class="store-logo-uploader" id="storeLogoUploader">
-                                        <div class="store-logo-preview-box" id="storeLogoPreviewBox">
-                                            <div class="store-logo-default-icon" id="storeLogoDefaultIcon">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
-                                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                                                </svg>
-                                            </div>
-                                            <img id="storeLogoPreviewImg" src="" alt="Store Logo Preview" class="store-logo-preview-image" style="display: none;">
-                                        </div>
-                                        <div class="store-logo-upload-info">
-                                            <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
-                                            <div class="upload-btn-row">
-                                                <label for="storeLogoFileInput" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <!-- Part 1 Panel: Store Identity & Announcement -->
+                            <div id="storePartPanel1" class="store-part-panel">
+                                <!-- Section A: Store Identity -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title" data-i18n="section_identity">🏪 1. Store Identity & Branding</h4>
+                                    <div class="form-group store-logo-field">
+                                        <label class="label-with-badge">
+                                            <span data-i18n="store_logo_label">Store Logo / Brand Icon</span>
+                                            <span class="field-hint">PNG, JPG, SVG, WEBP (Cloud Stored)</span>
+                                        </label>
+                                        <div class="store-logo-uploader" id="storeLogoUploader">
+                                            <div class="store-logo-preview-box" id="storeLogoPreviewBox">
+                                                <div class="store-logo-default-icon" id="storeLogoDefaultIcon">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                        <polyline points="17 8 12 3 7 8"></polyline>
-                                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                        <rect x="5" y="2" width="14" height="20" rx="2.5" ry="2.5"></rect>
+                                                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
                                                     </svg>
-                                                    <span id="chooseStoreLogoBtnText" data-i18n="upload_store_logo">Upload Store Logo</span>
-                                                </label>
-                                                <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                    </svg>
-                                                    <span data-i18n="remove">Remove</span>
-                                                </button>
+                                                </div>
+                                                <img id="storeLogoPreviewImg" src="" alt="Store Logo Preview" class="store-logo-preview-image" style="display: none;">
                                             </div>
-                                            <div class="store-logo-url-row" style="margin-top: 8px; display: flex; gap: 8px; width: 100%;">
-                                                <input type="text" id="settingStoreLogo" placeholder="Or paste Logo Image URL (https://...)" style="flex: 1; font-size: 12px; padding: 7px 11px; border: 1px solid #d5c8b8; border-radius: 8px;">
-                                                <button type="button" class="btn-secondary" id="btnPreviewStoreLogoUrl" style="padding: 7px 12px; font-size: 12px; font-weight: 600; white-space: nowrap;">Apply URL</button>
+                                            <div class="store-logo-upload-info">
+                                                <input type="file" id="storeLogoFileInput" accept="image/*" style="display: none;">
+                                                <div class="upload-btn-row">
+                                                    <label for="storeLogoFileInput" class="btn-upload-action btn-upload-choose" id="chooseStoreLogoBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                        </svg>
+                                                        <span id="chooseStoreLogoBtnText" data-i18n="upload_store_logo">Upload Store Logo</span>
+                                                    </label>
+                                                    <button type="button" class="btn-upload-action btn-upload-remove" id="removeStoreLogoBtn" style="display: none;">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                        </svg>
+                                                        <span data-i18n="remove">Remove</span>
+                                                    </button>
+                                                </div>
+                                                <div class="store-logo-url-row" style="margin-top: 8px; display: flex; gap: 8px; width: 100%;">
+                                                    <input type="text" id="settingStoreLogo" placeholder="Or paste Logo Image URL (https://...)" style="flex: 1; font-size: 12px; padding: 7px 11px; border: 1px solid #d5c8b8; border-radius: 8px;">
+                                                    <button type="button" class="btn-secondary" id="btnPreviewStoreLogoUrl" style="padding: 7px 12px; font-size: 12px; font-weight: 600; white-space: nowrap;">Apply URL</button>
+                                                </div>
+                                                <p class="upload-help-text" style="margin-top: 6px;">Upload PNG/JPG/SVG/WEBP or paste direct image link. Synced live across store.</p>
                                             </div>
-                                            <p class="upload-help-text" style="margin-top: 6px;">Upload PNG/JPG/SVG/WEBP or paste direct image link. Synced live across store.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingStoreName" data-i18n="store_name_label">Store Name *</label>
+                                            <input type="text" id="settingStoreName" placeholder="e.g. DyMaly" required oninput="updateStorePreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingStoreBadge" data-i18n="header_badge_label">Header Badge</label>
+                                            <input type="text" id="settingStoreBadge" placeholder="e.g. Official Store">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingStoreTagline" data-i18n="store_tagline_label">Store Tagline / Slogan</label>
+                                        <input type="text" id="settingStoreTagline" placeholder="e.g. Phones & audio, delivered fast" oninput="updateStorePreview()">
+                                    </div>
+                                </div>
+
+                                <!-- Section B: Announcement Bar -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title" data-i18n="section_announcement">📢 2. Top Announcement Bar</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingAnnouncementEnabled">Display Announcement Bar?</label>
+                                            <select id="settingAnnouncementEnabled">
+                                                <option value="true">✅ Enabled (Visible at top of website)</option>
+                                                <option value="false">❌ Disabled (Hidden)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingAnnouncementBadge">Announcement Badge Text</label>
+                                            <input type="text" id="settingAnnouncementBadge" placeholder="e.g. Special Offer">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingAnnouncementText">Announcement Message *</label>
+                                        <input type="text" id="settingAnnouncementText" placeholder="e.g. Free delivery on all phone orders over $100!">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingAnnouncementLink">Announcement Link (Optional)</label>
+                                        <input type="text" id="settingAnnouncementLink" placeholder="e.g. #productsSection or https://t.me/...">
+                                    </div>
+                                </div>
+
+                                <!-- Part 1 Actions -->
+                                <div class="store-part-footer">
+                                    <button type="submit" class="btn-save-settings btn-save-inline">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span data-i18n="save_store_settings">Save Live</span>
+                                    </button>
+                                    <button type="button" class="btn-step-nav btn-step-next" onclick="switchStorePart(2)">
+                                        <span data-i18n="next_store_part_2">Next: Hero & Highlights (Part 2) →</span>
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Part 2 Panel: Hero Promo Banner & Trust Badges -->
+                            <div id="storePartPanel2" class="store-part-panel" style="display: none;">
+                                <!-- Section C: Hero Banner Content -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title" data-i18n="section_hero">✨ 3. Hero Promo Banner (Homepage)</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingHeroBadge">Promo Badge</label>
+                                            <input type="text" id="settingHeroBadge" placeholder="e.g. ✨ Featured Flagship 2026">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingHeroBtnText">CTA Button Text</label>
+                                            <input type="text" id="settingHeroBtnText" placeholder="e.g. Explore Phones →">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingHeroTitle">Main Headline</label>
+                                        <input type="text" id="settingHeroTitle" placeholder="e.g. Next-Gen Smartphones">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingHeroSubtitle">Subheadline / Description</label>
+                                        <textarea id="settingHeroSubtitle" rows="2" placeholder="e.g. Titanium design, powerful mobile AI chips & pro-grade triple camera systems."></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Section F: Guarantees & Trust Badges -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title">🛡️ 4. Trust Badges & Guarantees (4 Highlights)</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Badge 1: Title & Icon</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="settingBadge1Icon" style="max-width: 60px; text-align: center;" placeholder="🚀">
+                                                <input type="text" id="settingBadge1Title" placeholder="Express Delivery">
+                                            </div>
+                                            <input type="text" id="settingBadge1Desc" style="margin-top: 6px;" placeholder="Fast shipping nationwide">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Badge 2: Title & Icon</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="settingBadge2Icon" style="max-width: 60px; text-align: center;" placeholder="🛡️">
+                                                <input type="text" id="settingBadge2Title" placeholder="Official Warranty">
+                                            </div>
+                                            <input type="text" id="settingBadge2Desc" style="margin-top: 6px;" placeholder="1-Year genuine warranty">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Badge 3: Title & Icon</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="settingBadge3Icon" style="max-width: 60px; text-align: center;" placeholder="💬">
+                                                <input type="text" id="settingBadge3Title" placeholder="24/7 Support">
+                                            </div>
+                                            <input type="text" id="settingBadge3Desc" style="margin-top: 6px;" placeholder="Instant help via Telegram">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Badge 4: Title & Icon</label>
+                                            <div style="display: flex; gap: 8px;">
+                                                <input type="text" id="settingBadge4Icon" style="max-width: 60px; text-align: center;" placeholder="🔄">
+                                                <input type="text" id="settingBadge4Title" placeholder="7-Day Return">
+                                            </div>
+                                            <input type="text" id="settingBadge4Desc" style="margin-top: 6px;" placeholder="Hassle-free exchange">
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingStoreName" data-i18n="store_name_label">Store Name *</label>
-                                        <input type="text" id="settingStoreName" placeholder="e.g. DyMaly" required oninput="updateStorePreview()">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingStoreBadge" data-i18n="header_badge_label">Header Badge</label>
-                                        <input type="text" id="settingStoreBadge" placeholder="e.g. Official Store">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="settingStoreTagline" data-i18n="store_tagline_label">Store Tagline / Slogan</label>
-                                    <input type="text" id="settingStoreTagline" placeholder="e.g. Phones & audio, delivered fast" oninput="updateStorePreview()">
-                                </div>
-                            </div>
-
-                            <!-- Section B: Announcement Bar -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title" data-i18n="section_announcement">📢 2. Top Announcement Bar</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingAnnouncementEnabled">Display Announcement Bar?</label>
-                                        <select id="settingAnnouncementEnabled">
-                                            <option value="true">✅ Enabled (Visible at top of website)</option>
-                                            <option value="false">❌ Disabled (Hidden)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingAnnouncementBadge">Announcement Badge Text</label>
-                                        <input type="text" id="settingAnnouncementBadge" placeholder="e.g. Special Offer">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="settingAnnouncementText">Announcement Message *</label>
-                                    <input type="text" id="settingAnnouncementText" placeholder="e.g. Free delivery on all phone orders over $100!">
-                                </div>
-                                <div class="form-group">
-                                    <label for="settingAnnouncementLink">Announcement Link (Optional)</label>
-                                    <input type="text" id="settingAnnouncementLink" placeholder="e.g. #productsSection or https://t.me/...">
-                                </div>
-                            </div>
-
-                            <!-- Section C: Hero Banner Content -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title" data-i18n="section_hero">✨ 3. Hero Promo Banner (Homepage)</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingHeroBadge">Promo Badge</label>
-                                        <input type="text" id="settingHeroBadge" placeholder="e.g. ✨ Featured Flagship 2026">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingHeroBtnText">CTA Button Text</label>
-                                        <input type="text" id="settingHeroBtnText" placeholder="e.g. Explore Phones →">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="settingHeroTitle">Main Headline</label>
-                                    <input type="text" id="settingHeroTitle" placeholder="e.g. Next-Gen Smartphones">
-                                </div>
-                                <div class="form-group">
-                                    <label for="settingHeroSubtitle">Subheadline / Description</label>
-                                    <textarea id="settingHeroSubtitle" rows="2" placeholder="e.g. Titanium design, powerful mobile AI chips & pro-grade triple camera systems."></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Section D: Contact & Location Details -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title" data-i18n="section_contact">📞 4. Customer Support & Store Location</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingStorePhone" data-i18n="contact_phone">Contact Phone</label>
-                                        <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingStoreEmail" data-i18n="contact_email">Contact Email</label>
-                                        <input type="email" id="settingStoreEmail" placeholder="e.g. contact@dymaly.com">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingStoreAddress" data-i18n="physical_address">Physical Address / City</label>
-                                        <input type="text" id="settingStoreAddress" placeholder="e.g. Preah Monivong Blvd, Phnom Penh, Cambodia">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingStoreHours" data-i18n="operating_hours">Operating Hours</label>
-                                        <input type="text" id="settingStoreHours" placeholder="e.g. Mon - Sun: 8:00 AM - 9:00 PM">
+                                <!-- Part 2 Actions -->
+                                <div class="store-part-footer">
+                                    <button type="button" class="btn-step-nav btn-step-prev" onclick="switchStorePart(1)">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                        <span data-i18n="back_store_part_1">← Back: Identity (Part 1)</span>
+                                    </button>
+                                    <div class="store-part-footer-right">
+                                        <button type="submit" class="btn-save-settings btn-save-inline">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            <span data-i18n="save_store_settings">Save Live</span>
+                                        </button>
+                                        <button type="button" class="btn-step-nav btn-step-next" onclick="switchStorePart(3)">
+                                            <span data-i18n="next_store_part_3">Next: Contact & Footer (Part 3) →</span>
+                                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Section E: Social Media Channels -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title" data-i18n="section_social">🌐 5. Social Media Channels</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingSocialTelegram">Telegram Link / Username</label>
-                                        <input type="text" id="settingSocialTelegram" placeholder="e.g. https://t.me/dymaly_store">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingSocialFacebook">Facebook Page URL</label>
-                                        <input type="text" id="settingSocialFacebook" placeholder="e.g. https://facebook.com/dymaly">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="settingSocialTiktok">TikTok Profile URL</label>
-                                        <input type="text" id="settingSocialTiktok" placeholder="e.g. https://tiktok.com/@dymaly">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="settingSocialInstagram">Instagram Profile URL</label>
-                                        <input type="text" id="settingSocialInstagram" placeholder="e.g. https://instagram.com/dymaly">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Section F: Guarantees & Trust Badges -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title">🛡️ 6. Trust Badges & Guarantees (4 Highlights)</h4>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Badge 1: Title & Icon</label>
-                                        <div style="display: flex; gap: 8px;">
-                                            <input type="text" id="settingBadge1Icon" style="max-width: 60px; text-align: center;" placeholder="🚀">
-                                            <input type="text" id="settingBadge1Title" placeholder="Express Delivery">
+                            <!-- Part 3 Panel: Contact, Social & Footer -->
+                            <div id="storePartPanel3" class="store-part-panel" style="display: none;">
+                                <!-- Section D: Contact & Location Details -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title" data-i18n="section_contact">📞 5. Customer Support & Store Location</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingStorePhone" data-i18n="contact_phone">Contact Phone</label>
+                                            <input type="text" id="settingStorePhone" placeholder="e.g. +855 12 345 678">
                                         </div>
-                                        <input type="text" id="settingBadge1Desc" style="margin-top: 6px;" placeholder="Fast shipping nationwide">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Badge 2: Title & Icon</label>
-                                        <div style="display: flex; gap: 8px;">
-                                            <input type="text" id="settingBadge2Icon" style="max-width: 60px; text-align: center;" placeholder="🛡️">
-                                            <input type="text" id="settingBadge2Title" placeholder="Official Warranty">
+                                        <div class="form-group">
+                                            <label for="settingStoreEmail" data-i18n="contact_email">Contact Email</label>
+                                            <input type="email" id="settingStoreEmail" placeholder="e.g. contact@dymaly.com">
                                         </div>
-                                        <input type="text" id="settingBadge2Desc" style="margin-top: 6px;" placeholder="1-Year genuine warranty">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingStoreAddress" data-i18n="physical_address">Physical Address / City</label>
+                                            <input type="text" id="settingStoreAddress" placeholder="e.g. Preah Monivong Blvd, Phnom Penh, Cambodia">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingStoreHours" data-i18n="operating_hours">Operating Hours</label>
+                                            <input type="text" id="settingStoreHours" placeholder="e.g. Mon - Sun: 8:00 AM - 9:00 PM">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Badge 3: Title & Icon</label>
-                                        <div style="display: flex; gap: 8px;">
-                                            <input type="text" id="settingBadge3Icon" style="max-width: 60px; text-align: center;" placeholder="💬">
-                                            <input type="text" id="settingBadge3Title" placeholder="24/7 Support">
-                                        </div>
-                                        <input type="text" id="settingBadge3Desc" style="margin-top: 6px;" placeholder="Instant help via Telegram">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Badge 4: Title & Icon</label>
-                                        <div style="display: flex; gap: 8px;">
-                                            <input type="text" id="settingBadge4Icon" style="max-width: 60px; text-align: center;" placeholder="🔄">
-                                            <input type="text" id="settingBadge4Title" placeholder="7-Day Return">
-                                        </div>
-                                        <input type="text" id="settingBadge4Desc" style="margin-top: 6px;" placeholder="Hassle-free exchange">
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Section G: Footer Content & Legal -->
-                            <div class="settings-sub-section">
-                                <h4 class="sub-section-title">📜 7. Footer Content & Copyright</h4>
-                                <div class="form-group">
-                                    <label for="settingFooterAbout">About Store Description</label>
-                                    <textarea id="settingFooterAbout" rows="2" placeholder="About your store..."></textarea>
+                                <!-- Section E: Social Media Channels -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title" data-i18n="section_social">🌐 6. Social Media Channels</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingSocialTelegram">Telegram Link / Username</label>
+                                            <input type="text" id="settingSocialTelegram" placeholder="e.g. https://t.me/dymaly_store">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingSocialFacebook">Facebook Page URL</label>
+                                            <input type="text" id="settingSocialFacebook" placeholder="e.g. https://facebook.com/dymaly">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="settingSocialTiktok">TikTok Profile URL</label>
+                                            <input type="text" id="settingSocialTiktok" placeholder="e.g. https://tiktok.com/@dymaly">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="settingSocialInstagram">Instagram Profile URL</label>
+                                            <input type="text" id="settingSocialInstagram" placeholder="e.g. https://instagram.com/dymaly">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="settingFooterCopyright">Copyright Text</label>
-                                    <input type="text" id="settingFooterCopyright" placeholder="© 2026 DyMaly Phone Store. All rights reserved.">
-                                </div>
-                            </div>
 
-                            <div class="settings-form-actions settings-multi-actions">
-                                <button type="submit" class="btn-save-settings" id="saveStoreSettingsBtn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
-                                    <span data-i18n="save_store_settings">Save & Sync All Website Information Live</span>
-                                </button>
-                                <button type="button" class="btn-step-nav btn-step-next" onclick="switchSettingsSection('cloudinary')">
-                                    <span data-i18n="next_part_2">Next: Cloudinary Cloud (Part 2) →</span>
-                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
+                                <!-- Section G: Footer Content & Legal -->
+                                <div class="settings-sub-section">
+                                    <h4 class="sub-section-title">📜 7. Footer Content & Copyright</h4>
+                                    <div class="form-group">
+                                        <label for="settingFooterAbout">About Store Description</label>
+                                        <textarea id="settingFooterAbout" rows="2" placeholder="About your store..."></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="settingFooterCopyright">Copyright Text</label>
+                                        <input type="text" id="settingFooterCopyright" placeholder="© 2026 DyMaly Phone Store. All rights reserved.">
+                                    </div>
+                                </div>
+
+                                <!-- Part 3 Actions -->
+                                <div class="store-part-footer">
+                                    <button type="button" class="btn-step-nav btn-step-prev" onclick="switchStorePart(2)">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                        </svg>
+                                        <span data-i18n="back_store_part_2">← Back: Hero & Highlights (Part 2)</span>
+                                    </button>
+                                    <button type="submit" class="btn-save-settings btn-save-primary" id="saveStoreSettingsBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span data-i18n="save_store_settings">Save & Sync All Website Information Live</span>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>

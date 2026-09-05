@@ -3082,6 +3082,44 @@ window.switchSettingsSection = function(section) {
     }
 };
 
+// Step switcher for Store Identity (Part 1, Part 2, Part 3)
+window.switchStorePart = function(partNum) {
+    const p1 = document.getElementById('storePartPanel1');
+    const p2 = document.getElementById('storePartPanel2');
+    const p3 = document.getElementById('storePartPanel3');
+    const b1 = document.getElementById('storePartBtn1');
+    const b2 = document.getElementById('storePartBtn2');
+    const b3 = document.getElementById('storePartBtn3');
+
+    // Toggle panels
+    if (p1) { p1.style.display = (partNum === 1 ? 'block' : 'none'); }
+    if (p2) { p2.style.display = (partNum === 2 ? 'block' : 'none'); }
+    if (p3) { p3.style.display = (partNum === 3 ? 'block' : 'none'); }
+
+    // Toggle active/completed states on buttons
+    if (b1) {
+        b1.classList.toggle('active', partNum === 1);
+        b1.classList.toggle('completed', partNum > 1);
+    }
+    if (b2) {
+        b2.classList.toggle('active', partNum === 2);
+        b2.classList.toggle('completed', partNum > 2);
+    }
+    if (b3) {
+        b3.classList.toggle('active', partNum === 3);
+    }
+
+    // Smooth scroll to top of Store Identity card
+    const stepNav = document.querySelector('.store-parts-nav');
+    if (stepNav) {
+        stepNav.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (window.i18n && typeof window.i18n.translatePage === 'function') {
+        window.i18n.translatePage();
+    }
+};
+
 // Check and display Cloudinary connection status
 window.loadCloudinaryStatus = async function() {
     const livePill = document.getElementById('cloudinaryLivePill');
