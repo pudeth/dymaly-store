@@ -3,19 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src-elem * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; style-src * 'self' 'unsafe-inline'; font-src * 'self' data:; img-src * 'self' data: blob: res.cloudinary.com;">
-    <!-- Safeguard against mobile simulator extensions passing non-finite values to elementFromPoint -->
-    <script>
-    (function() {
-        if (typeof document !== 'undefined' && document.elementFromPoint) {
-            var orig = document.elementFromPoint.bind(document);
-            document.elementFromPoint = function(x, y) {
-                if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-                try { return orig(x, y); } catch(e) { return null; }
-            };
-        }
-    })();
-    </script>
     <title>Admin Dashboard - DyMaly Store</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

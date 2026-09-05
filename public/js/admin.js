@@ -1,3 +1,14 @@
+// Safeguard against mobile simulator extensions passing non-finite values to elementFromPoint
+(function() {
+    if (typeof document !== 'undefined' && document.elementFromPoint) {
+        var orig = document.elementFromPoint.bind(document);
+        document.elementFromPoint = function(x, y) {
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+            try { return orig(x, y); } catch(e) { return null; }
+        };
+    }
+})();
+
 // Global state
 let currentTab = 'stats';
 let isInitialized = false;
