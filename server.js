@@ -92,6 +92,30 @@ const upload = multer({
 });
 
 // Middleware
+// Security, Framing & CSP Middleware (Permits mobile simulators, devtools, and prevents script-src 'none' blocks)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  
+  // Explicit CSP enabling scripts, elements, styles, fonts, images and framing in all simulator / webview contexts
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; " +
+    "script-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; " +
+    "script-src-elem * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; " +
+    "style-src * 'self' 'unsafe-inline'; " +
+    "font-src * 'self' data:; " +
+    "img-src * 'self' data: blob: res.cloudinary.com; " +
+    "frame-src *; " +
+    "frame-ancestors *;"
+  );
+  
+  // Remove X-Frame-Options to allow responsive simulators and iframe viewers
+  res.removeHeader('X-Frame-Options');
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
