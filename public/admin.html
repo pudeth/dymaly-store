@@ -524,6 +524,11 @@
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             <span data-i18n="store_identity">Store Setup</span>
                         </button>
+                        <button type="button" class="settings-subnav-btn" id="subnavCloudinaryBtn" onclick="switchSettingsSection('cloudinary')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                            <span>Cloudinary Cloud</span>
+                            <span class="subnav-pill-badge" id="cloudinarySubnavBadge">Pro Storage</span>
+                        </button>
                         <button type="button" class="settings-subnav-btn" id="subnavProfileBtn" onclick="switchSettingsSection('profile')">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                             <span data-i18n="admin_account">Admin Profile</span>
@@ -823,7 +828,137 @@
                     </div>
                 </div>
 
-                <!-- Section B: Admin Profile & Security -->
+                <!-- Section B: Cloudinary Cloud Storage Integration -->
+                <div id="settingsCloudinarySection" class="settings-tab-section" style="display: none;">
+                    <div class="cloudinary-master-container">
+                        <!-- Cloudinary Status Banner -->
+                        <div class="cloudinary-status-card" id="cloudinaryStatusCard">
+                            <div class="cloudinary-status-header">
+                                <div class="cloudinary-brand-badge">
+                                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2">
+                                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                    </svg>
+                                </div>
+                                <div class="cloudinary-status-text-wrap">
+                                    <div class="cloudinary-status-title-row">
+                                        <h4>Cloudinary Cloud Image Storage</h4>
+                                        <span class="cloudinary-live-pill" id="cloudinaryLivePill">Checking...</span>
+                                    </div>
+                                    <p id="cloudinaryStatusDesc">Connect your Cloudinary account to store all photos permanently on a fast worldwide CDN.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cloudinary Configuration Form Card -->
+                        <div class="settings-card cloudinary-form-card">
+                            <div class="settings-card-header">
+                                <div class="settings-icon-badge" style="background: rgba(14, 165, 233, 0.15); color: #0284c7;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                        <polyline points="13 14 16 11 19 14"></polyline>
+                                        <line x1="16" y1="11" x2="16" y2="18"></line>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3>Cloudinary Credentials</h3>
+                                    <p class="settings-card-desc">Enter your Cloudinary API URL or individual keys to store images permanently in the cloud</p>
+                                </div>
+                            </div>
+
+                            <!-- Option 1: Full Cloudinary URL -->
+                            <div class="form-group">
+                                <label for="cloudinaryUrlInput">
+                                    <strong>CLOUDINARY_URL (Recommended - Quickest)</strong>
+                                </label>
+                                <div class="input-with-leading-icon password-input-wrap">
+                                    <span class="input-leading-icon">🔗</span>
+                                    <input type="password" id="cloudinaryUrlInput" placeholder="cloudinary://api_key:api_secret@cloud_name" autocomplete="off">
+                                    <button type="button" class="btn-pwd-eye" onclick="togglePasswordVisibility('cloudinaryUrlInput', this)" title="Show/hide URL">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                </div>
+                                <span class="input-helper-text">Copied directly from your Cloudinary Dashboard (API Environment variable).</span>
+                            </div>
+
+                            <div class="form-divider-text">
+                                <span>— OR ENTER INDIVIDUAL CREDENTIALS —</span>
+                            </div>
+
+                            <!-- Option 2: Individual keys -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cloudinaryCloudNameInput">Cloud Name</label>
+                                    <div class="input-with-leading-icon">
+                                        <span class="input-leading-icon">☁️</span>
+                                        <input type="text" id="cloudinaryCloudNameInput" placeholder="e.g. dymalystore">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cloudinaryApiKeyInput">API Key</label>
+                                    <div class="input-with-leading-icon">
+                                        <span class="input-leading-icon">🔑</span>
+                                        <input type="text" id="cloudinaryApiKeyInput" placeholder="e.g. 123456789123456">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cloudinaryApiSecretInput">API Secret</label>
+                                <div class="input-with-leading-icon password-input-wrap">
+                                    <span class="input-leading-icon">🛡️</span>
+                                    <input type="password" id="cloudinaryApiSecretInput" placeholder="e.g. abcd_1234efgh5678" autocomplete="off">
+                                    <button type="button" class="btn-pwd-eye" onclick="togglePasswordVisibility('cloudinaryApiSecretInput', this)" title="Show/hide secret">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="cloudinaryTestFeedback" class="cloudinary-test-feedback" style="display: none;"></div>
+
+                            <!-- Action Buttons -->
+                            <div class="cloudinary-action-row">
+                                <button type="button" class="btn-test-cloudinary" id="btnTestCloudinary" onclick="testCloudinaryConnection()">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                    <span>Test Connection</span>
+                                </button>
+                                <button type="button" class="btn-save-settings btn-save-cloudinary" id="btnSaveCloudinary" onclick="saveCloudinarySettings()">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <span>Save Cloudinary Settings</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3-Step Visual Guide Card -->
+                        <div class="settings-card cloudinary-guide-card">
+                            <h4 class="guide-card-title">📖 3 Easy Steps to Get Your Free Cloudinary Account</h4>
+                            <div class="cloudinary-steps-grid">
+                                <div class="cloudinary-step-item">
+                                    <div class="step-num">1</div>
+                                    <div class="step-body">
+                                        <strong>Create Free Account</strong>
+                                        <p>Go to <a href="https://cloudinary.com/users/register_free" target="_blank" rel="noopener">cloudinary.com</a> and sign up for a free plan (25 GB free permanent storage & fast CDN).</p>
+                                    </div>
+                                </div>
+                                <div class="cloudinary-step-item">
+                                    <div class="step-num">2</div>
+                                    <div class="step-body">
+                                        <strong>Copy API Environment Variable</strong>
+                                        <p>In your Cloudinary Console dashboard, look for <strong>API Environment variable</strong> and click Copy (it starts with <code>cloudinary://...</code>).</p>
+                                    </div>
+                                </div>
+                                <div class="cloudinary-step-item">
+                                    <div class="step-num">3</div>
+                                    <div class="step-body">
+                                        <strong>Paste & Save</strong>
+                                        <p>Paste the copied URL above and click <strong>Save Cloudinary Settings</strong> (or add to Render Environment Variables). All your store images will be safely preserved forever!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section C: Admin Profile & Security -->
                 <div id="settingsProfileSection" class="settings-tab-section" style="display: none;">
                     <div class="profile-master-container">
                         <!-- Profile Hero Banner Card -->

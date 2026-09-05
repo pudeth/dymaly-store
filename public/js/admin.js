@@ -2640,6 +2640,11 @@ async function loadStoreSettings() {
             // Update live preview banner
             updateStorePreview();
             
+            // Sync Cloudinary status
+            if (typeof window.loadCloudinaryStatus === 'function') {
+                window.loadCloudinaryStatus();
+            }
+            
             // Update header title
             const headerTitle = document.getElementById('headerStoreTitle');
             if (headerTitle && currentStoreSettings.store_name) {
@@ -2998,36 +3003,200 @@ function initializeAdminAvatarUpload() {
     }
 }
 
-// Subnav section switcher between Store Setup & Admin Profile
+// Subnav section switcher between Store Setup, Cloudinary, & Admin Profile
 window.switchSettingsSection = function(section) {
     const storeSec = document.getElementById('settingsStoreSection');
+    const cloudSec = document.getElementById('settingsCloudinarySection');
     const profileSec = document.getElementById('settingsProfileSection');
     const storeBtn = document.getElementById('subnavStoreBtn');
+    const cloudBtn = document.getElementById('subnavCloudinaryBtn');
     const profileBtn = document.getElementById('subnavProfileBtn');
 
-    if (section === 'profile') {
-        if (storeSec) {
-            storeSec.style.display = 'none';
-            storeSec.classList.remove('active');
-        }
-        if (profileSec) {
-            profileSec.style.display = 'block';
-            profileSec.classList.add('active');
-        }
-        if (storeBtn) storeBtn.classList.remove('active');
+    // Hide all sections first
+    if (storeSec) { storeSec.style.display = 'none'; storeSec.classList.remove('active'); }
+    if (cloudSec) { cloudSec.style.display = 'none'; cloudSec.classList.remove('active'); }
+    if (profileSec) { profileSec.style.display = 'none'; profileSec.classList.remove('active'); }
+
+    // Deactivate all subnav buttons
+    if (storeBtn) storeBtn.classList.remove('active');
+    if (cloudBtn) cloudBtn.classList.remove('active');
+    if (profileBtn) profileBtn.classList.remove('active');
+
+    if (section === 'cloudinary') {
+        if (cloudSec) { cloudSec.style.display = 'block'; cloudSec.classList.add('active'); }
+        if (cloudBtn) cloudBtn.classList.add('active');
+        window.loadCloudinaryStatus();
+    } else if (section === 'profile') {
+        if (profileSec) { profileSec.style.display = 'block'; profileSec.classList.add('active'); }
         if (profileBtn) profileBtn.classList.add('active');
         loadAdminProfile();
     } else {
-        if (profileSec) {
-            profileSec.style.display = 'none';
-            profileSec.classList.remove('active');
-        }
-        if (storeSec) {
-            storeSec.style.display = 'block';
-            storeSec.classList.add('active');
-        }
-        if (profileBtn) profileBtn.classList.remove('active');
+        if (storeSec) { storeSec.style.display = 'block'; storeSec.classList.add('active'); }
         if (storeBtn) storeBtn.classList.add('active');
+    }
+};
+
+// Check and display Cloudinary connection status
+window.loadCloudinaryStatus = async function() {
+    const livePill = document.getElementById('cloudinaryLivePill');
+    const statusDesc = document.getElementById('cloudinaryStatusDesc');
+    const subnavBadge = document.getElementById('cloudinarySubnavBadge');
+    const urlInput = document.getElementById('cloudinaryUrlInput');
+    const nameInput = document.getElementById('cloudinaryCloudNameInput');
+    const keyInput = document.getElementById('cloudinaryApiKeyInput');
+    const secretInput = document.getElementById('cloudinaryApiSecretInput');
+
+    // Populate existing values from currentStoreSettings if present
+    if (window.currentStoreSettings) {
+        if (urlInput && window.currentStoreSettings.cloudinary_url) urlInput.value = window.currentStoreSettings.cloudinary_url;
+        if (nameInput && window.currentStoreSettings.cloudinary_cloud_name) nameInput.value = window.currentStoreSettings.cloudinary_cloud_name;
+        if (keyInput && window.currentStoreSettings.cloudinary_api_key) keyInput.value = window.currentStoreSettings.cloudinary_api_key;
+        if (secretInput && window.currentStoreSettings.cloudinary_api_secret) secretInput.value = window.currentStoreSettings.cloudinary_api_secret;
+    }
+
+    if (livePill) {
+        livePill.textContent = 'Checking status...';
+        livePill.className = 'cloudinary-live-pill pill-checking';
+    }
+
+    try {
+        const res = await fetch('/api/admin/cloudinary-status');
+        const data = await res.json();
+
+        if (data && data.connected) {
+            if (livePill) {
+                livePill.textContent = '🟢 Connected & Active';
+                livePill.className = 'cloudinary-live-pill pill-connected';
+            }
+            if (subnavBadge) {
+                subnavBadge.textContent = 'Connected';
+                subnavBadge.style.background = '#dcfce7';
+                subnavBadge.style.color = '#15803d';
+            }
+            if (statusDesc) {
+                statusDesc.textContent = `✓ Cloudinary is verified and actively storing all newly uploaded images to your cloud account (${data.source === 'render_environment' ? 'Configured via Render Environment' : 'Configured via Dashboard'}).`;
+            }
+        } else {
+            if (livePill) {
+                livePill.textContent = '⚪ Zero-Config Cloud CDN Active';
+                livePill.className = 'cloudinary-live-pill pill-freecdn';
+            }
+            if (subnavBadge) {
+                subnavBadge.textContent = 'Free CDN';
+                subnavBadge.style.background = 'rgba(255, 159, 67, 0.15)';
+                subnavBadge.style.color = '#c2610d';
+            }
+            if (statusDesc) {
+                statusDesc.textContent = 'Cloudinary is not connected yet. All uploads are currently safely stored using our automatic permanent cloud CDN. Enter your Cloudinary credentials below to connect your personal account.';
+            }
+        }
+    } catch (e) {
+        if (livePill) {
+            livePill.textContent = '⚪ Ready to Connect';
+            livePill.className = 'cloudinary-live-pill';
+        }
+    }
+};
+
+// Test Cloudinary connection in real-time
+window.testCloudinaryConnection = async function() {
+    const feedback = document.getElementById('cloudinaryTestFeedback');
+    const testBtn = document.getElementById('btnTestCloudinary');
+    const originalText = testBtn ? testBtn.innerHTML : '';
+
+    const cloudinary_url = (document.getElementById('cloudinaryUrlInput')?.value || '').trim();
+    const cloud_name = (document.getElementById('cloudinaryCloudNameInput')?.value || '').trim();
+    const api_key = (document.getElementById('cloudinaryApiKeyInput')?.value || '').trim();
+    const api_secret = (document.getElementById('cloudinaryApiSecretInput')?.value || '').trim();
+
+    if (!cloudinary_url && (!cloud_name || !api_key || !api_secret)) {
+        if (feedback) {
+            feedback.style.display = 'block';
+            feedback.className = 'cloudinary-test-feedback feedback-error';
+            feedback.textContent = 'Please enter your CLOUDINARY_URL or your Cloud Name + API Key + Secret before testing.';
+        }
+        return;
+    }
+
+    if (testBtn) {
+        testBtn.disabled = true;
+        testBtn.innerHTML = '<span>Testing connection...</span>';
+    }
+
+    try {
+        const res = await fetch('/api/admin/test-cloudinary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cloudinary_url, cloud_name, api_key, api_secret })
+        });
+        const data = await res.json();
+
+        if (feedback) {
+            feedback.style.display = 'block';
+            if (res.ok && data.success) {
+                feedback.className = 'cloudinary-test-feedback feedback-success';
+                feedback.textContent = '✓ SUCCESS: Cloudinary connected and pinged successfully! Click "Save Cloudinary Settings" to apply.';
+                showToast('✓ Cloudinary connected successfully!');
+            } else {
+                feedback.className = 'cloudinary-test-feedback feedback-error';
+                feedback.textContent = '✕ ' + (data.error || 'Cloudinary verification failed. Please check your credentials.');
+            }
+        }
+    } catch (err) {
+        if (feedback) {
+            feedback.style.display = 'block';
+            feedback.className = 'cloudinary-test-feedback feedback-error';
+            feedback.textContent = 'Network error while testing Cloudinary connection.';
+        }
+    } finally {
+        if (testBtn) {
+            testBtn.disabled = false;
+            testBtn.innerHTML = originalText;
+        }
+    }
+};
+
+// Save Cloudinary settings into database
+window.saveCloudinarySettings = async function() {
+    const saveBtn = document.getElementById('btnSaveCloudinary');
+    const originalText = saveBtn ? saveBtn.innerHTML : '';
+
+    const cloudinary_url = (document.getElementById('cloudinaryUrlInput')?.value || '').trim();
+    const cloudinary_cloud_name = (document.getElementById('cloudinaryCloudNameInput')?.value || '').trim();
+    const cloudinary_api_key = (document.getElementById('cloudinaryApiKeyInput')?.value || '').trim();
+    const cloudinary_api_secret = (document.getElementById('cloudinaryApiSecretInput')?.value || '').trim();
+
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>Saving...</span>';
+    }
+
+    try {
+        const res = await fetch('/api/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cloudinary_url,
+                cloudinary_cloud_name,
+                cloudinary_api_key,
+                cloudinary_api_secret
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+            showToast('✓ Cloudinary credentials saved into cloud database!');
+            await window.loadCloudinaryStatus();
+        } else {
+            alert(data.error || 'Failed to save Cloudinary settings.');
+        }
+    } catch (e) {
+        alert('Network error while saving Cloudinary settings.');
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        }
     }
 };
 

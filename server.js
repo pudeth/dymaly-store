@@ -1378,23 +1378,94 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 
 // ==================== BRAND ROUTES ====================
 
+// ==================== CLOUDINARY CLIENT & STORAGE ====================
+async function getCloudinaryClient() {
+  try {
+    const cloudinary = require('cloudinary').v2;
+
+    // 1. Check process.env first (Render Environment Variables)
+    if (process.env.CLOUDINARY_URL) {
+      cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL.trim() });
+      return cloudinary;
+    }
+    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME.trim(),
+        api_key: process.env.CLOUDINARY_API_KEY.trim(),
+        api_secret: process.env.CLOUDINARY_API_SECRET.trim(),
+        secure: true
+      });
+      return cloudinary;
+    }
+
+    // 2. Check Database Settings (saved via Admin Dashboard)
+    let cloudUrl = '';
+    let cloudName = '';
+    let apiKey = '';
+    let apiSecret = '';
+
+    if (isMongoConnected()) {
+      const docs = await Setting.find({
+        key: { $in: ['cloudinary_url', 'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret'] }
+      });
+      docs.forEach(d => {
+        if (d.key === 'cloudinary_url') cloudUrl = d.value;
+        if (d.key === 'cloudinary_cloud_name') cloudName = d.value;
+        if (d.key === 'cloudinary_api_key') apiKey = d.value;
+        if (d.key === 'cloudinary_api_secret') apiSecret = d.value;
+      });
+    } else {
+      const db = getDatabase();
+      if (db) {
+        const res = db.exec("SELECT key, value FROM settings WHERE key IN ('cloudinary_url', 'cloudinary_cloud_name', 'cloudinary_api_key', 'cloudinary_api_secret')");
+        if (res.length > 0 && res[0].values) {
+          res[0].values.forEach(([k, v]) => {
+            if (k === 'cloudinary_url') cloudUrl = v;
+            if (k === 'cloudinary_cloud_name') cloudName = v;
+            if (k === 'cloudinary_api_key') apiKey = v;
+            if (k === 'cloudinary_api_secret') apiSecret = v;
+          });
+        }
+      }
+    }
+
+    if (cloudUrl && cloudUrl.startsWith('cloudinary://')) {
+      cloudinary.config({ cloudinary_url: cloudUrl.trim() });
+      return cloudinary;
+    }
+    if (cloudName && apiKey && apiSecret) {
+      cloudinary.config({
+        cloud_name: cloudName.trim(),
+        api_key: apiKey.trim(),
+        api_secret: apiSecret.trim(),
+        secure: true
+      });
+      return cloudinary;
+    }
+  } catch (err) {
+    console.warn('Error reading Cloudinary configuration:', err.message);
+  }
+
+  return null;
+}
+
 // ==================== PERMANENT CLOUD STORAGE HELPER ====================
 async function uploadToPermanentCloud(filePath, originalFilename, mimeType) {
-  // Tier 1: Cloudinary (If user provided CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME)
-  if (process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_URL) {
-    try {
-      const cloudinary = require('cloudinary').v2;
+  // Tier 1: Cloudinary (If configured via Environment or Dashboard)
+  try {
+    const cloudinary = await getCloudinaryClient();
+    if (cloudinary) {
       const result = await cloudinary.uploader.upload(filePath, {
         folder: 'dymaly-store-uploads',
         resource_type: 'auto'
       });
       if (result && result.secure_url) {
-        console.log('✓ Uploaded to Cloudinary:', result.secure_url);
+        console.log('✓ Uploaded to Cloudinary Cloud:', result.secure_url);
         return result.secure_url;
       }
-    } catch (cloudErr) {
-      console.warn('Cloudinary upload warning:', cloudErr.message);
     }
+  } catch (cloudErr) {
+    console.warn('Cloudinary upload warning, using secondary cloud provider:', cloudErr.message);
   }
 
   // Tier 2: Freeimage.host (Fast, free permanent image CDN)
@@ -1535,6 +1606,59 @@ app.delete('/api/delete-image', requireAdmin, (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete image' });
+  }
+});
+
+// Cloudinary connection test endpoint
+app.post('/api/admin/test-cloudinary', requireAdmin, async (req, res) => {
+  try {
+    const { cloudinary_url, cloud_name, api_key, api_secret } = req.body || {};
+    const cloudinary = require('cloudinary').v2;
+
+    if (cloudinary_url && cloudinary_url.trim()) {
+      cloudinary.config({ cloudinary_url: cloudinary_url.trim() });
+    } else if (cloud_name && api_key && api_secret) {
+      cloudinary.config({
+        cloud_name: cloud_name.trim(),
+        api_key: api_key.trim(),
+        api_secret: api_secret.trim(),
+        secure: true
+      });
+    } else {
+      const client = await getCloudinaryClient();
+      if (!client) {
+        return res.status(400).json({ error: 'No Cloudinary credentials provided to test.' });
+      }
+    }
+
+    const pingResult = await cloudinary.api.ping();
+    if (pingResult && pingResult.status === 'ok') {
+      return res.json({ success: true, message: 'Cloudinary connected and verified successfully!' });
+    } else {
+      return res.status(400).json({ error: 'Cloudinary ping did not succeed: ' + JSON.stringify(pingResult) });
+    }
+  } catch (err) {
+    console.error('Cloudinary test error:', err);
+    return res.status(400).json({ error: 'Cloudinary connection failed: ' + err.message });
+  }
+});
+
+// Cloudinary live status endpoint
+app.get('/api/admin/cloudinary-status', requireAdmin, async (req, res) => {
+  try {
+    const client = await getCloudinaryClient();
+    if (!client) {
+      return res.json({ connected: false, source: 'none' });
+    }
+    const pingResult = await client.api.ping();
+    const isOk = pingResult && pingResult.status === 'ok';
+    const isEnv = !!(process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME);
+    return res.json({
+      connected: isOk,
+      source: isEnv ? 'render_environment' : 'dashboard_settings'
+    });
+  } catch (err) {
+    return res.json({ connected: false, error: err.message });
   }
 });
 
