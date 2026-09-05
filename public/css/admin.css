@@ -1692,6 +1692,34 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, button, input {
     transform: scale(1.08);
 }
 
+.subnav-step-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5px 7.5px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #4b5563;
+    transition: all 0.22s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.settings-subnav-btn:hover .subnav-step-badge {
+    background: rgba(255, 159, 67, 0.16);
+    color: #b45309;
+    border-color: rgba(255, 159, 67, 0.25);
+}
+
+.settings-subnav-btn.active .subnav-step-badge {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: #fde047;
+    border-color: #374151;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
 .subnav-pill-badge {
     padding: 2.5px 8px;
     border-radius: 8px;
@@ -2514,17 +2542,113 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, button, input {
     border: 1px solid rgba(217, 119, 6, 0.25);
 }
 
+/* Step Navigation Elements (Part 1, 2, 3 Navigation) */
+.btn-step-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.btn-step-next {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: #ffffff;
+    border: 1px solid #374151;
+    box-shadow: 0 4px 14px rgba(17, 24, 39, 0.2);
+}
+
+.btn-step-next:hover {
+    background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+    color: #fde047;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.28);
+}
+
+.btn-step-next svg {
+    transition: transform 0.2s;
+}
+
+.btn-step-next:hover svg {
+    transform: translateX(3px);
+}
+
+.btn-step-prev {
+    background: #f8f6f2;
+    color: #4b5563;
+    border: 1px solid #d9d3c7;
+}
+
+.btn-step-prev:hover {
+    background: #ede8e0;
+    color: #111827;
+    transform: translateY(-1.5px);
+    border-color: #b5ad9e;
+}
+
+.btn-step-prev svg {
+    transition: transform 0.2s;
+}
+
+.btn-step-prev:hover svg {
+    transform: translateX(-3px);
+}
+
+.settings-part-nav-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 22px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(230, 218, 202, 0.9);
+    box-shadow: 0 6px 20px rgba(36, 28, 23, 0.04);
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.settings-form-actions.settings-multi-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.settings-multi-actions .btn-save-settings {
+    flex: 1;
+    min-width: 260px;
+}
+
+.profile-actions-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
 /* Profile Actions Sticky Footer */
 .profile-actions-footer {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 12px;
     padding: 16px 22px;
     background: #ffffff;
     border-radius: 20px;
     border: 1px solid rgba(230, 218, 202, 0.9);
     box-shadow: 0 8px 26px rgba(36, 28, 23, 0.05);
+    flex-wrap: wrap;
 }
 
 .btn-profile-revert {
@@ -2572,7 +2696,22 @@ h1, h2, h3, h4, h5, h6, p, span, a, label, button, input {
     .profile-actions-footer {
         flex-direction: column-reverse;
         width: 100%;
+        gap: 12px;
     }
+    .profile-actions-right {
+        width: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    .settings-form-actions.settings-multi-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+    .settings-multi-actions .btn-save-settings,
+    .settings-multi-actions .btn-step-next,
+    .settings-part-nav-footer .btn-step-nav,
+    .profile-actions-footer .btn-step-nav,
     .btn-profile-revert, .btn-save-profile {
         width: 100% !important;
         justify-content: center;

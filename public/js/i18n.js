@@ -319,6 +319,13 @@
                 upload_photo: 'Upload Photo',
                 image_link: 'Image Link',
                 back_to_store_setup: 'Store Setup',
+                part_1: 'Part 1',
+                part_2: 'Part 2',
+                part_3: 'Part 3',
+                next_part_2: 'Next: Cloudinary Cloud (Part 2) →',
+                next_part_3: 'Next: Admin Profile (Part 3) →',
+                back_part_1: '← Back: Store Setup (Part 1)',
+                back_part_2: '← Back: Cloudinary Storage (Part 2)',
 
                 // Cart & Checkout
                 customer_info: 'Customer Information',
@@ -593,6 +600,13 @@
                 upload_photo: 'បញ្ចូលរូបថត',
                 image_link: 'តំណរូបភាព',
                 back_to_store_setup: 'ការកំណត់ហាង',
+                part_1: 'ផ្នែកទី ១',
+                part_2: 'ផ្នែកទី ២',
+                part_3: 'ផ្នែកទី ៣',
+                next_part_2: 'បន្ទាប់៖ កន្លែងផ្ទុក Cloudinary (ផ្នែកទី ២) →',
+                next_part_3: 'បន្ទាប់៖ គណនីអ្នកគ្រប់គ្រង (ផ្នែកទី ៣) →',
+                back_part_1: '← ថយក្រោយ៖ ការកំណត់ហាង (ផ្នែកទី ១)',
+                back_part_2: '← ថយក្រោយ៖ កន្លែងផ្ទុក Cloudinary (ផ្នែកទី ២)',
 
                 // Cart & Checkout
                 customer_info: 'ព័ត៌មានអតិថិជន',
@@ -867,6 +881,13 @@
                 upload_photo: '上传头像',
                 image_link: '图片链接',
                 back_to_store_setup: '店铺设置',
+                part_1: '第 1 部分',
+                part_2: '第 2 部分',
+                part_3: '第 3 部分',
+                next_part_2: '下一步：Cloudinary 云存储 (第 2 部分) →',
+                next_part_3: '下一步：管理员个人资料 (第 3 部分) →',
+                back_part_1: '← 返回：店铺基本设置 (第 1 部分)',
+                back_part_2: '← 返回：Cloudinary 云存储 (第 2 部分)',
 
                 // Cart & Checkout
                 customer_info: '顾客收货信息',

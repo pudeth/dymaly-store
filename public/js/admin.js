@@ -3067,6 +3067,19 @@ window.switchSettingsSection = function(section) {
         if (storeSec) { storeSec.style.display = 'block'; storeSec.classList.add('active'); }
         if (storeBtn) storeBtn.classList.add('active');
     }
+
+    // Smooth scroll to top of settings container for seamless part-to-part transition
+    const settingsHeader = document.querySelector('.settings-page-header');
+    if (settingsHeader) {
+        settingsHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        const settingsTab = document.getElementById('settingsTab');
+        if (settingsTab) settingsTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    if (window.i18n && typeof window.i18n.translatePage === 'function') {
+        window.i18n.translatePage();
+    }
 };
 
 // Check and display Cloudinary connection status
