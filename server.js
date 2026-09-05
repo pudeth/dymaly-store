@@ -1378,6 +1378,28 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
 
 // ==================== BRAND ROUTES ====================
 
+// Helper to parse cloudinary://<api_key>:<api_secret>@<cloud_name>
+function parseCloudinaryUrl(urlStr) {
+  if (!urlStr || typeof urlStr !== 'string' || !urlStr.startsWith('cloudinary://')) return null;
+  try {
+    const withoutPrefix = urlStr.replace('cloudinary://', '').trim();
+    const [authPart, cloud_name] = withoutPrefix.split('@');
+    if (!authPart || !cloud_name) return null;
+    const colonIdx = authPart.indexOf(':');
+    if (colonIdx === -1) return null;
+    const api_key = authPart.slice(0, colonIdx).trim();
+    const api_secret = authPart.slice(colonIdx + 1).trim();
+    return {
+      cloud_name: cloud_name.split('/')[0].trim(),
+      api_key,
+      api_secret,
+      secure: true
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 // ==================== CLOUDINARY CLIENT & STORAGE ====================
 async function getCloudinaryClient() {
   try {
@@ -1385,8 +1407,11 @@ async function getCloudinaryClient() {
 
     // 1. Check process.env first (Render Environment Variables)
     if (process.env.CLOUDINARY_URL) {
-      cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL.trim() });
-      return cloudinary;
+      const parsed = parseCloudinaryUrl(process.env.CLOUDINARY_URL);
+      if (parsed) {
+        cloudinary.config(parsed);
+        return cloudinary;
+      }
     }
     if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
       cloudinary.config({
@@ -1430,8 +1455,11 @@ async function getCloudinaryClient() {
     }
 
     if (cloudUrl && cloudUrl.startsWith('cloudinary://')) {
-      cloudinary.config({ cloudinary_url: cloudUrl.trim() });
-      return cloudinary;
+      const parsed = parseCloudinaryUrl(cloudUrl);
+      if (parsed) {
+        cloudinary.config(parsed);
+        return cloudinary;
+      }
     }
     if (cloudName && apiKey && apiSecret) {
       cloudinary.config({
@@ -1616,7 +1644,12 @@ app.post('/api/admin/test-cloudinary', requireAdmin, async (req, res) => {
     const cloudinary = require('cloudinary').v2;
 
     if (cloudinary_url && cloudinary_url.trim()) {
-      cloudinary.config({ cloudinary_url: cloudinary_url.trim() });
+      const parsed = parseCloudinaryUrl(cloudinary_url.trim());
+      if (parsed) {
+        cloudinary.config(parsed);
+      } else {
+        cloudinary.config({ cloudinary_url: cloudinary_url.trim() });
+      }
     } else if (cloud_name && api_key && api_secret) {
       cloudinary.config({
         cloud_name: cloud_name.trim(),
