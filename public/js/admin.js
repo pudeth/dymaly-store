@@ -1978,6 +1978,20 @@ async function handleImageFile(file) {
     if (imageDetails) imageDetails.classList.add('show');
 
     window.switchImageMode('upload');
+
+    // Automatic Cloud Upload immediately on file selection
+    uploadProductImageFile().then(cloudUrl => {
+        if (cloudUrl && (cloudUrl.startsWith('http://') || cloudUrl.startsWith('https://'))) {
+            currentImageUrl = cloudUrl;
+            const urlInput = document.getElementById('productImageUrlInput');
+            if (urlInput) urlInput.value = cloudUrl;
+            const hiddenInput = document.getElementById('productImage');
+            if (hiddenInput) hiddenInput.value = cloudUrl;
+            if (typeof showToast === 'function') {
+                showToast('✓ Image uploaded to Cloudinary automatically!');
+            }
+        }
+    }).catch(() => {});
 }
 
 // Format file size helper
@@ -3046,12 +3060,18 @@ window.loadCloudinaryStatus = async function() {
     const keyInput = document.getElementById('cloudinaryApiKeyInput');
     const secretInput = document.getElementById('cloudinaryApiSecretInput');
 
-    // Populate existing values from currentStoreSettings if present
-    if (window.currentStoreSettings) {
-        if (urlInput && window.currentStoreSettings.cloudinary_url) urlInput.value = window.currentStoreSettings.cloudinary_url;
-        if (nameInput && window.currentStoreSettings.cloudinary_cloud_name) nameInput.value = window.currentStoreSettings.cloudinary_cloud_name;
-        if (keyInput && window.currentStoreSettings.cloudinary_api_key) keyInput.value = window.currentStoreSettings.cloudinary_api_key;
-        if (secretInput && window.currentStoreSettings.cloudinary_api_secret) secretInput.value = window.currentStoreSettings.cloudinary_api_secret;
+    // Populate existing values from currentStoreSettings or built-in default
+    if (urlInput) {
+        urlInput.value = (window.currentStoreSettings && window.currentStoreSettings.cloudinary_url) || 'cloudinary://336129992788462:-I88xP4jfFSm4TvMKJGfksF0zaM@vgsdtmnx';
+    }
+    if (nameInput) {
+        nameInput.value = (window.currentStoreSettings && window.currentStoreSettings.cloudinary_cloud_name) || 'vgsdtmnx';
+    }
+    if (keyInput) {
+        keyInput.value = (window.currentStoreSettings && window.currentStoreSettings.cloudinary_api_key) || '336129992788462';
+    }
+    if (secretInput) {
+        secretInput.value = (window.currentStoreSettings && window.currentStoreSettings.cloudinary_api_secret) || '-I88xP4jfFSm4TvMKJGfksF0zaM';
     }
 
     if (livePill) {

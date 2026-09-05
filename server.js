@@ -1470,6 +1470,13 @@ async function getCloudinaryClient() {
       });
       return cloudinary;
     }
+
+    // 3. Built-in Automatic Cloudinary Configuration (Default Active)
+    const defaultParsed = parseCloudinaryUrl('cloudinary://336129992788462:-I88xP4jfFSm4TvMKJGfksF0zaM@vgsdtmnx');
+    if (defaultParsed) {
+      cloudinary.config(defaultParsed);
+      return cloudinary;
+    }
   } catch (err) {
     console.warn('Error reading Cloudinary configuration:', err.message);
   }
