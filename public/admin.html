@@ -129,12 +129,16 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button type="button" class="header-admin-pill" onclick="openAdminProfile()" title="Admin Profile & Security">
+                    <button type="button" class="header-admin-pill" onclick="openAdminProfile()" title="Admin Profile & Security" aria-label="Admin Profile & Security">
                         <span class="admin-pill-avatar" id="headerAdminAvatar">
                             <span id="headerAdminAvatarInitial">A</span>
                             <img id="headerAdminAvatarImg" src="" alt="Admin Avatar" class="header-pill-avatar-img" style="display: none;">
+                            <span class="header-pill-status-dot" title="Active Session"></span>
                         </span>
-                        <span class="admin-pill-name" id="headerAdminName">Admin</span>
+                        <span class="admin-pill-text-wrap">
+                            <span class="admin-pill-name" id="headerAdminName">Admin</span>
+                            <span class="header-pill-role-badge">👑 Master</span>
+                        </span>
                     </button>
                     <a href="index.html" class="header-store-btn" title="View Customer Store">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -532,7 +536,7 @@
                         <button type="button" class="settings-subnav-btn" id="subnavProfileBtn" onclick="switchSettingsSection('profile')">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                             <span data-i18n="admin_account">Admin Profile</span>
-                            <span class="subnav-pill-badge">Admin</span>
+                            <span class="subnav-pill-badge badge-master">👑 Master</span>
                         </button>
                     </div>
                 </div>
@@ -966,14 +970,24 @@
                             <div class="profile-hero-banner">
                                 <div class="profile-hero-glow"></div>
                                 <div class="profile-hero-top-row">
-                                    <div class="profile-role-tag">
-                                        <span class="role-icon">👑</span>
-                                        <span>Master Administrator</span>
+                                    <div class="profile-top-badges">
+                                        <div class="profile-role-tag">
+                                            <span class="role-icon">👑</span>
+                                            <span data-i18n="admin_profile_hero_title">Master Administrator</span>
+                                        </div>
+                                        <div class="profile-session-pill">
+                                            <span class="live-dot-pulse"></span>
+                                            <span data-i18n="active_session">Active Session</span>
+                                        </div>
+                                        <div class="profile-security-badge">
+                                            <span class="shield-icon">🛡️</span>
+                                            <span>256-Bit SSL Encrypted</span>
+                                        </div>
                                     </div>
-                                    <div class="profile-session-pill">
-                                        <span class="live-dot-pulse"></span>
-                                        <span>Active Session</span>
-                                    </div>
+                                    <button type="button" class="btn-subnav-fast-switch" onclick="switchSettingsSection('store')" title="Switch to Storefront Settings">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                        <span data-i18n="back_to_store_setup">Store Setup</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -989,15 +1003,19 @@
                                             </svg>
                                         </label>
                                         <input type="file" id="adminAvatarFileInput" accept="image/*" style="display: none;">
+                                        <span class="avatar-online-beacon" title="Logged in & Active"></span>
                                     </div>
                                 </div>
 
                                 <div class="profile-identity-details">
-                                    <h3 class="profile-display-name" id="profileCardDisplayName">Store Administrator</h3>
+                                    <h3 class="profile-display-name">
+                                        <span id="profileCardDisplayName">Store Administrator</span>
+                                        <span class="profile-verified-badge" title="Verified Super Administrator">✓</span>
+                                    </h3>
                                     <div class="profile-meta-chips">
                                         <span class="profile-meta-chip username-chip" id="profileCardUsername">@admin</span>
                                         <span class="profile-meta-chip email-chip" id="profileCardEmail">admin@bongstore.com</span>
-                                        <span class="profile-meta-chip status-chip">Full Privileges</span>
+                                        <span class="profile-meta-chip status-chip" data-i18n="full_access_role">Full Root Privileges</span>
                                     </div>
 
                                     <div class="profile-avatar-actions-bar">
@@ -1007,21 +1025,21 @@
                                                 <polyline points="17 8 12 3 7 8"></polyline>
                                                 <line x1="12" y1="3" x2="12" y2="15"></line>
                                             </svg>
-                                            <span id="chooseAvatarBtnText">Upload Photo</span>
+                                            <span id="chooseAvatarBtnText" data-i18n="upload_photo">Upload Photo</span>
                                         </label>
                                         <button type="button" class="btn-avatar-action btn-avatar-url-toggle" id="btnToggleAvatarUrlBox" onclick="toggleAvatarUrlDrawer()">
                                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                             </svg>
-                                            <span>Image Link</span>
+                                            <span data-i18n="image_link">Image Link</span>
                                         </button>
                                         <button type="button" class="btn-avatar-action btn-avatar-remove" id="removeAdminAvatarBtn" style="display: none;" onclick="removeAdminAvatar()">
                                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                                             </svg>
-                                            <span>Remove</span>
+                                            <span data-i18n="remove">Remove</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1035,7 +1053,53 @@
                                     <button type="button" class="btn-apply-avatar-url" id="btnPreviewAvatarUrl">Apply</button>
                                     <button type="button" class="btn-close-avatar-url" onclick="toggleAvatarUrlDrawer(false)" title="Close">✕</button>
                                 </div>
-                                <span class="url-drawer-hint">Paste an image link from any web CDN or social profile</span>
+                                <span class="url-drawer-hint">Paste an image link from any web CDN, Google Drive direct, or social profile</span>
+                            </div>
+                        </div>
+
+                        <!-- System Privileges & Security Overview Card -->
+                        <div class="profile-privileges-card">
+                            <div class="privileges-card-header">
+                                <div class="privileges-header-icon">👑</div>
+                                <div class="privileges-title-block">
+                                    <h4 data-i18n="system_privileges_title">Administrator Privileges & System Access</h4>
+                                    <p data-i18n="system_privileges_desc">Your account has unrestricted superuser authority across all store modules</p>
+                                </div>
+                                <span class="privileges-status-badge">🟢 Superuser Level 1</span>
+                            </div>
+                            <div class="privileges-grid">
+                                <div class="privilege-item">
+                                    <div class="privilege-icon-wrap orders-wrap">🛍️</div>
+                                    <div class="privilege-info">
+                                        <h5 data-i18n="privilege_orders_title">Orders & Payments</h5>
+                                        <p data-i18n="privilege_orders_desc">Manage orders, verify ABA KHQR payments & status updates</p>
+                                        <span class="privilege-chip chip-active">✓ Full Authority</span>
+                                    </div>
+                                </div>
+                                <div class="privilege-item">
+                                    <div class="privilege-icon-wrap catalog-wrap">📱</div>
+                                    <div class="privilege-info">
+                                        <h5 data-i18n="privilege_catalog_title">Product & Stock Control</h5>
+                                        <p data-i18n="privilege_catalog_desc">Real-time stock recalculation, catalog pricing & items</p>
+                                        <span class="privilege-chip chip-active">✓ Real-time Sync</span>
+                                    </div>
+                                </div>
+                                <div class="privilege-item">
+                                    <div class="privilege-icon-wrap store-wrap">🏪</div>
+                                    <div class="privilege-info">
+                                        <h5 data-i18n="privilege_store_title">Storefront Identity</h5>
+                                        <p data-i18n="privilege_store_desc">Branding, logos, hero banners, announcements & contact</p>
+                                        <span class="privilege-chip chip-active">✓ Live Broadcast</span>
+                                    </div>
+                                </div>
+                                <div class="privilege-item">
+                                    <div class="privilege-icon-wrap cloud-wrap">☁️</div>
+                                    <div class="privilege-info">
+                                        <h5 data-i18n="privilege_cloud_title">Cloud Media Storage</h5>
+                                        <p data-i18n="privilege_cloud_desc">Permanent Cloudinary CDN image synchronization</p>
+                                        <span class="privilege-chip chip-active">✓ Pro Cloud CDN</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1046,8 +1110,8 @@
                                 <div class="profile-card-header">
                                     <div class="profile-header-icon profile-icon-user">👤</div>
                                     <div>
-                                        <h4>Account Details</h4>
-                                        <p>Manage your public administrator identity and contact info</p>
+                                        <h4 data-i18n="account_details_title">Account Identity Details</h4>
+                                        <p data-i18n="account_details_desc">Manage your administrator identity, username, and contact information</p>
                                     </div>
                                 </div>
 
@@ -1065,7 +1129,7 @@
                                             <span class="input-leading-icon">@</span>
                                             <input type="text" id="profileUsername" placeholder="e.g. admin" required>
                                         </div>
-                                        <span class="input-helper-text">You use this username to log in to the dashboard</span>
+                                        <span class="input-helper-text" data-i18n="login_id_hint">You use this username to log in to the dashboard</span>
                                     </div>
                                 </div>
 
@@ -1092,8 +1156,8 @@
                                 <div class="profile-card-header">
                                     <div class="profile-header-icon profile-icon-security">🔐</div>
                                     <div>
-                                        <h4>Password & Authentication</h4>
-                                        <p>Leave password fields blank if you do not want to change your password</p>
+                                        <h4 data-i18n="security_center_title">Password & Authentication Security</h4>
+                                        <p data-i18n="security_center_desc">Leave password fields blank if you do not want to change your password</p>
                                     </div>
                                 </div>
 
@@ -1116,17 +1180,23 @@
                                             <span class="input-leading-icon">🛡️</span>
                                             <input type="password" id="profileNewPassword" placeholder="Min 6 characters" autocomplete="new-password" oninput="checkPasswordMatch()">
                                             <button type="button" class="btn-pwd-eye" onclick="togglePasswordVisibility('profileNewPassword', this)" title="Show/hide password" aria-label="Toggle password visibility">
-                                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
+                                        </div>
+                                        <div class="password-strength-container" id="passwordStrengthContainer" style="display: none;">
+                                            <div class="password-strength-track">
+                                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                            </div>
+                                            <span class="password-strength-label" id="passwordStrengthLabel">Strength: Fair</span>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="profileConfirmPassword">Confirm New Password</label>
+                                        <label for="profileConfirmPassword" data-i18n="confirm_new_password">Confirm New Password</label>
                                         <div class="input-with-leading-icon password-input-wrap">
                                             <span class="input-leading-icon">🛡️</span>
                                             <input type="password" id="profileConfirmPassword" placeholder="Re-enter new password" autocomplete="new-password" oninput="checkPasswordMatch()">
                                             <button type="button" class="btn-pwd-eye" onclick="togglePasswordVisibility('profileConfirmPassword', this)" title="Show/hide password" aria-label="Toggle password visibility">
-                                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
                                         </div>
                                         <div id="passwordMatchHint" class="password-match-tag" style="display: none;"></div>
@@ -1138,19 +1208,17 @@
                             <div class="profile-actions-footer">
                                 <button type="button" class="btn-profile-revert" onclick="loadAdminProfile()">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-                                    <span>Discard Changes</span>
+                                    <span data-i18n="discard_changes">Discard Changes</span>
                                 </button>
                                 <button type="submit" class="btn-save-settings btn-save-profile" id="saveAdminProfileBtn">
                                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
-                                    <span data-i18n="update_profile">Save Profile Changes</span>
+                                    <span data-i18n="save_profile_changes">Save Profile Changes</span>
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
                 </div>
             </div>
         </main>

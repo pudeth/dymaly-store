@@ -130,8 +130,27 @@ function initializeEventListeners() {
     initializeCategoryModal();
 }
 
-// Global Tab Switcher with Unified Catalog support
+// Global Tab Switcher with Unified Catalog & Profile support
 window.switchToTab = function(tab) {
+    if (tab === 'profile') {
+        tab = 'settings';
+        currentTab = 'settings';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.tab-btn[data-tab="settings"]`).forEach(b => b.classList.add('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        const targetContent = document.getElementById('settingsTab');
+        if (targetContent) targetContent.classList.add('active');
+        if (typeof window.switchSettingsSection === 'function') {
+            window.switchSettingsSection('profile');
+        }
+        loadTabContent('settings');
+        const profileSection = document.getElementById('settingsProfileSection');
+        if (profileSection) {
+            profileSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+    }
+
     let activeSubtab = null;
     if (tab === 'products' || tab === 'brands' || tab === 'categories') {
         activeSubtab = tab;
@@ -3305,11 +3324,51 @@ window.togglePasswordVisibility = function(inputId, btn) {
     }
 };
 
-// Real-time password match validator
+// Real-time password match validator and strength calculator
 window.checkPasswordMatch = function() {
     const newPwd = (document.getElementById('profileNewPassword')?.value || '');
     const confirmPwd = (document.getElementById('profileConfirmPassword')?.value || '');
     const hint = document.getElementById('passwordMatchHint');
+    const strengthContainer = document.getElementById('passwordStrengthContainer');
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthLabel = document.getElementById('passwordStrengthLabel');
+
+    // Real-time strength calculation
+    if (strengthContainer && strengthBar && strengthLabel) {
+        if (!newPwd) {
+            strengthContainer.style.display = 'none';
+        } else {
+            strengthContainer.style.display = 'flex';
+            let score = 0;
+            if (newPwd.length >= 6) score += 25;
+            if (newPwd.length >= 10) score += 25;
+            if (/[0-9]/.test(newPwd)) score += 25;
+            if (/[^A-Za-z0-9]/.test(newPwd)) score += 25;
+
+            if (score <= 25) {
+                strengthBar.style.width = '25%';
+                strengthBar.style.backgroundColor = '#ef4444';
+                strengthLabel.textContent = 'Strength: Weak (add numbers & symbols)';
+                strengthLabel.style.color = '#dc2626';
+            } else if (score <= 50) {
+                strengthBar.style.width = '55%';
+                strengthBar.style.backgroundColor = '#f59e0b';
+                strengthLabel.textContent = 'Strength: Fair';
+                strengthLabel.style.color = '#d97706';
+            } else if (score <= 75) {
+                strengthBar.style.width = '80%';
+                strengthBar.style.backgroundColor = '#3b82f6';
+                strengthLabel.textContent = 'Strength: Good';
+                strengthLabel.style.color = '#2563eb';
+            } else {
+                strengthBar.style.width = '100%';
+                strengthBar.style.backgroundColor = '#10b981';
+                strengthLabel.textContent = 'Strength: Very Strong ✓';
+                strengthLabel.style.color = '#059669';
+            }
+        }
+    }
+
     if (!hint) return;
 
     if (!newPwd && !confirmPwd) {
@@ -3444,6 +3503,8 @@ window.handleSaveAdminProfile = async function(event) {
             document.getElementById('profileConfirmPassword').value = '';
             const pwdHint = document.getElementById('passwordMatchHint');
             if (pwdHint) { pwdHint.style.display = 'none'; pwdHint.innerHTML = ''; }
+            const strengthContainer = document.getElementById('passwordStrengthContainer');
+            if (strengthContainer) strengthContainer.style.display = 'none';
             
             // Update UI avatar
             applyAdminAvatarToUI(avatar_url, display_name);
