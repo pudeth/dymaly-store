@@ -5555,23 +5555,28 @@ select.with-icon {
         font-weight: 700;
     }
 
+    /* Fixed centered floating sheet on mobile so it can NEVER overflow or be cut off */
     .ai-lang-dropdown {
-        left: auto;
-        right: -30px;
-        transform: translateY(8px) scale(0.96);
-        min-width: 275px;
-        width: min(315px, calc(100vw - 20px));
-        max-width: 315px;
+        position: fixed !important;
+        top: calc(env(safe-area-inset-top, 0px) + 58px) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) translateY(8px) scale(0.96) !important;
+        min-width: unset !important;
+        width: calc(100vw - 28px) !important;
+        max-width: 330px !important;
+        margin: 0 auto !important;
+        z-index: 10005 !important;
+        border-radius: 24px !important;
+        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 185, 120, 0.3) !important;
     }
 
     .ai-lang-switcher-wrap.open .ai-lang-dropdown {
-        transform: translateY(0) scale(1);
+        transform: translateX(-50%) translateY(0) scale(1) !important;
     }
 
     .ai-lang-dropdown::before {
-        left: auto;
-        right: 42px;
-        transform: rotate(45deg);
+        display: none !important; /* Hide arrow on mobile when centered */
     }
 }
 
@@ -5587,12 +5592,9 @@ select.with-icon {
     }
 
     .ai-lang-dropdown {
-        right: -20px;
-        min-width: 260px;
-    }
-
-    .ai-lang-dropdown::before {
-        right: 32px;
+        top: calc(env(safe-area-inset-top, 0px) + 54px) !important;
+        width: calc(100vw - 24px) !important;
+        max-width: 320px !important;
     }
 }
 
